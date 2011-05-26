@@ -1,0 +1,41 @@
+# The contents of these directories are used strictly for testing purposes
+web/htdocs/images/
+web/htdocs/scratchdocs/
+
+# Mac OS X Finder droppings
+.DS_Store
+
+# Textmate project
+*.tmproj
+
+# XCode noise
+*.
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+*.xcworkspace/
+xcuserdata/
+
+# Generated files
+VersionX-revision.h
+
+# build products
+build/
+*.[oa]
+
+# Other source repository archive directories (protects when importing)
+.hg
+.svn
+CVS
+
+# Automatic backup files
+*~.nib
+*.swp
+*~
+*(Autosaved).rtfd/
+Backup[ ]of[ ]*.pages/
+Backup[ ]of[ ]*.key/
+Backup[ ]of[ ]*.numbers/

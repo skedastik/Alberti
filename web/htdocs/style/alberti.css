@@ -1,0 +1,91 @@
+/* 
+ * alberti.css
+ *
+ * The order of rules below is important, as various scripts reference the 
+ * rules by index number. New order-sensitive rules should be appended to the 
+ * end of the section, and new properties should be appended to the end of 
+ * each rule.
+ *
+ */
+
+#selectionBox, #workspace .selected {
+	stroke-dasharray: 4, 4;
+}
+
+#selectionBox {
+	stroke: black;
+}
+
+/* * * * * * * * * * * Order below is NOT important. * * * * * * * * * * * */
+
+#background {
+/*	fill: black;*/
+	visibility: hidden;
+}
+
+#master {
+	fill: none;
+}
+
+#workspace {
+	pointer-events: visible;
+	stroke: #7788ff;
+}
+
+#overlay {
+	pointer-events: none;
+	stroke: red;
+	fill: none;
+}
+
+#underlay {
+	pointer-events: none;
+	stroke: red;
+	stroke-opacity: 0.2;
+/*	stroke: #ffc8c8;*/
+}
+
+#underlayimg {
+	position: absolute;
+}
+
+text {
+	pointer-events: none;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	font-size: 11px;
+}
+
+text, body {
+	pointer-events: none;
+	
+	/* currently, these are the best options to prevent text selection */
+	-webkit-user-select: none;
+/*	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	user-select: none;*/
+}
+
+#static_overlay text {
+	fill: red;
+}
+
+.cursorDefault    { cursor: auto; }
+.cursorZoomAndPan { cursor: move; }
+.cursorCrosshair  { cursor: crosshair; }
+.cursorBusy       { cursor: wait; }
+
+.optimized {
+	shape-rendering: crispEdges;
+}
+
+line {
+	/*
+	vector-effect is not supported in all implementations of SVG. A work-
+	around can be activated in Alberti.js by setting Alberti.nonScalingLinesHack 
+	to true. If the workaround is activated, the rule below must be commented 
+	out.
+	
+	vector-effect: non-scaling-stroke;
+	
+	*/
+}

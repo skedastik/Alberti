@@ -1,0 +1,7 @@
+#!
+./merge-js
+./merge-css
+./generate-header
+./generate-frontend
+
+cp ../var/index ../deploy/index.xhtml

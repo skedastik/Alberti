@@ -1,0 +1,4 @@
+#!
+css=$(cat ../htdocs/style/alberti.css | java -jar yuicompressor-2.4.6.jar --type css --preserve-semi)
+
+echo $css > ../var/css

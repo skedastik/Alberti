@@ -1,0 +1,8 @@
+#!
+js=$(cat ../var/js)
+css=$(cat ../var/css)
+h1=$(cat ../htdocs/template/header.1)
+h2=$(cat ../htdocs/template/header.2)
+h3=$(cat ../htdocs/template/header.3)
+
+echo $h1$css$h2$js$h3 > ../var/header

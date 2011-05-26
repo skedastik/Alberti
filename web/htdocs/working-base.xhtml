@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<link rel="stylesheet" href="style/alberti.css" type="text/css" />
+	<script type="text/ecmascript" src="js/core/DebugUtil.js"></script>
+	<script type="text/ecmascript" src="js/core/Util.js"></script>
+	<script type="text/ecmascript" src="js/core/SpatialHash.js"></script>
+	<script type="text/ecmascript" src="js/core/Animation.js"></script>
+	<script type="text/ecmascript" src="js/alberti/FastImage.js"></script>
+	<script type="text/ecmascript" src="js/alberti/AlbertiDocument.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Alberti.js"></script>
+	<script type="text/ecmascript" src="js/alberti/main.js"></script>
+	<script type="text/ecmascript" src="js/core/geometry/Coord2D.js"></script>
+	<script type="text/ecmascript" src="js/core/geometry/Rect2D.js"></script>
+	<script type="text/ecmascript" src="js/alberti/EventHandler.js"></script>
+	<script type="text/ecmascript" src="js/alberti/DragHandler.js"></script>
+	<script type="text/ecmascript" src="js/alberti/TransformHandler.js"></script>
+	<script type="text/ecmascript" src="js/alberti/AutoScale.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Zap.js"></script>
+	<script type="text/ecmascript" src="js/alberti/SvgObject.js"></script>
+	<script type="text/ecmascript" src="js/alberti/SvgContainer.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Group.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Text.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Shape.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Point.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Line.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Rectangle.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Circle.js"></script>
+	<script type="text/ecmascript" src="js/alberti/CircleArc.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Intersection.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Layer.js"></script>
+	<script type="text/ecmascript" src="js/alberti/UndoManager.js"></script>
+	<script type="text/ecmascript" src="js/alberti/LayerManager.js"></script>
+	<script type="text/ecmascript" src="js/alberti/ToolTip.js"></script>
+	<script type="text/ecmascript" src="js/alberti/Tool.js"></script>
+	<script type="text/ecmascript" src="js/alberti/ToolSelection.js"></script>
+	<script type="text/ecmascript" src="js/alberti/ToolLine.js"></script>
+	<script type="text/ecmascript" src="js/alberti/ToolCircleArc.js"></script>
+	<script type="text/ecmascript" src="js/alberti/UserInterface.js"></script>
+</head>
+<body onload="main()" style="margin: 0; overflow: hidden;">
+	<!-- <img id="underlayimg" src="images/scott_caple.jpg" /> -->
+	<svg id="svgroot" style="position: absolute; width:100%; height:100%"
+		xmlns="http://www.w3.org/2000/svg" version="1.1"
+		xmlns:xlink="http://www.w3.org/1999/xlink"
+		xmlns:berti="http://www.albertidraw.com/alberti">
+		<defs>
+			<g id="pointTemplate" shape-rendering="auto">
+				<circle cx="0" cy="0" r="1" stroke="none" stroke-width="1" />
+				<circle cx="0" cy="0" r="3" stroke-width="1.5" fill="none" />
+			</g>
+		</defs>
+		<g id="static_underlay">
+		</g>
+		<g id="root">
+			<!-- This large rectangle is used to set the cursor -->
+			<rect id="background" x="-10000" y="-10000" width="20000" height="20000" pointer-events="all" />
+			<g id="master">
+				<g id="underlay">
+				</g>
+				<g id="hud">
+					<line x1="-15" y1="-15"  x2="15" y2="15" stroke="#bbbbcc" stroke-width="1" />
+					<line  x1="15" y1="-15" x2="-15" y2="15" stroke="#bbbbcc" stroke-width="1" />
+				</g>
+				<g id="workspace">
+					<!-- Test document. -->
+					<!-- <g title="Another Test Layer">
+						<line x1="0" y1="0" x2="150" y2="125" berti:sid="s1"/>
+						<line x1="0" y1="0" x2="-150" y2="-125" berti:sid="s2"/>
+						<line x1="0" y1="0" x2="-150" y2="125" berti:sid="s3"/>
+					</g>
+					<g title="Test Layer">
+						<line x1="204" y1="126" x2="418" y2="4" berti:sid="s4"/>
+						<line x1="422" y1="46" x2="134" y2="38" berti:sid="s5"/>
+					</g> -->
+				</g>
+				<g id="overlay">
+				</g>
+			</g>
+		</g>
+		<g id="static_overlay">
+		</g>
+	</svg>
+</body>
+</html>
