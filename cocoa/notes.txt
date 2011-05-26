@@ -1,0 +1,14 @@
+THE "Crusty" PARADIGM
+
+Take a program predominantly written in Javascript and SVG, and wrap it in a
+Cocoa interface? Dare I? It's like Cocoa-crusted Javascript (hence "Crusty") and 
+it's probably every bit as appealing as the name sounds.
+
+A run-script build phase copies the necessary Javascript/XHTML resources to the 
+Xcode project's "Web" group. These files are bundled with the build target.
+
+A WebView serves as a host for the Javascript environment and facilitates 
+communication with the Cocoa environment. I expect things to get ugly when 
+attempting to fit this approach to Cocoa's document-based application structure.
+Also, using the Javascript environment as a data source for various Cocoa data 
+views and controls is going to be grotesque.

@@ -1,0 +1,8 @@
+#!
+./merge-js
+./merge-css
+./generate-header
+
+cp ../htdocs/template/body ../../cocoa/Alberti/Web/
+cp ../htdocs/template/footer ../../cocoa/Alberti/Web/
+cp ../var/header ../../cocoa/Alberti/Web/

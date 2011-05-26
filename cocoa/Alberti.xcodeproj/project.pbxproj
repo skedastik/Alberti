@@ -1,0 +1,360 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6DDE223B138C52F100CF1A86 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DDE223A138C52F100CF1A86 /* Cocoa.framework */; };
+		6DDE2245138C52F100CF1A86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6DDE2243138C52F100CF1A86 /* InfoPlist.strings */; };
+		6DDE2248138C52F100CF1A86 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE2247138C52F100CF1A86 /* main.m */; };
+		6DDE224B138C52F100CF1A86 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 6DDE2249138C52F100CF1A86 /* Credits.rtf */; };
+		6DDE224E138C52F100CF1A86 /* AlbertiDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDE224D138C52F100CF1A86 /* AlbertiDocument.m */; };
+		6DDE2251138C52F100CF1A86 /* AlbertiDocument.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDE224F138C52F100CF1A86 /* AlbertiDocument.xib */; };
+		6DDE2254138C52F200CF1A86 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDE2252138C52F200CF1A86 /* MainMenu.xib */; };
+		6DDE225B138C52FE00CF1A86 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DDE225A138C52FE00CF1A86 /* WebKit.framework */; };
+		6DDE2277138C68FE00CF1A86 /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDE2275138C68FE00CF1A86 /* add.png */; };
+		6DDE2278138C68FE00CF1A86 /* remove.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDE2276138C68FE00CF1A86 /* remove.png */; };
+		6DE4FB4D138DAE9700C6DF1F /* body in Resources */ = {isa = PBXBuildFile; fileRef = 6DE4FB4A138DAE9700C6DF1F /* body */; };
+		6DE4FB4E138DAE9700C6DF1F /* footer in Resources */ = {isa = PBXBuildFile; fileRef = 6DE4FB4B138DAE9700C6DF1F /* footer */; };
+		6DE4FB4F138DAE9700C6DF1F /* header in Resources */ = {isa = PBXBuildFile; fileRef = 6DE4FB4C138DAE9700C6DF1F /* header */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		6DDE2236138C52F100CF1A86 /* Alberti.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Alberti.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6DDE223A138C52F100CF1A86 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		6DDE223D138C52F100CF1A86 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		6DDE223E138C52F100CF1A86 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		6DDE223F138C52F100CF1A86 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6DDE2242138C52F100CF1A86 /* Alberti-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Alberti-Info.plist"; sourceTree = "<group>"; };
+		6DDE2244138C52F100CF1A86 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		6DDE2246138C52F100CF1A86 /* Alberti-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Alberti-Prefix.pch"; sourceTree = "<group>"; };
+		6DDE2247138C52F100CF1A86 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		6DDE224A138C52F100CF1A86 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		6DDE224C138C52F100CF1A86 /* AlbertiDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AlbertiDocument.h; sourceTree = "<group>"; };
+		6DDE224D138C52F100CF1A86 /* AlbertiDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AlbertiDocument.m; sourceTree = "<group>"; };
+		6DDE2250138C52F100CF1A86 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/AlbertiDocument.xib; sourceTree = "<group>"; };
+		6DDE2253138C52F200CF1A86 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		6DDE225A138C52FE00CF1A86 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		6DDE2275138C68FE00CF1A86 /* add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = add.png; sourceTree = "<group>"; };
+		6DDE2276138C68FE00CF1A86 /* remove.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = remove.png; sourceTree = "<group>"; };
+		6DE4FB44138D9C1C00C6DF1F /* notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
+		6DE4FB4A138DAE9700C6DF1F /* body */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = body; path = Alberti/Web/body; sourceTree = "<group>"; };
+		6DE4FB4B138DAE9700C6DF1F /* footer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = footer; path = Alberti/Web/footer; sourceTree = "<group>"; };
+		6DE4FB4C138DAE9700C6DF1F /* header */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = header; path = Alberti/Web/header; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6DDE2233138C52F100CF1A86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DDE225B138C52FE00CF1A86 /* WebKit.framework in Frameworks */,
+				6DDE223B138C52F100CF1A86 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6DDE222B138C52F100CF1A86 = {
+			isa = PBXGroup;
+			children = (
+				6DE4FB44138D9C1C00C6DF1F /* notes.txt */,
+				6DDE2240138C52F100CF1A86 /* Alberti */,
+				6DE4FB49138DADDD00C6DF1F /* Web */,
+				6DDE2274138C68FE00CF1A86 /* Resources */,
+				6DDE2239138C52F100CF1A86 /* Frameworks */,
+				6DDE2237138C52F100CF1A86 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6DDE2237138C52F100CF1A86 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE2236138C52F100CF1A86 /* Alberti.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6DDE2239138C52F100CF1A86 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE225A138C52FE00CF1A86 /* WebKit.framework */,
+				6DDE223A138C52F100CF1A86 /* Cocoa.framework */,
+				6DDE223C138C52F100CF1A86 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6DDE223C138C52F100CF1A86 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE223D138C52F100CF1A86 /* AppKit.framework */,
+				6DDE223E138C52F100CF1A86 /* CoreData.framework */,
+				6DDE223F138C52F100CF1A86 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		6DDE2240138C52F100CF1A86 /* Alberti */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE224C138C52F100CF1A86 /* AlbertiDocument.h */,
+				6DDE224D138C52F100CF1A86 /* AlbertiDocument.m */,
+				6DDE224F138C52F100CF1A86 /* AlbertiDocument.xib */,
+				6DDE2252138C52F200CF1A86 /* MainMenu.xib */,
+				6DDE2241138C52F100CF1A86 /* Supporting Files */,
+			);
+			path = Alberti;
+			sourceTree = "<group>";
+		};
+		6DDE2241138C52F100CF1A86 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE2242138C52F100CF1A86 /* Alberti-Info.plist */,
+				6DDE2243138C52F100CF1A86 /* InfoPlist.strings */,
+				6DDE2246138C52F100CF1A86 /* Alberti-Prefix.pch */,
+				6DDE2247138C52F100CF1A86 /* main.m */,
+				6DDE2249138C52F100CF1A86 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6DDE2274138C68FE00CF1A86 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6DDE2275138C68FE00CF1A86 /* add.png */,
+				6DDE2276138C68FE00CF1A86 /* remove.png */,
+			);
+			name = Resources;
+			path = Alberti/Resources;
+			sourceTree = "<group>";
+		};
+		6DE4FB49138DADDD00C6DF1F /* Web */ = {
+			isa = PBXGroup;
+			children = (
+				6DE4FB4A138DAE9700C6DF1F /* body */,
+				6DE4FB4B138DAE9700C6DF1F /* footer */,
+				6DE4FB4C138DAE9700C6DF1F /* header */,
+			);
+			name = Web;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6DDE2235138C52F100CF1A86 /* Alberti */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6DDE2257138C52F200CF1A86 /* Build configuration list for PBXNativeTarget "Alberti" */;
+			buildPhases = (
+				6DDE2232138C52F100CF1A86 /* Sources */,
+				6DDE2233138C52F100CF1A86 /* Frameworks */,
+				6DE4FB50138DAF1000C6DF1F /* Run script: Deploy web resources to Xcode */,
+				6DDE2234138C52F100CF1A86 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Alberti;
+			productName = Alberti;
+			productReference = 6DDE2236138C52F100CF1A86 /* Alberti.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6DDE222D138C52F100CF1A86 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 6DDE2230138C52F100CF1A86 /* Build configuration list for PBXProject "Alberti" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 6DDE222B138C52F100CF1A86;
+			productRefGroup = 6DDE2237138C52F100CF1A86 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6DDE2235138C52F100CF1A86 /* Alberti */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6DDE2234138C52F100CF1A86 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DDE2245138C52F100CF1A86 /* InfoPlist.strings in Resources */,
+				6DDE224B138C52F100CF1A86 /* Credits.rtf in Resources */,
+				6DDE2251138C52F100CF1A86 /* AlbertiDocument.xib in Resources */,
+				6DDE2254138C52F200CF1A86 /* MainMenu.xib in Resources */,
+				6DDE2277138C68FE00CF1A86 /* add.png in Resources */,
+				6DDE2278138C68FE00CF1A86 /* remove.png in Resources */,
+				6DE4FB4D138DAE9700C6DF1F /* body in Resources */,
+				6DE4FB4E138DAE9700C6DF1F /* footer in Resources */,
+				6DE4FB4F138DAE9700C6DF1F /* header in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		6DE4FB50138DAF1000C6DF1F /* Run script: Deploy web resources to Xcode */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run script: Deploy web resources to Xcode";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "cd ${PROJECT_DIR}/../web/bin/\n./deploy-to-xcode\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6DDE2232138C52F100CF1A86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6DDE2248138C52F100CF1A86 /* main.m in Sources */,
+				6DDE224E138C52F100CF1A86 /* AlbertiDocument.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		6DDE2243138C52F100CF1A86 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6DDE2244138C52F100CF1A86 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		6DDE2249138C52F100CF1A86 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6DDE224A138C52F100CF1A86 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		6DDE224F138C52F100CF1A86 /* AlbertiDocument.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6DDE2250138C52F100CF1A86 /* en */,
+			);
+			name = AlbertiDocument.xib;
+			sourceTree = "<group>";
+		};
+		6DDE2252138C52F200CF1A86 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6DDE2253138C52F200CF1A86 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6DDE2255138C52F200CF1A86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		6DDE2256138C52F200CF1A86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		6DDE2258138C52F200CF1A86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Alberti/Alberti-Prefix.pch";
+				INFOPLIST_FILE = "Alberti/Alberti-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		6DDE2259138C52F200CF1A86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Alberti/Alberti-Prefix.pch";
+				INFOPLIST_FILE = "Alberti/Alberti-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6DDE2230138C52F100CF1A86 /* Build configuration list for PBXProject "Alberti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DDE2255138C52F200CF1A86 /* Debug */,
+				6DDE2256138C52F200CF1A86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6DDE2257138C52F200CF1A86 /* Build configuration list for PBXNativeTarget "Alberti" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DDE2258138C52F200CF1A86 /* Debug */,
+				6DDE2259138C52F200CF1A86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6DDE222D138C52F100CF1A86 /* Project object */;
+}
