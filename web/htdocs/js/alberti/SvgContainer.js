@@ -25,3 +25,8 @@ SvgContainer.prototype.attachChild = function(svgObject) {
 SvgContainer.prototype.attachChildAfter = function(svgObject, afterChild) {
 	svgObject.attachAfter(this.svgNode, afterChild.svgNode);
 };
+
+// svgObject's SVG node will be attached before beforeChild's SVG node.
+SvgContainer.prototype.attachChildBefore = function(svgObject, beforeChild) {
+	svgObject.attachBefore(this.svgNode, beforeChild.svgNode);
+};

@@ -131,6 +131,14 @@ SvgObject.prototype.attachAfter = function(parentNode, afterChildNode) {
 	}
 };
 
+// Same as attach, but attaches before the given child node.
+SvgObject.prototype.attachBefore = function(parentNode, beforeChildNode) {
+	if (this.svgNode.parentNode === null) {
+		this.push();
+		parentNode.insertBefore(this.svgNode, beforeChildNode);
+	}
+};
+
 // Remove this object's SVG node from the SVG document. Returns self.
 SvgObject.prototype.detach = function() {
 	if (this.svgNode.parentNode !== null) {
