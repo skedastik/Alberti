@@ -26,6 +26,9 @@ function AlbertiDocument() {
 	var imgNode = Alberti.svgDoc.getElementById("underlayimg");
 	this.underlayImage = imgNode ? new FastImage(imgNode) : null;
 	
+	// Disable the undo manager during document load
+	this.undoManager.disable();
+	
 	if (Util.firstNonTextChild(workspaceSvgNode)) {
 		// Layers and shapes already exist, simply load them
 		this.load();
@@ -48,6 +51,9 @@ function AlbertiDocument() {
 		// Dbug.log("Number of buckets: "+this.layerManager.intersections.points.bucketCount);
 		// Dbug.log("Bucket width: "+this.layerManager.intersections.points.bucketWidth);
 	}
+	
+	// Enable the undo manager after the document has loaded
+	this.undoManager.enable();
 }
 
 // Returns clean SVG data in the workspace group

@@ -113,13 +113,29 @@ SvgObject.prototype.get = function(attr, namespace) {
 };
 
 // Add element to SVG document under specified parent node. Note that
-// SvgObject::generate and SvgObject::push are called automatically before 
-// adding the element to the SVG document. Has no effect if the object is
-// already a part of the SVG document.
+// SvgObject::push is called automatically before adding the element to the 
+// SVG document. Has no effect if the object is already a part of the SVG 
+// document.
 SvgObject.prototype.attach = function(parentNode) {
 	if (this.svgNode.parentNode === null) {
 		this.push();
 		parentNode.appendChild(this.svgNode);
+	}
+};
+
+// Same as attach, but attaches after the given child node.
+SvgObject.prototype.attachAfter = function(parentNode, afterChildNode) {
+	if (this.svgNode.parentNode === null) {
+		this.push();
+		parentNode.insertBefore(this.svgNode, afterChildNode.nextSibling);
+	}
+};
+
+// Same as attach, but attaches before the given child node.
+SvgObject.prototype.attachBefore = function(parentNode, beforeChildNode) {
+	if (this.svgNode.parentNode === null) {
+		this.push();
+		parentNode.insertBefore(this.svgNode, beforeChildNode);
 	}
 };
 

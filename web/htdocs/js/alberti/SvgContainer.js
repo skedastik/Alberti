@@ -20,3 +20,13 @@ Util.extend(SvgContainer, SvgObject);
 SvgContainer.prototype.attachChild = function(svgObject) {
 	svgObject.attach(this.svgNode);
 };
+
+// svgObject's SVG node will be attached after afterChild's SVG node.
+SvgContainer.prototype.attachChildAfter = function(svgObject, afterChild) {
+	svgObject.attachAfter(this.svgNode, afterChild.svgNode);
+};
+
+// svgObject's SVG node will be attached before beforeChild's SVG node.
+SvgContainer.prototype.attachChildBefore = function(svgObject, beforeChild) {
+	svgObject.attachBefore(this.svgNode, beforeChild.svgNode);
+};
