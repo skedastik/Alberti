@@ -100,11 +100,9 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 		
 		this.undoManager.recordStart();
 		
-		// Delete the layer's shapes in bulk. Must delete shapes in reverse
-		// since LayerManager::deleteShape splices out shapes from the shapes 
-		// array.
-		for (var i = targetLayer.shapes.length - 1; i >= 0; i--) {
-			var shape = targetLayer.shapes[i];
+		// Delete the layer's shapes in bulk.
+		while (targetLayer.shapes.length > 0) {
+			var shape = targetLayer.shapes.peek();
 			
 			this.undoManager.push("Delete Shape (sid="+shape.getSid()+")", this,
 				this.deleteShape, [shape, true],
@@ -116,12 +114,12 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 		this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
 		this.intersections.flush();
 		
-		// Register the layer deletion with the undo manager. If layer 0 is
-		// being deleted, the redo action must insert before the current layer
-		// rather than after.
+		// Register the layer deletion with the undo manager. If any layer but
+		// the topmost layer is being deleted, the redo action must insert 
+		// before the current layer rather than after.
 		this.undoManager.push("Delete Current Layer", this,
 			this.deleteCurrentLayer, null,
-			this.insertLayer, [targetLayer, this.currentLayer == 0]);
+			this.insertLayer, [targetLayer, this.currentLayer < this.layers.length - 1]);
 		
 		this.undoManager.recordStop();
 		
