@@ -5,8 +5,8 @@
  * 
  * * */
 
-bertiApp = null;
+albertiApp = null;
 
 function main() {
-	bertiApp = new Alberti();
+	albertiApp = new Alberti();
 }
