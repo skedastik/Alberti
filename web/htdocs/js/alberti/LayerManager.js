@@ -26,21 +26,62 @@ function LayerManager(layerGroup, undoManager) {
 	this.intersections = new Intersection();
 }
 
-// Create a new layer on top of the current layer (i.e. with a sequentially
-// higher layer number). Automatically sets current layer to new layer.
+// Generate and insert a new layer, optionally providing its name.
 LayerManager.prototype.newLayer = function(name) {
-	this.currentLayer = this.layers.push(new Layer(this.layerGroup, arguments > 0 ? name : "Layer "+(this.layers.length + 1))) - 1;
+	var newLayer = new Layer(new Group().generate());
+	newLayer.setName(name ? name : "Layer "+(this.layers.length + 1));
+	
+	this.insertLayer(newLayer);
 };
 
-// Create a new layer on top of the current layer from the given Group object.
-// Automatically sets current layer to new layer.
+// Generate a new layer from the given Group object and insert it.
 LayerManager.prototype.newLayerFromGroup = function(group) {
-	this.currentLayer = this.layers.push(Layer.fromGroup(group)) - 1;
+	var newLayer = new Layer(group);
+	newLayer.setName(group.get("title"));
+	
+	if (group.get("visibility") == "hidden") {
+		newLayer.hideLayer();
+	}
+	
+	this.insertLayer(newLayer);
+};
+
+// Inserts the given layer on top of the current layer. Automatically sets
+// current layer to inserted layer.
+LayerManager.prototype.insertLayer = function(layer) {
+	if (this.currentLayer != -1) {
+		this.layerGroup.attachChildAfter(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
+	} else {
+		this.layerGroup.attachChild(layer.svgGroup);
+	}
+	
+	this.layers.splice(this.currentLayer + 1, 0, layer);
+	
+	this.currentLayer++;
+};
+
+// Delete the specified layer (expects either a reference to an existing Layer 
+// object, or an array index)
+LayerManager.prototype.deleteLayer = function(layer) {
+	// TODO
+};
+
+// Switch to the given layer (expects either a reference to an existing Layer 
+// object, or an array index)
+LayerManager.prototype.switchToLayer = function(layer) {
+	var layerIndex = (typeof layer == "number") ? layer : this.layers.indexOf(layer);
+	
+	if (layerIndex < 0 || layerIndex >= this.layers.length) {
+		throw "Invalid layer passed to LayerManager::switchToLayer.";
+	}
+	
+	this.currentLayer = layerIndex;
 };
 
 // Append the given Shape, optionally providing a target layer index number 
-// (defaults to the current layer). A Alberti id is automatically assigned to 
-// the shape if it doesn't already have one. Returns the shape's Alberti sid.
+// (defaults to the current layer). An Alberti sid is automatically assigned 
+// to the shape if it doesn't already have one. Returns the shape's Alberti 
+// sid.
 LayerManager.prototype.insertShape = function(newShape, layerNumber) {
 	if (arguments.length < 2) {
 		layerNumber = this.currentLayer;
