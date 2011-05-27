@@ -11,6 +11,7 @@ function UndoManager(maxActions) {
 	
 	this.actionBuffer = null;
 	
+	this.enabled = false;
 	this.maxActions = maxActions;
 }
 
@@ -22,36 +23,45 @@ function UndoManager(maxActions) {
 // the object, and invoked with its respective arguments. If an action does
 // not have an undo counterpart, do not pass the undoFn and undoArgs 
 // arguments. If more than 'maxActions' actions are on the stack at the time 
-// of a push, the bottommost action will be discarded.
-// 
-// IMPORTANT: In order to save an extra function call, push will immediately
-// invoke the redo function so you don't have to. After all, the redo action
-// is the action you intend to carry out originally.
+// of a push, the bottommost action will be discarded. A name must also be
+// supplied to each undo action.
 //
 // UndoManager::push also clears the redo stack.
-UndoManager.prototype.push = function(object, redoFn, redoArgs, undoFn, undoArgs) {
-	var action = {
-		redo: function() {redoFn.apply(object, redoArgs);},
-		undo: arguments.length > 3 ? function() {undoFn.apply(object, undoArgs);} : null
-	};
+UndoManager.prototype.push = function(actionName, object, redoFn, redoArgs, undoFn, undoArgs) {
+	if (this.enabled) {
+		var action = {
+			name: actionName,
+			redo: function() {redoFn.apply(object, redoArgs);},
+			undo: undoFn ? function() {undoFn.apply(object, undoArgs);} : null
+		};
 	
-	// Immediately invoke the redo action
-	action.redo();
-	
-	// Either buffer the action pair, or push it onto the undo stack
-	if (this.actionBuffer !== null) {
-		this.actionBuffer.push(action);
-	} else {
-		this.undoStack.push(action);
+		// Either buffer the action pair, or push it onto the undo stack
+		if (this.actionBuffer !== null) {
+			this.actionBuffer.push(action);
+		} else {
+			this.undoStack.push(action);
 		
-		// Discard bottommost action if maxActions has been exceeded
-		if (this.undoStack.length > this.maxActions) {
-			this.undoStack.shift();
+			// Discard bottommost action if maxActions has been exceeded
+			if (this.undoStack.length > this.maxActions) {
+				this.undoStack.shift();
+			}
 		}
-	}
 	
-	// Clear the redo stack
-	this.redoStack = [];
+		// Clear the redo stack
+		this.redoStack = [];
+	}
+};
+
+// The UndoManager is disabled upon instantiation. Call to enable the 
+// recording of undo actions. Future calls to UndoManager::push will take 
+// effect.
+UndoManager.prototype.enable = function() {
+	this.enabled = true;
+};
+
+// Future calls to UndoManager::push will have no effect.
+UndoManager.prototype.disable = function() {
+	this.enabled = false;
 };
 
 // Returns the number of actions on the undo stack.
@@ -96,6 +106,12 @@ UndoManager.prototype.recordStop = function() {
 
 // Invoke the topmost undo action, and transfer it to the redo stack.
 UndoManager.prototype.undo = function() {
+	Dbug.log("--- UNDO -------");
+	
+	// Disable self while performing undo action or else the undo action
+	// might register further undo actions.
+	this.disable();
+	
 	if (this.undoStack.length > 0) {
 		var action = this.undoStack.pop();
 		
@@ -109,16 +125,26 @@ UndoManager.prototype.undo = function() {
 			
 			// Undo actions may be null
 			if (theAction.undo) {
+				Dbug.log("Action name: "+theAction.name);
 				theAction.undo();
 			}
 		}
 		
 		this.redoStack.push(action);
 	}
+	
+	// Undo action complete, re-enable self
+	this.enable();
 };
 
 // Invoke the topmost redo action, and transfer it to the undo stack.
 UndoManager.prototype.redo = function() {
+	Dbug.log("--- REDO -------");
+	
+	// Disable self while performing redo action or else the redo action
+	// might register further undo actions.
+	this.disable();
+	
 	if (this.redoStack.length > 0) {
 		var action = this.redoStack.pop();
 		
@@ -128,9 +154,13 @@ UndoManager.prototype.redo = function() {
 		
 		// Redo buffered actions in natural order of array
 		for (i = 0, aLen = action.length; i < aLen; i++) {
+			Dbug.log("Action name: "+action[i].name);
 			action[i].redo();
 		}
 		
 		this.undoStack.push(action);
 	}
+	
+	// Redo action complete, re-enable self
+	this.enable();
 };
