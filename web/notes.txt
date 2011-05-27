@@ -5,6 +5,8 @@ TODO
 - Rapid vanishing point panning via spacebar
 - Parallel and perpendicular line tool
 
+- Various 'throw' errors should be replaced with custom assertions.
+
 WEBKIT/SVG RELATED BUGS
 
 Line rendering issue:
