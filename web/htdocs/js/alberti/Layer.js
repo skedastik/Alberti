@@ -29,14 +29,14 @@ Layer.prototype.removeShape = function(shape) {
 	this.shapes.splice(this.shapes.indexOf(shape), 1);
 };
 
-Layer.prototype.hideLayer = function() {
+Layer.prototype.hide = function() {
 	if (!this.hidden) {
 		this.hidden = true;
 		this.svgGroup.set("display", "none");
 	}
 };
 
-Layer.prototype.showLayer = function() {
+Layer.prototype.show = function() {
 	if (this.hidden) {
 		this.hidden = false;
 		this.svgGroup.set("display", "");
