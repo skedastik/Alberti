@@ -46,47 +46,117 @@ LayerManager.prototype.newLayerFromGroup = function(group) {
 	this.insertLayer(newLayer);
 };
 
-// Inserts the given layer on top of the current layer. Automatically sets
-// current layer to inserted layer.
-LayerManager.prototype.insertLayer = function(layer) {
+// Inserts the given layer on top of the current layer by default. 
+// Automatically sets current layer to inserted layer. Layer insertions are 
+// automatically registered with the undo manager. Pass true for before to
+// insert below the current layer instead of above.
+LayerManager.prototype.insertLayer = function(layer, before) {
+	Dbug.log("LayerManager::insertLayer > "+layer);
+	
 	if (this.currentLayer != -1) {
-		this.layerGroup.attachChildAfter(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
+		if (before) {
+			this.layerGroup.attachChildBefore(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
+		} else {
+			this.layerGroup.attachChildAfter(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
+		}
 	} else {
 		this.layerGroup.attachChild(layer.svgGroup);
 	}
 	
-	this.layers.splice(this.currentLayer + 1, 0, layer);
+	if (before) {
+		this.layers.splice(this.currentLayer, 0, layer);
+	} else {
+		this.layers.splice(this.currentLayer + 1, 0, layer);
+		this.currentLayer++;
+	}
 	
-	this.currentLayer++;
+	// Register the layer insertion with the undo manager
+	this.undoManager.push("Insert Layer", this, this.insertLayer, [layer], this.deleteCurrentLayer, null);
 };
 
-// Delete the specified layer (expects either a reference to an existing Layer 
-// object, or an array index)
-LayerManager.prototype.deleteLayer = function(layer) {
-	// TODO
+// Delete the current layer. If only one layer exists, it will not be deleted. 
+// Layer deletions are automatically registered with the undo manager. Current
+// layer becomes the layer above the deleted layer, or, if there is nothing
+// above, the layer below.
+LayerManager.prototype.deleteCurrentLayer = function() {
+	Dbug.log("LayerManager::deleteCurrentLayer");
+	
+	// BUG! To reproduce ('>' means enter in console):
+	// 
+	// 1. Reload page
+	// 2. > albertiApp.doc.layerManager.switchToLayer(0);
+	// 3. > albertiApp.doc.layerManager.deleteCurrentLayer();
+	// 4. Undo
+	// 9. Redo
+	//
+	// Shapes from both layers are deleted! Fix this.
+	// 
+	
+	if (this.layers.length > 1) {
+		var targetLayer = this.layers[this.currentLayer];
+		
+		// Remove the layer's SVG group node from the SVG tree
+		targetLayer.svgGroup.detach();
+		
+		this.undoManager.recordStart();
+		
+		// Delete the layer's shapes in bulk. Must delete shapes in reverse
+		// since LayerManager::deleteShape splices out shapes from the shapes 
+		// array.
+		for (var i = targetLayer.shapes.length - 1; i >= 0; i--) {
+			var shape = targetLayer.shapes[i];
+			
+			this.undoManager.push("Delete Shape (sid="+shape.getSid()+")", this,
+				this.deleteShape, [shape, true],
+				this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]);
+			this.deleteShape(shape, true);
+		}
+		
+		// Flush the bulk deletion
+		this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
+		this.intersections.flush();
+		
+		// Register the layer deletion with the undo manager. If layer 0 is
+		// being deleted, the redo action must insert before the current layer
+		// rather than after.
+		this.undoManager.push("Delete Current Layer", this,
+			this.deleteCurrentLayer, null,
+			this.insertLayer, [targetLayer, this.currentLayer == 0]);
+		
+		this.undoManager.recordStop();
+		
+		this.layers.splice(this.currentLayer, 1);
+		
+		if (this.currentLayer == this.layers.length) {
+			this.currentLayer--;
+		}
+	}
 };
 
 // Switch to the given layer (expects either a reference to an existing Layer 
-// object, or an array index)
+// object, or an array index). Automatically registers an undo action.
 LayerManager.prototype.switchToLayer = function(layer) {
-	var layerIndex = (typeof layer == "number") ? layer : this.layers.indexOf(layer);
+	Dbug.log("LayerManager::switchToLayer > "+layer);
 	
-	if (layerIndex < 0 || layerIndex >= this.layers.length) {
-		throw "Invalid layer passed to LayerManager::switchToLayer.";
+	if (layerIndex != this.currentLayer) {
+		var layerIndex = (typeof layer == "number") ? layer : this.layers.indexOf(layer);
+		
+		if (layerIndex < 0 || layerIndex >= this.layers.length) {
+			throw "Invalid layer passed to LayerManager::switchToLayer.";
+		}
+	
+		// Register the layer switch with the undo manager
+		this.undoManager.push("Change Current Layer", this, this.switchToLayer, [layerIndex], this.switchToLayer, [this.currentLayer]);
+	
+		this.currentLayer = layerIndex;
 	}
-	
-	this.currentLayer = layerIndex;
 };
 
-// Append the given Shape, optionally providing a target layer index number 
+// Append the given Shape, optionally providing a target layer object 
 // (defaults to the current layer). An Alberti sid is automatically assigned 
 // to the shape if it doesn't already have one. Returns the shape's Alberti 
 // sid.
-LayerManager.prototype.insertShape = function(newShape, layerNumber) {
-	if (arguments.length < 2) {
-		layerNumber = this.currentLayer;
-	}
-	
+LayerManager.prototype.insertShape = function(newShape, layer) {	
 	var sid = newShape.getSid();
 	
 	if (!sid) {
@@ -94,16 +164,19 @@ LayerManager.prototype.insertShape = function(newShape, layerNumber) {
 		newShape.setSid(sid);
 	}
 	
+	Dbug.log("LayerManager::insertShape > "+newShape+" (sid="+sid+") into layer object "+layer);
+	
 	if (!this.shapeIndex[sid]) {
-		// Add the shape to the SVG tree
-		this.layers[layerNumber].addShape(newShape);
+		var targetLayer = layer ? layer : this.layers[this.currentLayer];
+		
+		targetLayer.addShape(newShape);
 		
 		// Calculate new intersection points before the shape is added to the 
 		// index, so that it is not tested against itself.
 		this.intersections.testShape(newShape, this.getVisibleShapes(), Intersection.insertFlag);
 		
 		// Create a new shape record
-		this.shapeIndex[sid] = {"shape":newShape, "layer":layerNumber};
+		this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
 		this.shapeCount++;
 		this.sidCounter++;
 	} else {
@@ -119,8 +192,10 @@ LayerManager.prototype.insertShape = function(newShape, layerNumber) {
 LayerManager.prototype.deleteShape = function(shape, bulk) {
 	var sid = shape.getSid();
 	
+	Dbug.log("LayerManager::deleteShape > "+shape+" (sid="+sid+")");
+	
 	if (this.shapeIndex[sid]) {
-		var layerNumber = this.shapeIndex[sid].layer;
+		var layer = this.shapeIndex[sid].layer;
 		
 		// Remove the shape from the index before checking for intersections, 
 		// so that it does not get tested against itself.
@@ -128,7 +203,7 @@ LayerManager.prototype.deleteShape = function(shape, bulk) {
 		this.shapeCount--;
 		
 		// Remove the Shape from the SVG document
-		this.layers[layerNumber].removeShape(shape);
+		layer.removeShape(shape);
 		
 		// Delete its intersection points
 		this.intersections.testShape(shape, this.getVisibleShapes(),
@@ -150,13 +225,15 @@ LayerManager.prototype.deleteSelectedShapes = function() {
 		
 		// Delete the shape, passing its layer number to the redo action so
 		// that it is added to the correct layer in case of a "redo"
-		this.undoManager.push(this,
+		this.undoManager.push("Delete Shape", this,
 			this.deleteShape, [shape, true],
 			this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]);
+		this.deleteShape(shape, true);
 	}
 	
 	// Flush the Intersection object after bulk deletions
-	this.undoManager.push(this.intersections, this.intersections.flush, null);
+	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
+	this.intersections.flush();
 	
 	this.undoManager.recordStop();
 	
@@ -244,7 +321,7 @@ LayerManager.prototype.getVisibleShapes = function() {
 	for (var sid in this.shapeIndex) {
 		var shapeRecord = this.shapeIndex[sid];
 		
-		if (!this.layers[shapeRecord.layer].isHidden()) {
+		if (!shapeRecord.layer.isHidden()) {
 			shapes.push(shapeRecord.shape);
 		}
 	}
