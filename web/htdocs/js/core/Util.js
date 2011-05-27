@@ -49,6 +49,20 @@ var Util = {
 		return next;
 	},
 	
+	// Add a CSS class to the given element
+	addHtmlClass: function(element, className) {
+		var pattern = new RegExp('(^|\\s)'+className+'($|\\s)', 'i');
+		if (!element.className.match(pattern)) {
+			element.className += ' '+className;
+		}
+	},
+
+	// Remove the specified CSS class from the given element
+	removeHtmlClass: function(element, className) {
+	   var pattern = new RegExp('(^|\\s)'+className, 'i');
+	   element.className = element.className.replace(pattern, '');
+	},
+	
 	// Package a value, be it a string describing quantity and units, or a 
 	// number, into an object of the following format:
 	//    {"quantity":<number>, "units":<units-string>}

@@ -130,6 +130,13 @@ function UserInterface(bertiDoc) {
 	this.currentTool = null;
 	this.setTool(UserInterface.defaultTool);
 	
+	// Set up the layer panel GUI
+	var mainDiv = document.getElementById("layer_panel");
+	var dynamicDiv = document.getElementById("layer_panel_dynamic");
+	var cstripDiv = document.getElementById("layer_panel_control_strip");
+	this.layerPanel = new LayerPanel(this.bertiDoc.layerManager, mainDiv, dynamicDiv, cstripDiv);
+	this.layerPanel.loadLayers();
+	
 	// var img = new Image().generate();
 	// img.url = "images/scott_caple.tiff";
 	// img.center.x = img.center.y = 0;

@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<link rel="stylesheet" href="style/alberti.css" type="text/css" />
+	<link rel="stylesheet" href="style/gui.css" type="text/css" />
 	<script type="text/ecmascript" src="js/core/DebugUtil.js"></script>
 	<script type="text/ecmascript" src="js/core/Util.js"></script>
 	<script type="text/ecmascript" src="js/core/SpatialHash.js"></script>
@@ -37,6 +38,8 @@
 	<script type="text/ecmascript" src="js/alberti/ToolSelection.js"></script>
 	<script type="text/ecmascript" src="js/alberti/ToolLine.js"></script>
 	<script type="text/ecmascript" src="js/alberti/ToolCircleArc.js"></script>
+	<script type="text/ecmascript" src="js/alberti/gui/GuiButton.js"></script>
+	<script type="text/ecmascript" src="js/alberti/gui/LayerPanel.js"></script>
 	<script type="text/ecmascript" src="js/alberti/UserInterface.js"></script>
 </head>
 <body onload="main()" style="margin: 0; overflow: hidden;">
@@ -82,5 +85,14 @@
 		<g id="static_overlay">
 		</g>
 	</svg>
+	<div id="layer_panel">
+		<div id="layer_panel_dynamic">
+		</div>
+		<div id="layer_panel_control_strip">
+			<div class="layer_panel_row">
+				
+			</div>
+		</div>
+	</div>
 </body>
 </html>

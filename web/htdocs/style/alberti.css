@@ -60,9 +60,9 @@ text, body {
 	
 	/* currently, these are the best options to prevent text selection */
 	-webkit-user-select: none;
-/*	-moz-user-select: -moz-none;
+	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
-	user-select: none;*/
+	user-select: none;
 }
 
 #static_overlay text {
