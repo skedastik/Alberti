@@ -14,6 +14,11 @@ Function.prototype.bindTo = function(object) {
    }
 }
 
+// Array extension that returns the last element of an array
+Array.prototype.peek = function() {
+	return this[this.length - 1];
+}
+
 // Miscellaneous utility functions
 var Util = {
 
