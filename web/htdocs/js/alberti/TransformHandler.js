@@ -98,8 +98,13 @@ TransformHandler.prototype.snap = function(coord) {
 					this.snapGuide = new Point().generate();
 					this.snapGuide.innerColor = "none";
 					this.snapGuide.set("opacity", "0.65");
-					this.overlayGroup.attachChild(this.snapGuide);
+				} else {
+					// Due to an obscure WebKit bug (https://bugs.webkit.org/show_bug.cgi?id=53767),
+					// the snap guide must be reattached every time it is moved.
+					this.snapGuide.detach();
 				}
+				
+				this.overlayGroup.attachChild(this.snapGuide);
 		
 				this.snapGuide.coord.x = coord.x;
 				this.snapGuide.coord.y = coord.y;

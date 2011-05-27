@@ -7,7 +7,7 @@ TODO
 
 - Various 'throw' errors should be replaced with custom assertions.
 
-WEBKIT/SVG RELATED BUGS
+WEBKIT+GECKO SVG RELATED BUGS
 
 Line rendering issue:
 
@@ -23,3 +23,7 @@ optimizations are enabled/disabled during panning/zooming. To work around
 this, the Point template has its shape-rendering attribute written directly 
 in the base SVG file, thereby overriding any externally applied CSS. In
 short, rendering of template objects is never optimized.
+
+Misc.:
+
+- Rather obscure bug, yet someone else has already detailed it in the following Bugzilla report: https://bugs.webkit.org/show_bug.cgi?id=53767
