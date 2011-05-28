@@ -50,13 +50,17 @@
 	user-select: none;
 }
 
+.layer_name {
+	float: left;
+}
+
 .layer_panel_row .visibility_toggle {
 	width: 18px;
 	height: 18px;
 	margin-right: 4px;
 	
 	display: inline;
-	float: left;
+	float: right;
 }
 
 .layer_panel_row .color_well {
@@ -69,8 +73,8 @@
 	
 	border-radius: 8px;
 	background-color: #7788ff;
-	-moz-box-shadow: 1px 1px 0px #bbc;
-	-webkit-box-shadow: 1px 1px 0px #bbc;
+	-moz-box-shadow: inset -1px -1px 0px #bbc;
+	-webkit-box-shadow: inset -1px -1px 0px #bbc;
 	
 	cursor: pointer;
 }
