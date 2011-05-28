@@ -56,7 +56,7 @@ GuiButton.prototype.enable = function() {
 	if (!this.enabled) {
 		this.enabled = true;
 		Util.removeHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.addEventListener("mouseup", this, false);
+		this.htmlNode.addEventListener("click", this, false);
 	}
 	
 	return this;
@@ -67,7 +67,7 @@ GuiButton.prototype.disable = function() {
 	if (this.enabled) {
 		this.enabled = false;
 		Util.addHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.removeEventListener("mouseup", this, false);
+		this.htmlNode.removeEventListener("click", this, false);
 	}
 	
 	return this;
@@ -84,7 +84,7 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 	}
 };
 
-GuiButton.prototype.mouseup = function(evt) {
+GuiButton.prototype.click = function(evt) {
 	if (this.autoToggle) {
 		this.toggle(!this.toggleOn);
 	}
