@@ -17,14 +17,22 @@
 }
 
 #layer_panel_control_strip {
+	border-bottom: 1px solid #888;
 	border-bottom-right-radius: 13px;
 	color: #888;
 	background-color: #fff;
 }
 
 #layer_panel_dynamic, #layer_panel_control_strip {
-	-moz-box-shadow: 2px 2px 4px #888;
-	-webkit-box-shadow: 2px 2px 4px #888;
+/*	
+	Sadly, as nice as external box shadows look, they degrade performance
+	significantly in Safari. For now, we must live with solid borders. One
+	day, the borders will fall.
+	
+	-moz-box-shadow: 1px 1px 2px #888;
+	-webkit-box-shadow: 1px 1px 2px #888;
+*/
+	border-right: 1px solid #888;
 }
 
 .layer_panel_row {
@@ -43,7 +51,7 @@
 	border-bottom: 0;
 }
 
-.layer_panel_row .layer_name {
+.layer_panel_row, .layer_name {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
