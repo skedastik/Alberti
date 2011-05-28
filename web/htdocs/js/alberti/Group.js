@@ -43,8 +43,13 @@ Group.prototype.push = function() {
 
 Group.prototype.pull = function() {
 	var transform = this.get("transform");
-	var translate = transform.match(/translate\((.+),(.+)\)/);
-	var scale = transform.match(/scale\((.+)\)/);
+	var translate = null;
+	var scale = null;
+	
+	if (transform) {
+		translate = transform.match(/translate\((.+),(.+)\)/);
+		scale = transform.match(/scale\((.+)\)/);
+	}
 	
 	this.position = translate ? new Coord2D(translate[1], translate[2]) : new Coord2D(0, 0);
 	this.scale = scale ? scale[1] : 1.0;
