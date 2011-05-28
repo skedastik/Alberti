@@ -60,6 +60,11 @@ Delegate.prototype.disableDelegation = function() {
 
 // Map object method to internal method
 Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName) {
+	// Assert that mapped method does not override existing method
+	if (this[objectMethodName] !== undefined) {
+		throw "Delegate::mapMethod > Method name '"+objectMethodName+"' would override existing method.";
+	}
+	
 	// Generate member method with same name as delegated object's method
 	this[objectMethodName] = function() {
 		// Invoke delegated object's method
