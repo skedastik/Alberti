@@ -1,5 +1,5 @@
-# The contents of these directories are used strictly for testing purposes
-web/htdocs/images/
+# These files are used strictly for testing purposes
+web/htdocs/images/scaple.*
 web/htdocs/scratchdocs/
 
 # Mac OS X Finder droppings
