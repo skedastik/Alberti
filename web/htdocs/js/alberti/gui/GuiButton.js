@@ -14,7 +14,9 @@
  * name belonging to that object. This method will be invoked each time the 
  * button is clicked. Two arguments will be passed to the action method, the 
  * first being a reference to the clicked button, the second being a 
- * javascript event object.
+ * javascript event object. Finally, you may optionally pass true for the
+ * 'respondMouseDown' argument if the button should respond to mousedown 
+ * events rather than click events.
  * 
  * Buttons are disabled by default. Call GuiButton::enable to enable them.
  * Conversely, call GuiButton::disable to disable them.
@@ -28,13 +30,14 @@
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
-function GuiButton(id, elt, autoToggle, delegate, action) {
+function GuiButton(id, elt, autoToggle, delegate, action, respondMouseDown) {
 	GuiButton.baseConstructor.call(this);
 	this.id = id;
 	this.htmlNode = elt;
 	this.autoToggle = autoToggle;
 	this.delegate = delegate;
 	this.action = action;
+	this.respondMouseDown = respondMouseDown;
 	
 	this.toggleOn = false;
 	this.enabled = true;
@@ -56,7 +59,7 @@ GuiButton.prototype.enable = function() {
 	if (!this.enabled) {
 		this.enabled = true;
 		Util.removeHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.addEventListener("click", this, false);
+		this.htmlNode.addEventListener(this.respondMouseDown ? "mousedown" : "click", this, false);
 	}
 	
 	return this;
@@ -67,7 +70,7 @@ GuiButton.prototype.disable = function() {
 	if (this.enabled) {
 		this.enabled = false;
 		Util.addHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.removeEventListener("click", this, false);
+		this.htmlNode.removeEventListener(this.respondMouseDown ? "mousedown" : "click", this, false);
 	}
 	
 	return this;
@@ -84,7 +87,8 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 	}
 };
 
-GuiButton.prototype.click = function(evt) {
+// GuiButton can respond to both click or mousedown events
+GuiButton.prototype.click = GuiButton.prototype.mousedown = function(evt) {
 	if (this.autoToggle) {
 		this.toggle(!this.toggleOn);
 	}
