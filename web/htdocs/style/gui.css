@@ -42,13 +42,25 @@
 	border-bottom: 1px solid #666;
 }
 
-.selected_row {
-	background-image: url('../images/layer_row_grad.png');
-	background-repeat: x;
+.layer_panel_row:hover {
+	background-image: url('../images/layer_row_selected.png');
+}
+
+.layer_panel_row:active {
+	background-image: url('../images/layer_row_active.png');
+}
+
+.layer_panel_row.guiBtnToggled {
+	background-image: url('../images/layer_row_selected.png');
+	background-repeat: repeat-x;
 }
 
 #layer_panel_control_strip .layer_panel_row {
 	border-bottom: 0;
+}
+
+#layer_panel_control_strip .layer_panel_row:hover {
+	background-image: none;
 }
 
 .layer_panel_row, .layer_name {
@@ -69,6 +81,8 @@
 	
 	display: inline;
 	float: right;
+	
+	cursor: pointer;
 }
 
 .layer_panel_row .color_well {
