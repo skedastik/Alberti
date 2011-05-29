@@ -118,24 +118,30 @@ function UserInterface(bertiDoc) {
 	// Enable our own zooming and panning mechanism
 	this.zap = new Zap(this.masterGroup, this.autoScale, this.bertiDoc, this.toolTip);
 	
+	// Create the layer panel
+	var mainDiv = document.getElementById("layer_panel");
+	var dynamicDiv = document.getElementById("layer_panel_dynamic");
+	var cstripDiv = document.getElementById("layer_panel_control_strip");
+	this.layerPanel = new LayerPanel(mainDiv, dynamicDiv, cstripDiv);
+	
+	// Create layer manager delegate so that layer-related changes are reflected in GUI
+	this.layerManagerDelegate = new LayerManagerDelegate(this.bertiDoc.layerManager, this.layerPanel);
+	
+	// Pass data to the layer panel
+	this.layerPanel.setLayerManager(this.layerManagerDelegate);
+	this.layerPanel.loadLayers();
+	
 	// Initialize the toolset, and select the default tool
 	this.tools = [
-		{"tool" : new ToolSelection(this.masterGroup, this.bertiDoc.layerManager, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolSelection(this.masterGroup, this.layerManagerDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorDefault },
-		{"tool" : new ToolLine(this.masterGroup, this.bertiDoc.layerManager, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolLine(this.masterGroup, this.layerManagerDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair },
-		{"tool" : new ToolCircleArc(this.masterGroup, this.bertiDoc.layerManager, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolCircleArc(this.masterGroup, this.layerManagerDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair }
 	];
 	this.currentTool = null;
 	this.setTool(UserInterface.defaultTool);
-	
-	// Set up the layer panel GUI
-	var mainDiv = document.getElementById("layer_panel");
-	var dynamicDiv = document.getElementById("layer_panel_dynamic");
-	var cstripDiv = document.getElementById("layer_panel_control_strip");
-	this.layerPanel = new LayerPanel(this.bertiDoc.layerManager, mainDiv, dynamicDiv, cstripDiv);
-	this.layerPanel.loadLayers();
 	
 	// var img = new Image().generate();
 	// img.url = "images/scott_caple.tiff";
@@ -202,7 +208,7 @@ UserInterface.prototype.keydown = function(evt) {
 		
 		case UserInterface.deleteKeyCode:
 		case UserInterface.backspaceKeyCode:
-			this.bertiDoc.layerManager.deleteSelectedShapes();
+			this.layerManagerDelegate.deleteSelectedShapes();
 			
 			// Attempt to suppress backspace-key navigation.
 			evt.preventDefault();
