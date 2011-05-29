@@ -61,8 +61,6 @@ LayerManager.prototype.newLayerFromGroup = function(group) {
 // automatically registered with the undo manager. Pass true for before to
 // insert below the current layer instead of above.
 LayerManager.prototype.insertLayer = function(layer, before) {
-	Dbug.log("LayerManager::insertLayer > "+layer);
-	
 	if (this.currentLayer != -1) {
 		if (before) {
 			this.layerGroup.attachChildBefore(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
@@ -89,19 +87,6 @@ LayerManager.prototype.insertLayer = function(layer, before) {
 // layer becomes the layer above the deleted layer, or, if there is nothing
 // above, the layer below.
 LayerManager.prototype.deleteCurrentLayer = function() {
-	Dbug.log("LayerManager::deleteCurrentLayer");
-	
-	// BUG! To reproduce ('>' means enter in console):
-	// 
-	// 1. Reload page
-	// 2. > albertiApp.doc.layerManager.switchToLayer(0);
-	// 3. > albertiApp.doc.layerManager.deleteCurrentLayer();
-	// 4. Undo
-	// 9. Redo
-	//
-	// Shapes from both layers are deleted! Fix this.
-	// 
-	
 	if (this.layers.length > 1) {
 		var targetLayer = this.layers[this.currentLayer];
 		
@@ -145,8 +130,6 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 // object, or the layer's index). Automatically registers an undo action. An
 // exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(layer) {
-	Dbug.log("LayerManager::switchToLayer > "+layer);
-	
 	var layerIndex = this.getLayerIndex(layer);
 	
 	if (layerIndex != this.currentLayer) {
@@ -292,8 +275,6 @@ LayerManager.prototype.insertShape = function(newShape, layer) {
 		newShape.setSid(sid);
 	}
 	
-	Dbug.log("LayerManager::insertShape > "+newShape+" (sid="+sid+") into layer object "+layer);
-	
 	if (!this.shapeIndex[sid]) {
 		var targetLayer = layer ? layer : this.layers[this.currentLayer];
 		
@@ -319,8 +300,6 @@ LayerManager.prototype.insertShape = function(newShape, layer) {
 // "flush" method). Returns the Shape object.
 LayerManager.prototype.deleteShape = function(shape, bulk) {
 	var sid = shape.getSid();
-	
-	Dbug.log("LayerManager::deleteShape > "+shape+" (sid="+sid+")");
 	
 	if (this.shapeIndex[sid]) {
 		var layer = this.shapeIndex[sid].layer;
