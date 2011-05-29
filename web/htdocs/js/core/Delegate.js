@@ -5,8 +5,9 @@
  * object with additional functionality. As far as other objects are 
  * concerned, this new delegate is identical to the original object (excepting
  * use of the instanceof operator, of course). This is useful for connecting a 
- * data object with its corresponding view (e.g., every time an Array's "push" 
- * method is invoked, add the pushed element to a corresponding HTML table).
+ * data object with its corresponding view (e.g., every time a hypothetical
+ * Stack object's "push" method is invoked, add the pushed element to a 
+ * corresponding HTML table).
  * 
  * USAGE
  * 
