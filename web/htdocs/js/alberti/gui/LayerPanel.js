@@ -149,7 +149,7 @@ function LayerPanelRow(rowBtnFamily, rowNumber, layerName, buttonDelegate) {
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton("lr"+rowNumber, this.rowDiv, false, buttonDelegate, "handleButton").enable();
+	this.rowButton = new GuiButton("lr"+rowNumber, this.rowDiv, false, buttonDelegate, "handleButton", true).enable();
 	rowBtnFamily.addButton(this.rowButton);
 	
 	// Create button that toggles layer visibility
