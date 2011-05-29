@@ -52,11 +52,18 @@
  * 
  *    myData.length == data.length;   // evaluates to true
  * 
- * Keep in mind that if a property is subsequently added to the delegated 
- * object, it will _not_ be added to the corresponding Delegate object:
+ * IMPORTANT
+ * 
+ * Note that if a property is subsequently added to the delegated object, it 
+ * will _not_ be added to its corresponding Delegate object:
  * 
  *    data.foo = "bar";
  *    myData.foo;                     // undefined
+ * 
+ * With this in mind, it is crucially important that _all_ of an object's
+ * properties be defined before instantiating a delegate for that object.
+ * 
+ * LIMITATIONS
  * 
  * One limitation of Delegate is that you cannot create a delegate for an 
  * instance of an Array object. Attempting to do so will generate an 
@@ -93,23 +100,21 @@ function Delegate(object, methodMap) {
 	
 	// Generate getters and setters for each non-function property
 	props.forEach(function(propName) {
-		if (Object.defineProperty) {
-			// ECMAScript 5
-			Object.defineProperty(this, propName, {
-				get: function()      { return this.delegatedObject[propName]; },
-				set: function(value) { this.delegatedObject[propName] = value; }
-			});
-		} else {
-			// Legacy
-			this.__defineGetter__(propName, function()      { return this.delegatedObject[propName]; });
-			this.__defineSetter__(propName, function(value) { this.delegatedObject[propName] = value; });
+		var getter = function()      { return this.delegatedObject[propName]; };
+		var setter = function(value) { this.delegatedObject[propName] = value; };
+		
+		if (Object.defineProperty) {                                              // ECMAScript 5
+			Object.defineProperty(this, propName, {get:getter, set:setter});
+		} else {                                                                  // Legacy
+			this.__defineGetter__(propName, getter);
+			this.__defineSetter__(propName, setter);
 		}
 	}, this);
 	
 	// Generate internal methods that simply apply methods of delegated object
 	funcs.forEach(function(funcName) {
 		this[funcName] = function() {
-			this.delegatedObject[funcName].apply(this.delegatedObject, arguments);
+			return this.delegatedObject[funcName].apply(this.delegatedObject, arguments);
 		};
 	}, this);
 }
@@ -127,11 +132,13 @@ Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName) {
 	// Override internal method
 	this[objectMethodName] = function() {
 		// Invoke delegated object's method
-		this.delegatedObject[objectMethodName].apply(this.delegatedObject, arguments);
+		var returnVal = this.delegatedObject[objectMethodName].apply(this.delegatedObject, arguments);
 		
 		// If delegation is enabled, invoke internal delegate method
 		if (this.delegationEnabled) {
 			this[internalMethodName].apply(this, arguments);
 		}
+		
+		return returnVal;
 	};
 };
