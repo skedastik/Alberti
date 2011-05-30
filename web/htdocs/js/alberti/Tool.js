@@ -203,11 +203,8 @@ Tool.prototype.disable = function() {
 // to true, the registered shape will be rendered below other shapes in the
 // underlay group.
 Tool.prototype.registerShape = function(shape, name, renderBelow) {
-	if (typeof name != "string" || name === "") {
-		throw "Invalid name passed to Tool::registerShape.";
-	} else if (this.getShape(name)) {
-		throw "Duplicate name passed to Tool::registerShape.";
-	}
+	Util.assert(typeof name == "string" && name !== "", "Invalid name passed to Tool::registerShape.");
+	Util.assert(!this.getShape(name), "Duplicate name passed to Tool::registerShape.");
 	
 	this.steps[this.currentStep].addShape(shape, name);
 	shape.push();
@@ -222,41 +219,27 @@ Tool.prototype.registerShape = function(shape, name, renderBelow) {
 // Mark a shape for baking. Throws an exception if the shape name wasn't 
 // found. Returns the shape.
 Tool.prototype.bakeShape = function(name) {
-	var shape;
+	var shapes = this.getSiblingShapes(name);
 	
-	for (var i = 0; i <= this.currentStep; i++) {
-		var shapes = this.steps[i].shapes;
-		
-		if (shapes[name]) {
-			shape = shapes[name].shape;
-			shapes[name].bakeFlag = true;
-			break;
-		}
-	}
+	Util.assert(shapes, "Tool::bakeShape could not find shape with name '"+name+"'");
 	
-	if (!shape) {
-		throw "Tool::bakeShape could not find shape with name '"+name+"'";
-	}
+	var shape = shapes[name].shape;
+	shapes[name].bakeFlag = true;
 	
 	return shape;
 };
 
-// Remove a shape from the SVG document and immediately unregisters it. 
-// Returns a reference to the shape, or null if no shape with such name found.
+// Remove a shape from the SVG document and immediately unregister it. 
+// Returns a reference to the shape, or throws an exception if not found.
 Tool.prototype.unregisterShape = function(name) {
-	var shape;
+	var shapes = this.getSiblingShapes(name);
 	
-	for (var i = 0; i <= this.currentStep; i++) {
-		var shapes = this.steps[i].shapes;
-		
-		if (shapes[name]) {
-			shape = shapes[name].shape.detach();
-			delete shapes[name];
-			break;
-		}
-	}
+	Util.assert(shapes, "Tool::unregisterShape could not find shape with name '"+name+"'");
 	
-	return shape ? shape : null;
+	var shape = shapes[name].shape.detach();
+	delete shapes[name];
+	
+	return shape;
 };
 
 // Return the Coord2D of the mousedown that initiated the specified step.
@@ -264,68 +247,49 @@ Tool.prototype.getKeyCoordFromStep = function(stepNum) {
 	return this.steps[stepNum] !== undefined ? this.steps[stepNum].keyCoord.clone() : undefined;
 };
 
-// Get previously registered shape
-//
-// TODO: Various functions such as unregisterShape, sendShapeToUnderlay, etc. 
-// repeat the code in getShape when they should just use getShape. Clean up
-// this filth.
+// Get previously registered shape. Returns null if shape w/ given name not found.
 Tool.prototype.getShape = function(name) {
-	var shape;
+	var shapes = this.getSiblingShapes(name);
+	return shapes ? shapes[name].shape : null;
+};
+
+// Get the associative array of shapes containing the shape w/ the given name,
+// or null if shape not found.
+Tool.prototype.getSiblingShapes = function(name) {
+	var shapes;
 	
 	for (var i = 0; i <= this.currentStep; i++) {
-		var shapes = this.steps[i].shapes;
+		shapes = this.steps[i].shapes;
 		if (shapes[name]) {
-			shape = shapes[name].shape;
-			break;
+			return shapes;
 		}
 	}
 	
-	return shape ? shape : null;
+	return null;
 };
 
 // Move a shape from the overlay to the underlay
 Tool.prototype.sendShapeToUnderlay = function(name) {
-	var shape;
+	var shapes = this.getSiblingShapes(name);
 	
-	for (var i = 0; i <= this.currentStep; i++) {
-		var shapes = this.steps[i].shapes;
-		
-		if (shapes[name]) {
-			var shape = shapes[name].shape;
-			
-			shape.detach();
-			this.underlayGroup.attachChild(shape);
-			
-			break;
-		}
-	}
+	Util.assert(shapes, "Tool::sendShapeToUnderlay could not find shape with name '"+name+"'");
 	
-	if (!shape) {
-		throw "Tool::sendShapeToUnderlay could not find shape with name '"+name+"'";
-	}
+	var shape = shapes[name].shape;			
+	shape.detach();
+	this.underlayGroup.attachChild(shape);
 	
 	return shape;
 };
 
 // Move a shape from the underlay to the overlay
 Tool.prototype.sendShapeToOverlay = function(name) {
-	var shape;
+	var shapes = this.getSiblingShapes(name);
 	
-	for (var i = 0; i <= this.currentStep; i++) {
-		var shapes = this.steps[i].shapes;
-		
-		if (shapes[name]) {
-			var shape = shapes[name].shape;
-			
-			shape.detach();
-			this.overlayGroup.attachChild(shape);
-			break;
-		}
-	}
+	Util.assert(shapes, "Tool::sendShapeToOverlay could not find shape with name '"+name+"'");
 	
-	if (!shape) {
-		throw "Tool::sendShapeToOverlay could not find shape with name '"+name+"'";
-	}
+	var shape = shapes[name].shape;
+	shape.detach();
+	this.overlayGroup.attachChild(shape);
 	
 	return shape;
 };
