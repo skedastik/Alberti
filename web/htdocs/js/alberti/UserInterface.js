@@ -26,6 +26,9 @@ UserInterface.enterKeyCode  = 13;
 UserInterface.deleteKeyCode    = 46;
 UserInterface.backspaceKeyCode = 8;
 
+UserInterface.arrowUpKeyCode   = 38;
+UserInterface.arrowDownKeyCode = 40;
+
 UserInterface.number1KeyCode = 49;
 UserInterface.number2KeyCode = 50;
 UserInterface.number3KeyCode = 51;
@@ -223,7 +226,7 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 		
 		// Tool selection keys 0-9
-		case UserInterface.number1KeyCode: 
+		case UserInterface.number1KeyCode:
 		case UserInterface.number2KeyCode:
 		case UserInterface.number3KeyCode:
 		case UserInterface.number4KeyCode:
@@ -233,6 +236,14 @@ UserInterface.prototype.keydown = function(evt) {
 		case UserInterface.number8KeyCode:
 		case UserInterface.number9KeyCode:
 			this.setTool(evt.keyCode - 49);
+			break;
+		
+		case UserInterface.arrowUpKeyCode:
+			this.layerManagerDelegate.switchToLayerAbove();
+			break;
+		
+		case UserInterface.arrowDownKeyCode:
+			this.layerManagerDelegate.switchToLayerBelow();
 			break;
 	}
 };
