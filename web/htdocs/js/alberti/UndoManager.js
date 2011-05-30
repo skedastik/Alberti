@@ -25,28 +25,34 @@ function UndoManager(maxActions) {
 // arguments. If more than 'maxActions' actions are on the stack at the time 
 // of a push, the bottommost action will be discarded. A name must also be
 // supplied to each undo action.
+// 
+// You may optionally pass 'true' for cascade to mark the undo action as 
+// cascading. At the next call to UndoManager::undo, all contiguously-stacked,
+// cascading actions with the same action name (and one more action after 
+// that) will be undone, rather than just the topmost undo.
 //
-// UndoManager::push also clears the redo stack.
-UndoManager.prototype.push = function(actionName, object, redoFn, redoArgs, undoFn, undoArgs) {
+// Note that UndoManager::push clears the redo stack.
+UndoManager.prototype.push = function(actionName, object, redoFn, redoArgs, undoFn, undoArgs, cascadeFlag) {
 	if (this.enabled) {
 		var action = {
 			name: actionName,
 			redo: function() {redoFn.apply(object, redoArgs);},
-			undo: undoFn ? function() {undoFn.apply(object, undoArgs);} : null
+			undo: undoFn ? function() {undoFn.apply(object, undoArgs);} : null,
+			cascades: cascadeFlag ? cascadeFlag : false
 		};
-	
+		
 		// Either buffer the action pair, or push it onto the undo stack
 		if (this.actionBuffer !== null) {
 			this.actionBuffer.push(action);
 		} else {
-			this.undoStack.push(action);
-		
+			this.undoStack.push([action]);
+
 			// Discard bottommost action if maxActions has been exceeded
 			if (this.undoStack.length > this.maxActions) {
 				this.undoStack.shift();
 			}
 		}
-	
+
 		// Clear the redo stack
 		this.redoStack = [];
 	}
@@ -108,25 +114,34 @@ UndoManager.prototype.undo = function() {
 	// might register further undo actions.
 	this.disable();
 	
+	var plusOne = 1;
+	
 	if (this.undoStack.length > 0) {
-		var action = this.undoStack.pop();
+		do {
+			var action = this.undoStack.pop();
 		
-		if (!Array.isArray(action)) {
-			action = [action];
-		}
-		
-		// Undo buffered actions in reverse order of array
-		for (i = action.length -1; i >= 0; i--) {
-			var theAction = action[i];
+			// Undo buffered actions in reverse order of array
+			for (i = action.length -1; i >= 0; i--) {
+				var theAction = action[i];
 			
-			// Undo actions may be null
-			if (theAction.undo) {
-				Dbug.log("Action name: "+theAction.name);
-				theAction.undo();
+				// Undo actions may be null
+				if (theAction.undo) {
+					Dbug.log(theAction.name+(theAction.cascades ? " (cascades)" : ""));
+					theAction.undo();
+				}
 			}
-		}
 		
-		this.redoStack.push(action);
+			this.redoStack.push(action);
+		} while (                                // May have to perform cascading undo
+			this.undoStack.length > 0
+			&& (
+				action[0].cascades 
+				&& (
+					(this.undoStack.peek()[0].cascades && action[0].name == this.undoStack.peek()[0].name)
+					|| --plusOne >= 0
+				)
+			)
+		);
 	}
 	
 	// Undo action complete, re-enable self
@@ -141,20 +156,29 @@ UndoManager.prototype.redo = function() {
 	// might register further undo actions.
 	this.disable();
 	
+	var plusOne = 1;
+	
 	if (this.redoStack.length > 0) {
-		var action = this.redoStack.pop();
+		do {
+			var action = this.redoStack.pop();
 		
-		if (!Array.isArray(action)) {
-			action = [action];
-		}
+			// Redo buffered actions in natural order of array
+			for (i = 0, aLen = action.length; i < aLen; i++) {
+				Dbug.log(action[i].name+(action[i].cascades ? " (cascades)" : ""));
+				action[i].redo();
+			}
 		
-		// Redo buffered actions in natural order of array
-		for (i = 0, aLen = action.length; i < aLen; i++) {
-			Dbug.log("Action name: "+action[i].name);
-			action[i].redo();
-		}
-		
-		this.undoStack.push(action);
+			this.undoStack.push(action);
+		} while (                                // May have to perform cascading redo
+			this.redoStack.length > 0
+			&& (
+				action[0].cascades 
+				&& (
+					(this.redoStack.peek()[0].cascades && action[0].name == this.redoStack.peek()[0].name)
+					|| --plusOne >= 0
+				)
+			)
+		);
 	}
 	
 	// Redo action complete, re-enable self
