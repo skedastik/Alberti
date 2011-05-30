@@ -137,10 +137,11 @@ LayerManager.prototype.switchToLayer = function(layerNumber) {
 		
 		Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
 		
-		// Register the layer switch with the undo manager
+		// Register the layer switch with the undo manager. This is a cascading undo.
 		this.undoManager.push("Change Current Layer", this,
 			this.switchToLayer, [layerNumber],
-			this.switchToLayer, [this.currentLayer]);
+			this.switchToLayer, [this.currentLayer],
+			true);
 		
 		this.currentLayer = layerNumber;
 	}
