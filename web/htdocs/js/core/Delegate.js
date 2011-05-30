@@ -26,6 +26,9 @@
  *       this.mapMethod("push", "pushDelegate");
  *    }
  *    
+ *    // Your own inheritance scheme
+ *    inherit(StackDelegate, Delegate);
+ *    
  *    // Define "pushDelegate" with identical args to Stack::push
  *    StackDelegate.prototype.pushDelegate = function(element) {
  *       // Do something with data
@@ -40,7 +43,7 @@
  * 
  * Notice that the pushDelegate method above did not have to invoke the 'push'
  * method of Stack 'data'. This is automatically performed by the Delegate
- * class, _before_ invoking pushDelegate.
+ * class, _after_ invoking pushDelegate.
  * 
  * You can disable delegation by calling Delegate::disableDelegation.
  * Subsequent calls to object methods will invoke the object method directly,
@@ -71,6 +74,61 @@
  * 
  * Also, the delegated object may share a property name with the Delegate. An 
  * exception will be thrown if this is the case (though it is unlikely).
+ * 
+ * Finally, it was mentioned above that delegate methods are invoked _before_
+ * corresponding object methods. The reason for this is to support recursive
+ * object methods. The following example illustrates:
+ * 
+ *    function Cat() {
+ *       this.lives = 9;
+ *    }
+ *    
+ *    Cat.prototype.die = function(lives) {
+ *       console.log("Cat has died.");
+ *       if (--this.lives > 0) {
+ *          this.die();
+ *       }
+ *    };
+ *    
+ *    function CatDelegate(cat) {
+ *       callBaseClassConstructor(cat);
+ *       this.mapMethod("die", "dieDelegate");
+ *    }
+ *    
+ *    // Your own inheritance scheme
+ *    inherit(CatDelegate, Delegate);
+ *    
+ *    CatDelegate.prototype.dieDelegate = function() {
+ *       console.log(this.lives+" lives remaining.");
+ *    };
+ *    
+ *    var cat         = new Cat();
+ *    var catDelegate = new CatDelegate(cat);
+ *    
+ *    catDelegate.die();
+ *    
+ *    // OUTPUT:
+ *    //
+ *    // 9 lives remaining.
+ *    // Cat has died.
+ *    // 8 lives remaining.
+ *    // Cat has died.
+ *    // 7 lives remaining.
+ *    // Cat has died.
+ *    // ...
+ *    // 2 lives remaining.
+ *    // Cat has died.
+ *    // 1 lives remaining.
+ *    // Cat has died.
+ * 
+ * Whereas, if the delegate method is called _after_ the object method:
+ *    
+ *    // OUTPUT
+ *    //
+ *    // 9x "Cat has died."
+ *    // 9x "0 lives remaining."
+ * 
+ * The first approach is "more correct", so that is the approach used.
  * 
  * * */
  
@@ -111,10 +169,13 @@ function Delegate(object, methodMap) {
 		}
 	}, this);
 	
-	// Generate internal methods that simply apply methods of delegated object
+	// Generate internal methods that simply apply methods of delegated 
+	// object. Note that the delegated method is applied with the 'this' 
+	// argument pointing at Delegate's self rather than the delegated object!
+	// This same approach is used with 'apply' calls below.
 	funcs.forEach(function(funcName) {
 		this[funcName] = function() {
-			return this.delegatedObject[funcName].apply(this.delegatedObject, arguments);
+			return this.delegatedObject[funcName].apply(this, arguments);
 		};
 	}, this);
 }
@@ -129,15 +190,20 @@ Delegate.prototype.disableDelegation = function() {
 
 // Map object method to internal method
 Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName) {
+	// Assert that delegated object contains the given method
+	if (this.delegatedObject[objectMethodName] === undefined) {
+		throw "Delegated object does not contain method name passed to Delegate::mapMethod.";
+	}
+	
 	// Override internal method
 	this[objectMethodName] = function() {
-		// Invoke delegated object's method
-		var returnVal = this.delegatedObject[objectMethodName].apply(this.delegatedObject, arguments);
-		
 		// If delegation is enabled, invoke internal delegate method
 		if (this.delegationEnabled) {
 			this[internalMethodName].apply(this, arguments);
 		}
+		
+		// Invoke delegated object's method
+		var returnVal = this.delegatedObject[objectMethodName].apply(this, arguments);
 		
 		return returnVal;
 	};
