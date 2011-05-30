@@ -125,7 +125,7 @@ LayerPanel.prototype.handleRowButton = function(button, evt) {
 
 // GuiButton event handling is delegated to this method
 LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
-	
+	this.layerManager.setLayerVisibility(parseInt(button.id), button.isToggled());
 };
 
 // GuiButton event handling is delegated to this method
@@ -150,7 +150,9 @@ function LayerPanelRow(rowBtnFamily, rowNumber, layerName, buttonDelegate) {
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
 	this.visibilityToggleDiv.className = "visibility_toggle";
-	this.visibilityToggleButton = new GuiButton(rowNumber, this.visibilityToggleDiv, true, buttonDelegate, "handleVisibilityToggle").enable();
+	this.visibilityToggleButton = new GuiButton(
+		rowNumber, this.visibilityToggleDiv, true, buttonDelegate, "handleVisibilityToggle"
+	).enable().toggle(true);
 	
 	// Create layer name text field/label
 	this.layerNameSpan = document.createElement("span");
