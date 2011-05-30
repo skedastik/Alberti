@@ -21,8 +21,11 @@
  * Buttons are disabled by default. Call GuiButton::enable to enable them.
  * Conversely, call GuiButton::disable to disable them.
  * 
- * A button's id may be fetched with GuiButton::getId. To determine if a
- * button is toggled on, use GuiButton::isToggled.
+ * Auto-toggle buttons are toggled off by default. Call GuiButton::toggle
+ * passing 'true' to toggle the button on. To determine if a button is toggled 
+ * on, use GuiButton::isToggled.
+ * 
+ * A button's id may be fetched with GuiButton::getId.
  * 
  * * */
 
@@ -39,9 +42,11 @@ function GuiButton(id, elt, autoToggle, delegate, action, respondMouseDown) {
 	this.action = action;
 	this.respondMouseDown = respondMouseDown;
 	
-	this.toggleOn = false;
 	this.enabled = true;
+	this.toggleOn = true;
+	
 	this.disable();
+	this.toggle(false);
 }
 Util.extend(GuiButton, EventHandler);
 
@@ -76,7 +81,7 @@ GuiButton.prototype.disable = function() {
 	return this;
 };
 
-// Pass true to toggle the button to its 'on' state, false for 'off'.
+// Pass true to toggle the button to its 'on' state, false for 'off'. Returns self.
 GuiButton.prototype.toggle = function(toggleFlag) {
 	if (toggleFlag != this.toggleOn) {
 		if ((this.toggleOn = toggleFlag)) {
@@ -85,6 +90,8 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 			Util.removeHtmlClass(this.htmlNode, GuiButton.styleToggled);
 		}
 	}
+	
+	return this;
 };
 
 // GuiButton can respond to both click or mousedown events
