@@ -1,9 +1,9 @@
 /*
  * LayerPanel.js
  * 
- * GUI for manipulating layers. A LayerManagerDelegate serves as the data 
- * source for the layer panel. Be sure to call setLayerManager before
- * performing operations on the LayerPanel object.
+ * GUI for manipulating layers. A LayerManager serves as the data source for 
+ * the layer panel. Be sure to call setLayerManager before performing 
+ * operations on the LayerPanel object.
  * 
  * TODO
  * 
@@ -17,21 +17,26 @@
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	LayerPanel.baseConstructor.call(this);
-	
 	this.mainDivNode = mainDiv;                    // The div containing the entire layer panel
 	this.dynamicDivNode = dynamicDiv;              // The div containing layer "row" divs
 	this.cstripDivNode = cstripDiv;                // The div containing the layer panel's control strip
 	
+	this.layerManager = null;
+	
 	this.rows = [];                                // Array of LayerPanelRows
 	this.rowBtnFamily = new GuiButtonFamily();     // Each row div is used for a GuiButton in this family
 	
-	this.animationEnabled = true;                  // Enable animated row insertions and deletions?
-	
-	// Register event listeners on the layer panel div, if only to absorb
-	// window-level mouse clicks that would normally draw in the workspace.
-	this.mainDivNode.addEventListener("mousedown", this, false);
+	this.animationEnabled = false;                 // Enable animated row insertions and deletions?
 }
 Util.extend(LayerPanel, EventHandler);
+
+LayerPanel.prototype.enableAnimation = function() {
+	this.animationEnabled = true;
+};
+
+LayerPanel.prototype.enableAnimation = function() {
+	this.animationEnabled = false;
+};
 
 LayerPanel.prototype.setLayerManager = function(layerManager) {
 	// A LayerManagerDelegate serves as the data source for the layer panel
@@ -53,8 +58,8 @@ LayerPanel.prototype.loadLayers = function() {
 		this.insertNewRow(layers[i].name);
 	}
 	
-	// Highlight the currently selected layer
-	this.selectCurrentLayer();
+	// Select the row corresponding to the current layer
+	this.selectRow(this.layerManager.currentLayer);
 	
 	// Re-enable layer insertion/deletion animations
 	this.animationEnabled = true;
@@ -103,39 +108,27 @@ LayerPanel.prototype.deleteRow = function(rowNumber) {
 	this.dynamicDivNode.removeChild(this.rows[rowNumber]);
 	this.rowBtnFamily.removeButton(th)
 	this.rows.splice(rowNumber, 1);
-	
-	// The selected layer may have been deleted, so update selection
-	this.selectCurrentLayer();
 }
-
-// Highlight the row div corresponding to the current layer
-LayerPanel.prototype.selectCurrentLayer = function() {
-	this.selectRow(this.layerManager.currentLayer);
-};
 
 // Highlight the specified row, signifying that it is selected
 LayerPanel.prototype.selectRow = function(rowNumber) {
 	this.rowBtnFamily.toggleButton(this.rows[rowNumber].rowButton);
 };
 
-// GuiButton event handling is delegated to this method
-LayerPanel.prototype.handleButton = function(button, evt) {
-	var tokens = button.id.match(/([^0-9]+)([0-9]+)/);
-	var type = tokens[1];
-	var rowNum = parseInt(tokens[2]);
-	
-	switch (type) {
-		case "lr":                                         // Handle layer row clicks
-			this.rowBtnFamily.toggleButton(button);
-			break;
+LayerPanel.prototype.handleRowButton = function(button, evt) {
+	if (evt.target === button.htmlNode) {
+		this.layerManager.switchToLayer(parseInt(button.id));
 	}
 };
 
-LayerPanel.prototype.mousedown = function(evt) {
-	// Prevent mousedown events originating in the layer panel from 
-	// propagating to the Alberti workspace, or else drawing will happen when  
-	// the user clicks in the layer panel.
-	evt.stopPropagation();
+// GuiButton event handling is delegated to this method
+LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
+	
+};
+
+// GuiButton event handling is delegated to this method
+LayerPanel.prototype.handleColorWell = function(button, evt) {
+	
 };
 
 /*
@@ -149,13 +142,13 @@ function LayerPanelRow(rowBtnFamily, rowNumber, layerName, buttonDelegate) {
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton("lr"+rowNumber, this.rowDiv, false, buttonDelegate, "handleButton", true).enable();
+	this.rowButton = new GuiButton(rowNumber, this.rowDiv, false, buttonDelegate, "handleRowButton", true).enable();
 	rowBtnFamily.addButton(this.rowButton);
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
 	this.visibilityToggleDiv.className = "visibility_toggle";
-	this.visibilityToggleButton = new GuiButton("vt"+rowNumber, this.visibilityToggleDiv, true, buttonDelegate, "handleButton").enable();
+	this.visibilityToggleButton = new GuiButton(rowNumber, this.visibilityToggleDiv, true, buttonDelegate, "handleVisibilityToggle").enable();
 	
 	// Create layer name text field/label
 	this.layerNameSpan = document.createElement("span");
@@ -166,7 +159,7 @@ function LayerPanelRow(rowBtnFamily, rowNumber, layerName, buttonDelegate) {
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
 	this.colorWellDiv.className = "color_well";
-	this.colorWellButton = new GuiButton("cw"+rowNumber, this.colorWellDiv, false, buttonDelegate, "handleButton").enable();
+	this.colorWellButton = new GuiButton(rowNumber, this.colorWellDiv, false, buttonDelegate, "handleColorWell").enable();
 	// TODO: Color picker functionality
 	
 	this.rowDiv.appendChild(this.layerNameSpan);
