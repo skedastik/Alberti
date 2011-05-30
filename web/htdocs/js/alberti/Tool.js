@@ -442,7 +442,8 @@ Tool.prototype.bake = function() {
 				// Register shape insertion with the undo manager
 				this.undoManager.push("Insert Shape", this.layerManager,
 					this.layerManager.insertShape, [shape],
-					this.layerManager.deleteShape, [shape]);
+					this.layerManager.deleteShape, [shape]
+				);
 				this.layerManager.insertShape(shape);
 			}
 		}
