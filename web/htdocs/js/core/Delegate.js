@@ -136,18 +136,16 @@ function Delegate(object, methodMap) {
 	this.delegatedObject = object;
 	this.delegationEnabled = true;
 	
-	if (Array.isArray(object)) {
-		throw "Delegate constructor > Creating delegates for Array objects is not supported.";
-	}
+	Util.assert(!Array.isArray(object), "Creating Delegates for Array objects is not supported.");
 	
 	var props = [];        // Collects non-function properties
 	var funcs = [];        // Collects function properties
 	
 	for (var prop in this.delegatedObject) {
-		if (this[prop] !== undefined) {
-			// Assert that there is no intersection of delegated object property names and internal property names.
-			throw "Delegate constructor > Delegated object has property ('"+prop+"') with same name as internal property.";
-		}
+		Util.assert(
+			this[prop] === undefined,
+			"Delegated object has property '"+prop+"' with same name as internal property."
+		);
 		
 		if (typeof this.delegatedObject[prop] == "function") {
 			funcs.push(prop);
@@ -191,9 +189,10 @@ Delegate.prototype.disableDelegation = function() {
 // Map object method to internal method
 Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName) {
 	// Assert that delegated object contains the given method
-	if (this.delegatedObject[objectMethodName] === undefined) {
-		throw "Delegated object does not contain method name passed to Delegate::mapMethod.";
-	}
+	Util.assert(
+		this.delegatedObject[objectMethodName] !== undefined,
+		"Delegated object does not contain method name passed to Delegate::mapMethod."
+	);
 	
 	// Override internal method
 	this[objectMethodName] = function() {

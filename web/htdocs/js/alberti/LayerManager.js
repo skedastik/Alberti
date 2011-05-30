@@ -130,13 +130,12 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 // action. An exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(layerNumber) {
 	if (layerNumber != this.currentLayer) {
-		if (layerNumber < 0 || layerNumber >= this.layers.length) {
-			throw "Invalid layer passed to LayerManager::switchToLayer.";
-		}
+		Util.assert(
+			layerNumber >= 0 && layerNumber < this.layers.length,
+			"Invalid layer passed to LayerManager::switchToLayer."
+		);
 		
-		if (this.layers[layerNumber].hidden) {
-			throw "LayerManager::switchToLayer attempted to switch to a hidden layer.";
-		}
+		Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
 		
 		// Register the layer switch with the undo manager
 		this.undoManager.push("Change Current Layer", this,
@@ -156,9 +155,7 @@ LayerManager.prototype.switchToLayer = function(layerNumber) {
 LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 	var targetLayer = this.getLayerObject(layer);
 	
-	if (!targetLayer) {
-		throw "Invalid layer passed to LayerManager::setLayerVisibility.";
-	}
+	Util.assert(targetLayer, "Invalid layer passed to LayerManager::setLayerVisibility.");
 	
 	if (makeVisible) {
 		if (targetLayer.hidden) {
@@ -177,9 +174,10 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 			targetLayer.show();
 		}
 	} else if (!targetLayer.hidden) {
-		if (this.layers.length - this.numHiddenLayers <= 1) {
-			throw "LayerManager::setLayerVisibility attempted to hide only visible layer.";
-		}
+		Util.assert(
+			this.layers.length - this.numHiddenLayers > 1,
+			"LayerManager::setLayerVisibility attempted to hide only visible layer."
+		);
 		
 		this.numHiddenLayers++;
 		
@@ -255,27 +253,25 @@ LayerManager.prototype.getLayerIndex = function(layer) {
 LayerManager.prototype.insertShape = function(newShape, layer) {	
 	var sid = newShape.getSid();
 	
+	// Assign an Alberti sid if the shape does not already have one
 	if (!sid) {
 		sid = "s"+this.sidCounter;
 		newShape.setSid(sid);
 	}
 	
-	if (!this.shapeIndex[sid]) {
-		var targetLayer = layer ? layer : this.layers[this.currentLayer];
-		
-		targetLayer.addShape(newShape);
-		
-		// Calculate new intersection points before the shape is added to the 
-		// index, so that it is not tested against itself.
-		this.intersections.testShape(newShape, this.getVisibleShapes(), Intersection.insertFlag);
-		
-		// Create a new shape record
-		this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
-		this.shapeCount++;
-		this.sidCounter++;
-	} else {
-		throw "Duplicate shape passed to LayerManager::insertShape (sid '"+sid+"').";
-	}
+	Util.assert(!this.shapeIndex[sid], "Duplicate shape passed to LayerManager::insertShape (sid '"+sid+"').");
+	
+	var targetLayer = layer ? layer : this.layers[this.currentLayer];
+	targetLayer.addShape(newShape);
+	
+	// Calculate new intersection points before the shape is added to the 
+	// index, so that it is not tested against itself.
+	this.intersections.testShape(newShape, this.getVisibleShapes(), Intersection.insertFlag);
+	
+	// Create a new shape record
+	this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
+	this.shapeCount++;
+	this.sidCounter++;
 	
 	return sid;
 };
@@ -285,24 +281,21 @@ LayerManager.prototype.insertShape = function(newShape, layer) {
 // "flush" method). Returns the Shape object.
 LayerManager.prototype.deleteShape = function(shape, bulk) {
 	var sid = shape.getSid();
+	var layer = this.shapeIndex[sid].layer;
 	
-	if (this.shapeIndex[sid]) {
-		var layer = this.shapeIndex[sid].layer;
-		
-		// Remove the shape from the index before checking for intersections, 
-		// so that it does not get tested against itself.
-		delete this.shapeIndex[sid];
-		this.shapeCount--;
-		
-		// Remove the Shape from the SVG document
-		layer.removeShape(shape);
-		
-		// Delete its intersection points
-		this.intersections.testShape(shape, this.getVisibleShapes(),
-			bulk ? Intersection.bulkDeleteFlag : Intersection.deleteFlag);
-	} else {
-		throw "Shape with unrecognized sid passed to LayerManager::deleteShape.";
-	}
+	Util.assert(this.shapeIndex[sid], "Shape with unrecognized sid passed to LayerManager::deleteShape.");
+	
+	// Remove the shape from the index before checking for intersections, 
+	// so that it does not get tested against itself.
+	delete this.shapeIndex[sid];
+	this.shapeCount--;
+	
+	// Remove the Shape from the SVG document
+	layer.removeShape(shape);
+	
+	// Delete its intersection points
+	this.intersections.testShape(shape, this.getVisibleShapes(),
+		bulk ? Intersection.bulkDeleteFlag : Intersection.deleteFlag);
 	
 	return shape;
 };

@@ -57,9 +57,7 @@ function SpatialHash(bucketWidth) {
 SpatialHash.prototype.search = function(queryCoord, radius) {
 	var hw = this.bucketWidth / 2;
 	
-	if (radius > hw) {
-		throw "Radius passed to SpatialHash::search must be smaller than bucket width.";
-	}
+	Util.assert(radius <= hw, "Radius passed to SpatialHash::search must be no larger than half the bucket width.");
 	
 	var bx = Util.roundToMultiple(queryCoord.x, this.bucketWidth);
 	var by = Util.roundToMultiple(queryCoord.y, this.bucketWidth);

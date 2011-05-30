@@ -16,9 +16,7 @@ function GuiButtonFamily() {
 GuiButtonFamily.prototype.toggleButton = function(button) {
 	var index = this.buttons.indexOf(button);
 	
-	if (index < 0) {
-		throw "Invalid GuiButton object passed to GuiButtonFamily::toggleButton.";
-	}
+	Util.assert(index >= 0, "Invalid GuiButton object passed to GuiButtonFamily::toggleButton.");
 	
 	if (this.currentToggled >= 0) {
 		this.buttons[this.currentToggled].toggle(false);

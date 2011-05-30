@@ -80,9 +80,10 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 	// top of older rows.
 	
 	if (beforeRow !== undefined) {
-		if (beforeRow < 0 || beforeRow >= this.rows.length) {
-			throw "Invalid 'beforeRow' argument passed to LayerPanel::createRowDiv";
-		}
+		Util.assert(
+			beforeRow >= 0 && beforeRow < this.rows.length,
+			"Invalid 'beforeRow' argument passed to LayerPanel::createRowDiv"
+		);
 		
 		// Insert new row directly below 'beforeRow'.
 		this.dynamicDivNode.insertBefore(row.rowDiv, this.rows[beforeRow].rowDiv.nextSibling);
@@ -101,9 +102,10 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 
 // Delete the specified row
 LayerPanel.prototype.deleteRow = function(rowNumber) {
-	if (rowNumber < 0 || rowNumber >= this.rows.length) {
-		throw "Invalid 'rowNumber' argument passed to LayerPanel::deleteRow";
-	}
+	Util.assert(
+		rowNumber >= 0 && rowNumber < this.rows.length,
+		"Invalid 'rowNumber' argument passed to LayerPanel::deleteRow"
+	);
 	
 	this.dynamicDivNode.removeChild(this.rows[rowNumber]);
 	this.rowBtnFamily.removeButton(th)

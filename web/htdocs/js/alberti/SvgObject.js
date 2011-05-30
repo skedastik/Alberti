@@ -79,9 +79,7 @@
 
 function SvgObject(svgTagOrObject) {
 	if (typeof svgTagOrObject == "string") {
-		if (svgTagOrObject === "") {
-			throw "Invalid SVG tag string passed to SvgObject constructor.";
-		}
+		Util.assert(svgTagOrObject !== "", "Invalid SVG tag string passed to SvgObject constructor.");
 		
 		this.svgNode = null;
 		this.svgTag = svgTagOrObject;

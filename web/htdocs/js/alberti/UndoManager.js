@@ -79,15 +79,11 @@ UndoManager.prototype.clearStack = function() {
 // immediately push an action onto the undo stack. Rather, subsequent pushes
 // will be buffered until UndoManager::recordStop is called, at which point
 // the entire buffer will be pushed onto the undo stack as a unit. This allows 
-// for undos consisting of multiple actions. Note that UndoManager::push 
-// always immediately executes the redo action regardless of whether or not
-// actions are being buffered.
+// for undos consisting of multiple actions.
 UndoManager.prototype.recordStart = function() {
-	if (this.actionBuffer === null) {
-		this.actionBuffer = [];
-	} else {
-		throw "UndoManager::recordStart was invoked while already recording actions.";
-	}
+	Util.assert(this.actionBuffer === null, "UndoManager::recordStart was invoked while already recording actions.");
+
+	this.actionBuffer = [];
 };
 
 // Stop buffering actions and transfer the buffer to the undo stack as a unit.
