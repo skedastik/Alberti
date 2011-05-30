@@ -101,7 +101,8 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 			
 			this.undoManager.push("Delete Shape", this,
 				this.deleteShape, [shape, true],
-				this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]);
+				this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]
+			);
 			this.deleteShape(shape, true);
 		}
 		
@@ -114,7 +115,8 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 		// before the current layer rather than after.
 		this.undoManager.push("Delete Current Layer", this,
 			this.deleteCurrentLayer, null,
-			this.insertLayer, [targetLayer, this.currentLayer < this.layers.length - 1]);
+			this.insertLayer, [targetLayer, this.currentLayer < this.layers.length - 1]
+		);
 		
 		this.undoManager.recordStop();
 		
@@ -141,10 +143,23 @@ LayerManager.prototype.switchToLayer = function(layerNumber) {
 		this.undoManager.push("Change Current Layer", this,
 			this.switchToLayer, [layerNumber],
 			this.switchToLayer, [this.currentLayer],
-			true);
+			true
+		);
 		
 		this.currentLayer = layerNumber;
 	}
+};
+
+// Switch to next visible layer above current layer, wrapping around if necessary
+LayerManager.prototype.switchToLayerAbove = function(arguments) {
+	var nextLayer = this.getNextHighestVisibleLayer();
+	this.switchToLayer(nextLayer >= 0 ? nextLayer : this.getNextHighestVisibleLayer(-1));
+};
+
+// Switch to next visible layer below current layer, wrapping around if necessary
+LayerManager.prototype.switchToLayerBelow = function(arguments) {
+	var prevLayer = this.getNextLowestVisibleLayer();
+	this.switchToLayer(prevLayer >= 0 ? prevLayer : this.getNextLowestVisibleLayer(this.layers.length));
 };
 
 // Set the visibility of the given layer (expects either a reference to an 
@@ -171,7 +186,8 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 			// Make it undoable
 			this.undoManager.push("Show Layer", this,
 				this.setLayerVisibility, [targetLayer, true],
-				this.setLayerVisibility, [targetLayer, false]);
+				this.setLayerVisibility, [targetLayer, false]
+			);
 			targetLayer.show();
 		}
 	} else if (!targetLayer.hidden) {
@@ -197,14 +213,16 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 		// highest visible layer, or next lowest if next highest does not 
 		// exist.
 		if (this.layers.indexOf(targetLayer) == this.currentLayer) {
-			var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
-			this.switchToLayer(nextLayer ? nextLayer : this.getNextLowestVisibleLayer(this.currentLayer));
+			var nextLayer = this.getNextHighestVisibleLayer();
+			var prevLayer = this.getNextLowestVisibleLayer();
+			this.switchToLayer(nextLayer >= 0 ? nextLayer : (prevLayer >= 0 ? prevLayer : this.currentLayer));
 		}
 		
 		// Make it undoable
 		this.undoManager.push("Hide Layer", this,
 			this.setLayerVisibility, [targetLayer, false],
-			this.setLayerVisibility, [targetLayer, true]);
+			this.setLayerVisibility, [targetLayer, true]
+		);
 		targetLayer.hide();
 		
 		this.undoManager.recordStop();
@@ -212,27 +230,27 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 };
 
 // Returns the index of the next highest visible layer from the layer with the
-// given index, or null if none found.
+// given index (defaults to current layer), or -1 if none found.
 LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayerNumber) {
-	for (var i = fromLayerNumber + 1, len = this.layers.length; i < len; i++) {
+	for (var i = (fromLayerNumber ? fromLayerNumber : this.currentLayer) + 1, len = this.layers.length; i < len; i++) {
 		if (!this.layers[i].hidden) {
 			return i;
 		}
 	}
 	
-	return null;
+	return -1;
 };
 
 // Returns the index of the next lowest visible layer from the layer with the
-// given index, or null if none found.
+// given index (defaults to current layer), or -1 if none found.
 LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayerNumber) {
-	for (var i = fromLayerNumber - 1; i >= 0; i--) {
+	for (var i = (fromLayerNumber ? fromLayerNumber : this.currentLayer) - 1; i >= 0; i--) {
 		if (!this.layers[i].hidden) {
 			return i;
 		}
 	}
 	
-	return null;
+	return -1;
 };
 
 // Expects a reference to an existing Layer object, or the layer's index and 
@@ -313,7 +331,8 @@ LayerManager.prototype.deleteSelectedShapes = function() {
 		// that it is added to the correct layer in case of a "redo"
 		this.undoManager.push("Delete Shape", this,
 			this.deleteShape, [shape, true],
-			this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]);
+			this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]
+		);
 		this.deleteShape(shape, true);
 	}
 	
