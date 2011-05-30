@@ -162,14 +162,13 @@ LayerManager.prototype.switchToLayerBelow = function(arguments) {
 	this.switchToLayer(prevLayer >= 0 ? prevLayer : this.getNextLowestVisibleLayer(this.layers.length));
 };
 
-// Set the visibility of the given layer (expects either a reference to an 
-// existing Layer object, or the layer's index). Pass true for 'makeVisible'
-// to show the layer, false to hide it. If the current layer is hidden, 
-// current layer is switched to the next highest visible layer, or next lowest 
-// if next highest does not exist. At least one layer must remain visible at 
-// all times. Automatically registers an undo action.
-LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
-	var targetLayer = this.getLayerObject(layer);
+// Set the visibility of the layer with the given index. Pass true for 
+// 'makeVisible' to show the layer, false to hide it. If the current layer is 
+// hidden, current layer is switched to the next highest visible layer, or 
+// next lowest if next highest does not exist. At least one layer must remain 
+// visible at all times. Automatically registers an undo action.
+LayerManager.prototype.setLayerVisibility = function(layerNumber, makeVisible) {
+	var targetLayer = this.layers[layerNumber];
 	
 	Util.assert(targetLayer, "Invalid layer passed to LayerManager::setLayerVisibility.");
 	
@@ -185,8 +184,8 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 		
 			// Make it undoable
 			this.undoManager.push("Show Layer", this,
-				this.setLayerVisibility, [targetLayer, true],
-				this.setLayerVisibility, [targetLayer, false]
+				this.setLayerVisibility, [layerNumber, true],
+				this.setLayerVisibility, [layerNumber, false]
 			);
 			targetLayer.show();
 		}
@@ -220,8 +219,8 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 		
 		// Make it undoable
 		this.undoManager.push("Hide Layer", this,
-			this.setLayerVisibility, [targetLayer, false],
-			this.setLayerVisibility, [targetLayer, true]
+			this.setLayerVisibility, [layerNumber, false],
+			this.setLayerVisibility, [layerNumber, true]
 		);
 		targetLayer.hide();
 		
