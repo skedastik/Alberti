@@ -33,6 +33,12 @@ var Util = {
 		subclass.superclass = baseclass.prototype;
 	},
 	
+	assert: function(condition, errMsg) {
+		if (!condition) {
+			throw errMsg;
+		}
+	},
+	
 	// Get first non-text child of specified element (null if none found)
 	firstNonTextChild: function(element) {
 		if (element.firstChild) {
@@ -73,12 +79,18 @@ var Util = {
 	//    {"quantity":<number>, "units":<units-string>}
 	// "units" will be an empty string if the value was unitless.
 	parseValue: function(value) {
+		var type = typeof value;
 		var quanity;
 		var units = "";
 		
-		if (typeof value == "number") {
+		Util.assert(
+			type == "number" || type == "string",
+			"Invalid, non-alphanumeric argument passed to Util::parseValue"
+		);
+		
+		if (type == "number") {
 			quantity = value;
-		} else if (typeof value == "string"){
+		} else if (type == "string"){
 			var tokens = value.match(/^([0-9]+(\.[0-9]+)?)\s*(.*)/);
 			
 			if (tokens !== null) {
@@ -86,15 +98,12 @@ var Util = {
 				quanity = tokens[1];
 			} else {
 				tokens = value.match(/^([^0-9]*)\s*([0-9]+(\.[0-9]+)?)/);
-				if (tokens !== null) {
-					units = tokens[1];
-					quanity = tokens[2];
-				} else {
-					throw "Util::parseValue found no numerical quantity in string ["+value+"]";
-				}
+				
+				Util.assert(tokens !== null, "Util::parseValue found no numerical quantity in string '"+value+"'");
+				
+				units = tokens[1];
+				quanity = tokens[2];
 			}
-		} else {
-			throw "Invalid, non-alphanumeric argument passed to Util::parseValue!";
 		}
 		
 		return {"quantity":parseFloat(quantity), "units":units};
