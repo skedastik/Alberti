@@ -114,9 +114,10 @@ UndoManager.prototype.undo = function() {
 	// might register further undo actions.
 	this.disable();
 	
-	var plusOne = 1;
-	
 	if (this.undoStack.length > 0) {
+		// If the initial undo cascades, add an extra iteration to the cascading undo loop
+		var plusOne = this.undoStack.peek().peek().cascades ? 1 : 0;
+		
 		do {
 			var action = this.undoStack.pop();
 		
@@ -156,9 +157,10 @@ UndoManager.prototype.redo = function() {
 	// might register further undo actions.
 	this.disable();
 	
-	var plusOne = 1;
-	
 	if (this.redoStack.length > 0) {
+		// If the initial redo cascades, add an extra iteration to the cascading redo loop
+		var plusOne = this.redoStack.peek().peek().cascades ? 1 : 0;
+		
 		do {
 			var action = this.redoStack.pop();
 		
