@@ -14,9 +14,12 @@
  * name belonging to that object. This method will be invoked each time the 
  * button is clicked. Two arguments will be passed to the action method, the 
  * first being a reference to the clicked button, the second being a 
- * javascript event object. Finally, you may optionally pass true for the
- * 'respondMouseDown' argument if the button should respond to mousedown 
- * events rather than click events.
+ * javascript event object. 'toolTip' is an optional argument that expects a
+ * string to display as a native tooltip (use empty string if no tool tip). 
+ * If you specify a comma-separate tool tip string, the first string will be
+ * used as the tool tip for the 'on' state, the second for the 'off' state.
+ * Finally, you may optionally pass true for the 'respondMouseDown' argument 
+ * if the button should respond to mousedown events rather than click events.
  * 
  * Buttons are disabled by default. Call GuiButton::enable to enable them.
  * Conversely, call GuiButton::disable to disable them.
@@ -33,7 +36,7 @@
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
-function GuiButton(id, elt, autoToggle, delegate, action, respondMouseDown) {
+function GuiButton(id, elt, autoToggle, delegate, action, tooltip, respondMouseDown) {
 	GuiButton.baseConstructor.call(this);
 	this.id = id;
 	this.htmlNode = elt;
@@ -41,6 +44,17 @@ function GuiButton(id, elt, autoToggle, delegate, action, respondMouseDown) {
 	this.delegate = delegate;
 	this.action = action;
 	this.respondMouseDown = respondMouseDown;
+	
+	this.tooltipOn = "";
+	this.tooltipOff = "";
+	if (tooltip) {
+		var tokens = tooltip.toString().match(/^\s*([^,]+?)\s*(,\s*(.+?)\s*)?$/);
+		
+		Util.assert(tokens !== null, "Invalid tool tip string passed to GuiButton constructor.");
+		
+		this.tooltipOn = tokens[1];
+		this.tooltipOff = tokens[3] ? tokens[3] : this.tooltipOn;
+	}
 	
 	this.enabled = true;
 	this.toggleOn = true;
@@ -85,9 +99,13 @@ GuiButton.prototype.disable = function() {
 GuiButton.prototype.toggle = function(toggleFlag) {
 	if (toggleFlag != this.toggleOn) {
 		if ((this.toggleOn = toggleFlag)) {
+			// Update button's appearance to its 'on' state
 			Util.addHtmlClass(this.htmlNode, GuiButton.styleToggled);
+			this.htmlNode.title = this.tooltipOn;
 		} else {
+			// Update button's appearance to its 'off' state
 			Util.removeHtmlClass(this.htmlNode, GuiButton.styleToggled);
+			this.htmlNode.title = this.tooltipOff;
 		}
 	}
 	
