@@ -126,27 +126,24 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 	}
 };
 
-// Switch to the given layer (expects either a reference to an existing Layer 
-// object, or the layer's index). Automatically registers an undo action. An
-// exception is raised if attempting to switch to hidden layer.
-LayerManager.prototype.switchToLayer = function(layer) {
-	var layerIndex = this.getLayerIndex(layer);
-	
-	if (layerIndex != this.currentLayer) {
-		if (layerIndex < 0 || layerIndex >= this.layers.length) {
+// Switch to the layer with the given index. Automatically registers an undo 
+// action. An exception is raised if attempting to switch to hidden layer.
+LayerManager.prototype.switchToLayer = function(layerNumber) {
+	if (layerNumber != this.currentLayer) {
+		if (layerNumber < 0 || layerNumber >= this.layers.length) {
 			throw "Invalid layer passed to LayerManager::switchToLayer.";
 		}
 		
-		if (this.layers[layerIndex].hidden) {
+		if (this.layers[layerNumber].hidden) {
 			throw "LayerManager::switchToLayer attempted to switch to a hidden layer.";
 		}
 		
 		// Register the layer switch with the undo manager
 		this.undoManager.push("Change Current Layer", this,
-			this.switchToLayer, [layerIndex],
+			this.switchToLayer, [layerNumber],
 			this.switchToLayer, [this.currentLayer]);
 		
-		this.currentLayer = layerIndex;
+		this.currentLayer = layerNumber;
 	}
 };
 
@@ -215,40 +212,28 @@ LayerManager.prototype.setLayerVisibility = function(layer, makeVisible) {
 	}
 };
 
-// Returns the next highest visible Layer object from the given layer (either 
-// a reference to an existing Layer object, or the layer's index), or null if 
-// none found.
-LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayer) {
-	var nextLayer = null;
-	
-	for (var i = this.getLayerIndex(fromLayer) + 1, len = this.layers.length; i < len; i++) {
-		var layer = this.layers[i];
-		
-		if (!layer.hidden) {
-			nextLayer = layer;
-			break;
+// Returns the index of the next highest visible layer from the layer with the
+// given index, or null if none found.
+LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayerNumber) {
+	for (var i = fromLayerNumber + 1, len = this.layers.length; i < len; i++) {
+		if (!this.layers[i].hidden) {
+			return i;
 		}
 	}
 	
-	return nextLayer;
+	return null;
 };
 
-// Returns the next lowest visible Layer object from the given layer (either a 
-// reference to an existing Layer object, or the layer's index), or null if 
-// none found.
-LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayer) {
-	var nextLayer = null;
-	
-	for (var i = this.getLayerIndex(fromLayer) - 1; i >= 0; i--) {
-		var layer = this.layers[i];
-		
-		if (!layer.hidden) {
-			nextLayer = layer;
-			break;
+// Returns the index of the next lowest visible layer from the layer with the
+// given index, or null if none found.
+LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayerNumber) {
+	for (var i = fromLayerNumber - 1; i >= 0; i--) {
+		if (!this.layers[i].hidden) {
+			return i;
 		}
 	}
 	
-	return nextLayer;
+	return null;
 };
 
 // Expects a reference to an existing Layer object, or the layer's index and 
