@@ -155,9 +155,7 @@ SpatialHash.prototype.remove = function(coordArray) {
 		var nodeInfo = this.fastLookup[fastIndex];
 		
 		if (nodeInfo) {
-			nodeInfo.count--;
-			
-			if (nodeInfo.count == 0) {
+			if (--nodeInfo.count == 0) {
 				this.nodeCount--;
 				
 				var bucket = this.buckets[nodeInfo.bucketIndex];

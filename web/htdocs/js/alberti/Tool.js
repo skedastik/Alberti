@@ -449,9 +449,7 @@ Tool.prototype.decrementStep = function() {
 		this.unregisterShapesInCurrentStep();
 		this.steps.pop();
 		
-		this.currentStep--;
-		
-		if (this.currentStep == -1) {
+		if (--this.currentStep == -1) {
 			// Reset the tool if it is now step 0.
 			this.reset();
 		} else {
