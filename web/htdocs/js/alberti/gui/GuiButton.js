@@ -95,8 +95,13 @@ GuiButton.prototype.disable = function() {
 	return this;
 };
 
-// Pass true to toggle the button to its 'on' state, false for 'off'. Returns self.
+// Pass true to toggle the button to its 'on' state, false for 'off'. If no
+// 'toggleFlag' arg is supplied, simply inverts toggle state. Returns self.
 GuiButton.prototype.toggle = function(toggleFlag) {
+	if (toggleFlag === undefined) {
+		toggleFlag = !this.toggleOn;
+	}
+	
 	if (toggleFlag != this.toggleOn) {
 		if ((this.toggleOn = toggleFlag)) {
 			// Update button's appearance to its 'on' state
@@ -115,7 +120,7 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 // GuiButton can respond to both click or mousedown events
 GuiButton.prototype.click = GuiButton.prototype.mousedown = function(evt) {
 	if (this.autoToggle) {
-		this.toggle(!this.toggleOn);
+		this.toggle();
 	}
 	
 	// Invoke the delegate object's action method
