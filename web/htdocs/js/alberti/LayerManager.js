@@ -56,42 +56,48 @@ LayerManager.prototype.newLayerFromGroup = function(group) {
 	return newLayer;
 };
 
-// Inserts the given layer on top of the current layer by default. 
-// Automatically sets current layer to inserted layer. Layer insertions are 
-// automatically registered with the undo manager. Pass true for before to
-// insert below the current layer instead of above.
-LayerManager.prototype.insertLayer = function(layer, before) {
-	if (this.currentLayer != -1) {
-		if (before) {
-			this.layerGroup.attachChildBefore(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
-		} else {
-			this.layerGroup.attachChildAfter(layer.svgGroup, this.layers[this.currentLayer].svgGroup);
-		}
-	} else {
-		this.layerGroup.attachChild(layer.svgGroup);
+// Inserts Layer object 'newLayer' above current layer by default. You may
+// optionally supply a reference layer with index 'layerNumber'. The new layer
+// will be inserted after this layer. Finally, you may optionally pass 'true' 
+// for 'before' in order to insert before the reference layer rather than 
+// after. Automatically sets current layer to inserted layer. Layer insertions 
+// are automatically registered with the undo manager.
+LayerManager.prototype.insertLayer = function(newLayer, layerNumber, before) {
+	if (layerNumber === undefined) {
+		layerNumber = this.currentLayer;
 	}
 	
-	var layerIndex = before ? this.currentLayer : this.currentLayer + 1;	
-	this.layers.splice(layerIndex, 0, layer);
+	if (this.layers.length > 0) {
+		if (before) {
+			this.layerGroup.attachChildBefore(newLayer.svgGroup, this.layers[layerNumber].svgGroup);
+		} else {
+			this.layerGroup.attachChildAfter(newLayer.svgGroup, this.layers[layerNumber].svgGroup);
+		}
+	} else {
+		this.layerGroup.attachChild(newLayer.svgGroup);
+	}
 	
-	this.undoManager.recordStart();
+	var insertIndex = before ? layerNumber : layerNumber + 1;	
+	this.layers.splice(insertIndex, 0, newLayer);
 	
-	// Buffer layer switch and insertion undo actions
-	this.switchToLayer(layerIndex);
-	this.undoManager.push("Insert Layer", this, this.insertLayer, [layer], this.deleteCurrentLayer, null);
+	// Register undo action for insertion
+	this.undoManager.push("Insert Layer", this,
+		this.insertLayer, [newLayer, layerNumber],
+		this.deleteLayer, [insertIndex]
+	);
 	
-	this.undoManager.recordStop();
+	// Layer-switch undo will cascade automatically
+	this.switchToLayer(insertIndex);
 };
 
-// Delete the current layer. If only one layer exists, an exception is thrown. 
-// Layer deletions are automatically registered with the undo manager. Current
-// layer becomes the layer below the deleted layer, or, if there is nothing
-// below, the layer above.
-LayerManager.prototype.deleteCurrentLayer = function() {
-	Util.assert(this.layers.length > 1, "LayerManager::deleteCurrentLayer attempted to delete only remaining layer.");
+// Delete the layer with the given index. If only one layer exists, an 
+// exception is thrown. Current layer becomes the next visible layer below the 
+// specified layer, or, if there is nothing below, the next visible layer 
+// above. Layer deletions are automatically registered with the undo manager.
+LayerManager.prototype.deleteLayer = function(layerNumber) {
+	Util.assert(this.layers.length > 1, "LayerManager::deleteLayer attempted to delete only remaining layer.");
 	
-	var targetLayerIndex = this.currentLayer;
-	var targetLayer = this.layers[targetLayerIndex];
+	var targetLayer = this.layers[layerNumber];
 	
 	// Remove the layer's SVG group node from the SVG tree
 	targetLayer.svgGroup.detach();
@@ -116,33 +122,36 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 	// Switch to another layer before deleting current layer, otherwise undo
 	// will attempt to switch to the deleted layer before it is re-inserted.
 	//
-	//
-	// TODO: Check for hidden layers !!!!!!!!!!!
-	this.switchToLayer(this.currentLayer > 0 ? this.currentLayer - 1 : this.currentLayer);
+	// TODO: Check for hidden layers. Automatically reveal a hidden layer and
+	// switch to it if no visible layer is available.
+	this.switchToLayer(layerNumber > 0 ? layerNumber - 1 : layerNumber);
 	
 	// Register the layer deletion with the undo manager. If the bottommost
-	// layer is being deleted, the redo action must insert before the current 
-	// layer rather than after.
+	// layer is being deleted, the redo action must insert before rather than 
+	// after.
 	this.undoManager.push("Delete Current Layer", this,
-		this.deleteCurrentLayer, null,
-		this.insertLayer, [targetLayer, targetLayerIndex == 0]
+		this.deleteLayer, [layerNumber],
+		this.insertLayer, [targetLayer, layerNumber == 0 ? layerNumber : layerNumber - 1, layerNumber == 0]
 	);
 	
-	this.layers.splice(targetLayerIndex, 1);
+	this.layers.splice(layerNumber, 1);
 	
 	this.undoManager.recordStop();
+};
+
+LayerManager.prototype.deleteCurrentLayer = function() {
+	this.deleteLayer(this.currentLayer);
 };
 
 // Switch to the layer with the given index. Automatically registers an undo 
 // action. An exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(layerNumber) {
-	if (layerNumber != this.currentLayer) {
+	// if (layerNumber != this.currentLayer) {
 		Util.assert(
 			layerNumber >= 0 && layerNumber < this.layers.length,
 			"Invalid layer passed to LayerManager::switchToLayer."
 		);
 		
-		// TODO: Automatically show hidden layer if no visible layer is available.
 		Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
 		
 		// Register the layer switch with the undo manager. This is a cascading undo.
@@ -153,7 +162,7 @@ LayerManager.prototype.switchToLayer = function(layerNumber) {
 		);
 		
 		this.currentLayer = layerNumber;
-	}
+	// }
 };
 
 // Switch to next visible layer above current layer, wrapping around if necessary
@@ -256,18 +265,6 @@ LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayerNumber) {
 	}
 	
 	return -1;
-};
-
-// Expects a reference to an existing Layer object, or the layer's index and 
-// returns the Layer object.
-LayerManager.prototype.getLayerObject = function(layer) {
-	return (typeof layer == "number") ? this.layers[layer] : layer;
-};
-
-// Expects a reference to an existing Layer object, or the layer's index and 
-// returns the layer's index.
-LayerManager.prototype.getLayerIndex = function(layer) {
-	return (typeof layer == "number") ? layer : this.layers.indexOf(layer);
 };
 
 // Append the given Shape, optionally providing a target layer object 
