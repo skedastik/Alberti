@@ -38,4 +38,9 @@ GuiButtonFamily.prototype.removeButton = function(button) {
 	if (index >= 0) {
 		this.buttons.splice(index, 1);
 	}
+	
+	// The currently toggled button is being removed, so set currentToggled to -1
+	if (index == this.currentToggled) {
+		this.currentToggled = -1;
+	}
 };
