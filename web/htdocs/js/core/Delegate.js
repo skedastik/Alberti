@@ -128,7 +128,10 @@
  *    // 9x "Cat has died."
  *    // 9x "0 lives remaining."
  * 
- * The first approach is "more correct", so that is the approach used.
+ * The first approach is "more correct", so that is the approach used. 
+ * Furthermore, by executing the delegate method first, we ensure that it is
+ * not exposed to inconsistent state (as the delegate method might have been
+ * invoked in the middle of an object method).
  * 
  * * */
  
