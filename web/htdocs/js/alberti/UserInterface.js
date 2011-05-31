@@ -39,9 +39,10 @@ UserInterface.number7KeyCode = 55;
 UserInterface.number8KeyCode = 56;
 UserInterface.number9KeyCode = 57;
 
-UserInterface.snapKeyCode = 83;        // 's' - Activate mouse snapping
-UserInterface.undoKeyCode = 85;        // 'u'
-UserInterface.redoKeyCode = 82;        // 'r'
+UserInterface.lpCollapseKeyCode = 220;       // '\' - Collapse/reveal layer panel
+UserInterface.snapKeyCode       = 83;        // 's' - Activate mouse snapping
+UserInterface.undoKeyCode       = 85;        // 'u'
+UserInterface.redoKeyCode       = 82;        // 'r'
 
 UserInterface.selectionTool = 0;
 UserInterface.lineTool      = 1;
@@ -236,6 +237,10 @@ UserInterface.prototype.keydown = function(evt) {
 		case UserInterface.number8KeyCode:
 		case UserInterface.number9KeyCode:
 			this.setTool(evt.keyCode - 49);
+			break;
+		
+		case UserInterface.lpCollapseKeyCode:
+			this.layerPanel.toggleCollapse();
 			break;
 		
 		case UserInterface.arrowUpKeyCode:
