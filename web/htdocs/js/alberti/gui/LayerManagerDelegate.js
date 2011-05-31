@@ -17,9 +17,24 @@ function LayerManagerDelegate(layerManager, layerPanel) {
 Util.extend(LayerManagerDelegate, Delegate);
 
 LayerManagerDelegate.prototype.insertLayerDelegate = function(layer, before) {
+	var currentLayer = this.delegatedObject.currentLayer;
+	
+	if (before) {
+		// Layer is being inserted before current layer, so use current layer as 'beforeRow' arg
+		this.layerPanel.insertNewRow(layer.name, currentLayer);
+	} else {
+		if (currentLayer == this.delegatedObject.layers.length - 1) {
+			// Layer is being inserted above topmost layer, so 'beforeRow' arg is not needed
+			this.layerPanel.insertNewRow(layer.name);
+		} else {
+			// Layer is being inserted above non-topmost layer, so use row above current row as 'beforeRow' arg
+			this.layerPanel.insertNewRow(layer.name, currentLayer + 1);
+		}
+	}
 };
 
 LayerManagerDelegate.prototype.deleteCurrentLayerDelegate = function() {
+	this.layerPanel.deleteRow(this.delegatedObject.currentLayer);
 };
 
 LayerManagerDelegate.prototype.switchToLayerDelegate = function(layerNumber) {
