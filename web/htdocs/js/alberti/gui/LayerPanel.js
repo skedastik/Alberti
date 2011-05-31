@@ -73,6 +73,8 @@ LayerPanel.prototype.loadLayers = function() {
 // row number, otherwise the row is placed above all other rows. Row 0 is the
 // bottommost row.
 LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
+	Dbug.log("LayerPanel > Inserting row for layer '"+layerName+"'"+(beforeRow !== undefined ? " before row "+beforeRow : " after row "+(this.rows.length - 1)));
+	
 	// Generate div representing the layer row
 	var row = new LayerPanelRow(this.rowBtnFamily, this.rows.length, layerName, this);
 	
@@ -90,7 +92,7 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 		
 		// Insert new row directly below 'beforeRow'.
 		this.dynamicDivNode.insertBefore(row.rowDiv, this.rows[beforeRow].rowDiv.nextSibling);
-		this.rows.splice(beforeRow, 0, rowDiv);
+		this.rows.splice(beforeRow, 0, row);
 	} else {
 		// Insert at the top of the panel by default (before all other rows in the DOM tree)
 		if (this.rows.length > 0) {
@@ -101,22 +103,32 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 		
 		this.rows.push(row);
 	}
+	
+	// Dbug.log(this.rows);
 };
 
 // Delete the specified row
 LayerPanel.prototype.deleteRow = function(rowNumber) {
+	Dbug.log("LayerPanel > Deleting row "+rowNumber);
+	
 	Util.assert(
 		rowNumber >= 0 && rowNumber < this.rows.length,
 		"Invalid 'rowNumber' argument passed to LayerPanel::deleteRow"
 	);
 	
-	this.dynamicDivNode.removeChild(this.rows[rowNumber]);
-	this.rowBtnFamily.removeButton(th)
+	var row = this.rows[rowNumber];
+	
+	this.dynamicDivNode.removeChild(row.rowDiv);
+	this.rowBtnFamily.removeButton(row.rowButton);
 	this.rows.splice(rowNumber, 1);
+	
+	// Dbug.log(this.rows);
 }
 
 // Highlight the specified row, signifying that it is selected
 LayerPanel.prototype.selectRow = function(rowNumber) {
+	Dbug.log("LayerPanel > Selecting row "+rowNumber);
+	
 	this.rowBtnFamily.toggleButton(this.rows[rowNumber].rowButton);
 };
 
@@ -135,11 +147,11 @@ LayerPanel.prototype.handleColorWell = function(button, evt) {
 };
 
 LayerPanel.prototype.handleNewLayerButton = function(button, evt) {
-	
+	this.layerManager.newLayer();
 };
 
 LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
-	
+	this.layerManager.deleteCurrentLayer();
 };
 
 LayerPanel.prototype.handleCollapseButton = function(button, evt) {
