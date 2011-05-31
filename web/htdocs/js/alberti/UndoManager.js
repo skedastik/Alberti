@@ -116,7 +116,7 @@ UndoManager.prototype.undo = function() {
 	
 	if (this.undoStack.length > 0) {
 		// If the initial undo cascades, add an extra iteration to the cascading undo loop
-		var plusOne = this.undoStack.peek().peek().cascades ? 1 : 0;
+		var extraIterations = this.undoStack.peek().peek().cascades ? 1 : 0;
 		
 		do {
 			var action = this.undoStack.pop();
@@ -133,15 +133,15 @@ UndoManager.prototype.undo = function() {
 			}
 		
 			this.redoStack.push(action);
-		} while (                                // May have to perform cascading undo
-			this.undoStack.length > 0
+		} while (                                // May have to perform a cascading undo...
+			this.undoStack.length > 0            // ...if there are undo actions remaining...
 			&& (
-				action.peek().cascades           // Does the topmost buffered undo action cascade?
+				action.peek().cascades           // ...and the current undo action cascades...
 				&& (
-					// Does the next undo action cascade and have the same action name?
-					(this.undoStack.peek()[0].cascades && action[0].name == this.undoStack.peek()[0].name)
-					// Or is there an cascade iteration remaining?
-					|| --plusOne >= 0
+					// ...and the action at the top of the next buffered set also cascades and has the same action name...
+					(this.undoStack.peek().peek().cascades && action.peek().name == this.undoStack.peek().peek().name)
+					// ...or there is an extra cascade iteration remaining
+					|| --extraIterations >= 0
 				)
 			)
 		);
@@ -161,7 +161,7 @@ UndoManager.prototype.redo = function() {
 	
 	if (this.redoStack.length > 0) {
 		// If the initial redo cascades, add an extra iteration to the cascading redo loop
-		var plusOne = this.redoStack.peek().peek().cascades ? 1 : 0;
+		var extraIterations = this.redoStack.peek().peek().cascades ? 1 : 0;
 		
 		do {
 			var action = this.redoStack.pop();
@@ -173,15 +173,15 @@ UndoManager.prototype.redo = function() {
 			}
 		
 			this.undoStack.push(action);
-		} while (                                // May have to perform cascading redo
-			this.redoStack.length > 0
+		} while (                                // May have to perform a cascading redo...
+			this.redoStack.length > 0            // ...if there are redo actions remaining...
 			&& (
-				action[0].cascades               // Does the bottommost buffered redo action cascade?
+				action[0].cascades               // ...and the current redo action cascades...
 				&& (
-					// Does the next redo action cascade and have the same action name?
+					// ...and the action at the bottom of the next buffered set cascades and has the same action name...
 					(this.redoStack.peek()[0].cascades && action[0].name == this.redoStack.peek()[0].name)
-					// Or is there an cascade iteration remaining?
-					|| --plusOne >= 0
+					// ...or there is an extra cascade iteration remaining
+					|| --extraIterations >= 0
 				)
 			)
 		);
