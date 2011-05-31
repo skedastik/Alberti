@@ -73,8 +73,6 @@ LayerPanel.prototype.loadLayers = function() {
 // row number, otherwise the row is placed above all other rows. Row 0 is the
 // bottommost row.
 LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
-	Dbug.log("LayerPanel > Inserting row for layer '"+layerName+"'"+(beforeRow !== undefined ? " before row "+beforeRow : " after row "+(this.rows.length - 1)));
-	
 	// Generate div representing the layer row
 	var row = new LayerPanelRow(this.rowBtnFamily, this.rows.length, layerName, this);
 	
@@ -103,14 +101,10 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 		
 		this.rows.push(row);
 	}
-	
-	// Dbug.log(this.rows);
 };
 
 // Delete the specified row
 LayerPanel.prototype.deleteRow = function(rowNumber) {
-	Dbug.log("LayerPanel > Deleting row "+rowNumber);
-	
 	Util.assert(
 		rowNumber >= 0 && rowNumber < this.rows.length,
 		"Invalid 'rowNumber' argument passed to LayerPanel::deleteRow"
@@ -121,20 +115,20 @@ LayerPanel.prototype.deleteRow = function(rowNumber) {
 	this.dynamicDivNode.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
 	this.rows.splice(rowNumber, 1);
-	
-	// Dbug.log(this.rows);
 }
 
 // Highlight the specified row, signifying that it is selected
 LayerPanel.prototype.selectRow = function(rowNumber) {
-	Dbug.log("LayerPanel > Selecting row "+rowNumber);
-	
 	this.rowBtnFamily.toggleButton(this.rows[rowNumber].rowButton);
 };
 
 LayerPanel.prototype.handleRowButton = function(button, evt) {
+	// Only changes rows if the row itself was clicked, not one of the row's controls
 	if (evt.target === button.htmlNode) {
-		this.layerManager.switchToLayer(parseInt(button.id));
+		// Only select row if it isn't already selected
+		if (!button.isToggled()) {
+			this.layerManager.switchToLayer(parseInt(button.id));
+		}
 	}
 };
 
