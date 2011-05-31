@@ -179,7 +179,7 @@ AnimatedProperty.prototype.stepTo = function(elapsed) {
 	// places so calculations are rounded to the 13th decimal place.
 	this.setTargetProperty(
 			Util.roundToDecimal(this.acceleration * Math.pow(elapsed, 2) + this.initVelocity * elapsed + this.initValue, 10)
-			+ (this.units === "" ? 0 : units));      // be careful not to turn value into string needlessly!
+			+ (this.units === "" ? 0 : this.units));      // be careful not to turn value into string needlessly!
 };
 
 AnimatedProperty.prototype.setScalarProperty = function(value) {
