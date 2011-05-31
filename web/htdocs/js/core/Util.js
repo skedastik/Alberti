@@ -91,12 +91,9 @@ var Util = {
 		if (type == "number") {
 			quantity = value;
 		} else if (type == "string"){
-			// var tokens = value.match(/^([0-9]+(\.[0-9]+)?)\s*(.*)/);
 			var tokens = value.match(/^\s*(-?[0-9]+(\.[0-9]+)?)\s*([^\s\-0-9]+)?\s*$|^\s*(-?)(([^\s\-0-9]+)\s*)?([0-9]+(\.[0-9]+)?)\s*$/);
 			
 			Util.assert(tokens !== null, "Util::parseValue found malformed quantity, or ambiguous units in string '"+value+"'");
-			
-			Dbug.log(tokens);
 			
 			quantity = parseFloat(tokens[1] ? tokens[1] : tokens[4]+tokens[7]);
 			units = tokens[3] ? tokens[3] : tokens[6];
