@@ -120,15 +120,15 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 	// TODO: Check for hidden layers !!!!!!!!!!!
 	this.switchToLayer(this.currentLayer > 0 ? this.currentLayer - 1 : this.currentLayer);
 	
-	// Register the layer deletion with the undo manager. If any layer but
-	// the topmost layer is being deleted, the redo action must insert 
-	// before the current layer rather than after.
+	// Register the layer deletion with the undo manager. If the bottommost
+	// layer is being deleted, the redo action must insert before the current 
+	// layer rather than after.
 	this.undoManager.push("Delete Current Layer", this,
 		this.deleteCurrentLayer, null,
 		this.insertLayer, [targetLayer, targetLayerIndex == 0]
 	);
 	
-	this.layers.splice(this.currentLayer, 1);
+	this.layers.splice(targetLayerIndex, 1);
 	
 	this.undoManager.recordStop();
 };
