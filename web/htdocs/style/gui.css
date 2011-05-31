@@ -1,6 +1,6 @@
 #layer_panel {
 	position: absolute;
-	top: 200px;
+	bottom: 26px;
 	margin-left: -10px;
 	
 	font-family: "Lucida Grande", Arial, sans-serif;
@@ -40,6 +40,8 @@
 	height: 17px;
 	padding: 4px 4px 5px 16px;
 	border-bottom: 1px solid #666;
+	
+	cursor: pointer;
 }
 
 .layer_panel_row.guiBtnToggled {
@@ -49,6 +51,7 @@
 
 #layer_panel_control_strip .layer_panel_row {
 	border-bottom: 0;
+	cursor: auto;
 }
 
 .layer_panel_row, .layer_name {
@@ -60,6 +63,7 @@
 
 .layer_name {
 	float: left;
+	cursor: text;
 }
 
 .layer_panel_row .visibility_toggle,
