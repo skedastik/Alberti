@@ -37,6 +37,7 @@ LayerManagerDelegate.prototype.insertLayerDelegate = function(newLayer, layerNum
 
 LayerManagerDelegate.prototype.deleteLayerDelegate = function(layerNumber) {
 	this.layerPanel.deleteRow(layerNumber);
+	this.delegatedObject.clearSelections();      // Clear shape selections whenever a layer is deleted
 };
 
 LayerManagerDelegate.prototype.switchToLayerDelegate = function(layerNumber) {
@@ -48,7 +49,8 @@ LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber
 		// Layer is being shown, so enable selection of the layer row
 		this.layerPanel.rows[layerNumber].rowButton.enable();
 	} else {
-		// Layer is being hidden, so disable selection of the layer row
+		// Layer is being hidden, so disable selection of the layer row, and clear shape selections
 		this.layerPanel.rows[layerNumber].rowButton.disable();
+		this.delegatedObject.clearSelections();
 	}
 };
