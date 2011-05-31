@@ -5,15 +5,10 @@
  * the layer panel. Be sure to call setLayerManager before performing 
  * operations on the LayerPanel object.
  * 
- * TODO
- * 
- * - Animated row insertions/deletions.
- * 
- * - This class does too much. Should be split into a generic GuiSelectList 
- * class, and a LayerPanel-specific subclass. The control strip should 
- * probably be moved to a separate class as well.
- * 
  * * */
+
+LayerPanel.collapseWidth            = "170px";     // How much is the layer panel collapsed?
+LayerPanel.collapseTransitionLength = 0.25;        // Collapse animation length in seconds
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	LayerPanel.baseConstructor.call(this);
@@ -26,20 +21,12 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	this.rows = [];                                // Array of LayerPanelRows
 	this.rowBtnFamily = new GuiButtonFamily();     // Each row div is used for a GuiButton in this family
 	
-	this.animationEnabled = false;                 // Enable animated row insertions and deletions?
-	
 	// Add control strip buttons to control strip div's layer panel row
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
+	
+	this.collapseAnimation = null;                 // Collapse Animation object
 }
 Util.extend(LayerPanel, EventHandler);
-
-LayerPanel.prototype.enableAnimation = function() {
-	this.animationEnabled = true;
-};
-
-LayerPanel.prototype.enableAnimation = function() {
-	this.animationEnabled = false;
-};
 
 LayerPanel.prototype.setLayerManager = function(layerManager) {
 	// A LayerManagerDelegate serves as the data source for the layer panel
@@ -48,8 +35,6 @@ LayerPanel.prototype.setLayerManager = function(layerManager) {
 
 // Generates layer panel rows from existing layers in layer manager
 LayerPanel.prototype.loadLayers = function() {
-	// Do not animate row insertions/deletions when loading layers
-	this.animationEnabled = false;
 	
 	// Clear existing layer panel rows
 	this.dynamicDivNode.innerHTML = "";
@@ -63,9 +48,6 @@ LayerPanel.prototype.loadLayers = function() {
 	
 	// Select the row corresponding to the current layer
 	this.selectRow(this.layerManager.currentLayer);
-	
-	// Re-enable layer insertion/deletion animations
-	this.animationEnabled = true;
 };
 
 // Create a single row div element w/ the given Alberti layer name. You may 
@@ -115,11 +97,34 @@ LayerPanel.prototype.deleteRow = function(rowNumber) {
 	this.dynamicDivNode.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
 	this.rows.splice(rowNumber, 1);
-}
+};
 
 // Highlight the specified row, signifying that it is selected
 LayerPanel.prototype.selectRow = function(rowNumber) {
 	this.rowBtnFamily.toggleButton(this.rows[rowNumber].rowButton);
+};
+
+// Collapse the layer panel if 'collapseFlag' is true, reveal it otherwise
+LayerPanel.prototype.collapse = function(collapseFlag) {
+	if (this.collapseAnimation) {
+		this.collapseAnimation.stop();
+	}
+	
+	this.collapseAnimation = new Animation(LayerPanel.collapseTransitionLength,
+		function() {
+			this.collapseAnimation = null;
+		}.bindTo(this)
+	);
+	
+	this.collapseAnimation.add(
+		this.mainDivNode.style,
+		"left",
+		this.mainDivNode.style.left ? this.mainDivNode.style.left : "0px",
+		collapseFlag ? "-"+LayerPanel.collapseWidth : "0px",
+		-1.0
+	);
+	
+	this.collapseAnimation.begin();
 };
 
 LayerPanel.prototype.handleRowButton = function(button, evt) {
@@ -149,7 +154,7 @@ LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
 };
 
 LayerPanel.prototype.handleCollapseButton = function(button, evt) {
-	
+	this.collapse(!button.isToggled());
 };
 
 /*
