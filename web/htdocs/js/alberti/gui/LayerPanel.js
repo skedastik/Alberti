@@ -24,6 +24,7 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	// Add control strip buttons to control strip div's layer panel row
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
 	
+	this.isCollapsed = false;
 	this.collapseAnimation = null;                 // Collapse Animation object
 }
 Util.extend(LayerPanel, EventHandler);
@@ -105,7 +106,9 @@ LayerPanel.prototype.selectRow = function(rowNumber) {
 };
 
 // Collapse the layer panel if 'collapseFlag' is true, reveal it otherwise
-LayerPanel.prototype.collapse = function(collapseFlag) {
+LayerPanel.prototype.toggleCollapse = function() {
+	this.isCollapsed = !this.isCollapsed;
+	
 	if (this.collapseAnimation) {
 		this.collapseAnimation.stop();
 	}
@@ -120,7 +123,7 @@ LayerPanel.prototype.collapse = function(collapseFlag) {
 		this.mainDivNode.style,
 		"left",
 		this.mainDivNode.style.left ? this.mainDivNode.style.left : "0px",
-		collapseFlag ? "-"+LayerPanel.collapseWidth : "0px",
+		this.isCollapsed ? "-"+LayerPanel.collapseWidth : "0px",
 		-1.0
 	);
 	
@@ -154,7 +157,8 @@ LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
 };
 
 LayerPanel.prototype.handleCollapseButton = function(button, evt) {
-	this.collapse(!button.isToggled());
+	this.toggleCollapse();
+	button.toggle();
 };
 
 /*
@@ -175,7 +179,7 @@ function LayerPanelControlStrip(cstripDiv, buttonDelegate) {
 	
 	this.lpCollapseDiv = document.createElement("div");
 	this.lpCollapseDiv.className = "lp_collapse_button";
-	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, true, buttonDelegate, "handleCollapseButton", "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
+	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, false, buttonDelegate, "handleCollapseButton", "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
 	
 	cstripDiv.appendChild(this.newLayerDiv);
 	cstripDiv.appendChild(this.deleteLayerDiv);
