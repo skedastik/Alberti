@@ -71,61 +71,66 @@ LayerManager.prototype.insertLayer = function(layer, before) {
 		this.layerGroup.attachChild(layer.svgGroup);
 	}
 	
-	if (before) {
-		this.layers.splice(this.currentLayer, 0, layer);
-	} else {
-		this.layers.splice(this.currentLayer + 1, 0, layer);
-		this.currentLayer++;
-	}
+	var layerIndex = before ? this.currentLayer : this.currentLayer + 1;	
+	this.layers.splice(layerIndex, 0, layer);
 	
-	// Register the layer insertion with the undo manager
+	this.undoManager.recordStart();
+	
+	// Buffer layer switch and insertion undo actions
+	this.switchToLayer(layerIndex);
 	this.undoManager.push("Insert Layer", this, this.insertLayer, [layer], this.deleteCurrentLayer, null);
+	
+	this.undoManager.recordStop();
 };
 
-// Delete the current layer. If only one layer exists, it will not be deleted. 
+// Delete the current layer. If only one layer exists, an exception is thrown. 
 // Layer deletions are automatically registered with the undo manager. Current
-// layer becomes the layer above the deleted layer, or, if there is nothing
-// above, the layer below.
+// layer becomes the layer below the deleted layer, or, if there is nothing
+// below, the layer above.
 LayerManager.prototype.deleteCurrentLayer = function() {
-	if (this.layers.length > 1) {
-		var targetLayer = this.layers[this.currentLayer];
+	Util.assert(this.layers.length > 1, "LayerManager::deleteCurrentLayer attempted to delete only remaining layer.");
+	
+	var targetLayerIndex = this.currentLayer;
+	var targetLayer = this.layers[targetLayerIndex];
+	
+	// Remove the layer's SVG group node from the SVG tree
+	targetLayer.svgGroup.detach();
+	
+	this.undoManager.recordStart();
+	
+	// Delete the layer's shapes in bulk.
+	while (targetLayer.shapes.length > 0) {
+		var shape = targetLayer.shapes.peek();
 		
-		// Remove the layer's SVG group node from the SVG tree
-		targetLayer.svgGroup.detach();
-		
-		this.undoManager.recordStart();
-		
-		// Delete the layer's shapes in bulk.
-		while (targetLayer.shapes.length > 0) {
-			var shape = targetLayer.shapes.peek();
-			
-			this.undoManager.push("Delete Shape", this,
-				this.deleteShape, [shape, true],
-				this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]
-			);
-			this.deleteShape(shape, true);
-		}
-		
-		// Flush the bulk deletion
-		this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
-		this.intersections.flush();
-		
-		// Register the layer deletion with the undo manager. If any layer but
-		// the topmost layer is being deleted, the redo action must insert 
-		// before the current layer rather than after.
-		this.undoManager.push("Delete Current Layer", this,
-			this.deleteCurrentLayer, null,
-			this.insertLayer, [targetLayer, this.currentLayer < this.layers.length - 1]
+		this.undoManager.push("Delete Shape", this,
+			this.deleteShape, [shape, true],
+			this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]
 		);
-		
-		this.undoManager.recordStop();
-		
-		this.layers.splice(this.currentLayer, 1);
-		
-		if (this.currentLayer == this.layers.length) {
-			this.currentLayer--;
-		}
+		this.deleteShape(shape, true);
 	}
+	
+	// Flush the bulk deletion
+	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
+	this.intersections.flush();
+	
+	// Switch to another layer before deleting current layer, otherwise undo
+	// will attempt to switch to the deleted layer before it is re-inserted.
+	//
+	//
+	// TODO: Check for hidden layers !!!!!!!!!!!
+	this.switchToLayer(this.currentLayer > 0 ? this.currentLayer - 1 : this.currentLayer);
+	
+	// Register the layer deletion with the undo manager. If any layer but
+	// the topmost layer is being deleted, the redo action must insert 
+	// before the current layer rather than after.
+	this.undoManager.push("Delete Current Layer", this,
+		this.deleteCurrentLayer, null,
+		this.insertLayer, [targetLayer, targetLayerIndex == 0]
+	);
+	
+	this.layers.splice(this.currentLayer, 1);
+	
+	this.undoManager.recordStop();
 };
 
 // Switch to the layer with the given index. Automatically registers an undo 
@@ -137,6 +142,7 @@ LayerManager.prototype.switchToLayer = function(layerNumber) {
 			"Invalid layer passed to LayerManager::switchToLayer."
 		);
 		
+		// TODO: Automatically show hidden layer if no visible layer is available.
 		Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
 		
 		// Register the layer switch with the undo manager. This is a cascading undo.
