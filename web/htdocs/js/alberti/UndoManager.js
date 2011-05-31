@@ -136,9 +136,11 @@ UndoManager.prototype.undo = function() {
 		} while (                                // May have to perform cascading undo
 			this.undoStack.length > 0
 			&& (
-				action[0].cascades 
+				action.peek().cascades           // Does the topmost buffered undo action cascade?
 				&& (
+					// Does the next undo action cascade and have the same action name?
 					(this.undoStack.peek()[0].cascades && action[0].name == this.undoStack.peek()[0].name)
+					// Or is there an cascade iteration remaining?
 					|| --plusOne >= 0
 				)
 			)
@@ -174,9 +176,11 @@ UndoManager.prototype.redo = function() {
 		} while (                                // May have to perform cascading redo
 			this.redoStack.length > 0
 			&& (
-				action[0].cascades 
+				action[0].cascades               // Does the bottommost buffered redo action cascade?
 				&& (
+					// Does the next redo action cascade and have the same action name?
 					(this.redoStack.peek()[0].cascades && action[0].name == this.redoStack.peek()[0].name)
+					// Or is there an cascade iteration remaining?
 					|| --plusOne >= 0
 				)
 			)
