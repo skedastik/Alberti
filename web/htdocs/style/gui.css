@@ -66,15 +66,15 @@
 	cursor: text;
 }
 
-.layer_panel_row .visibility_toggle,
-.layer_panel_row .new_layer_button,
-.layer_panel_row .delete_layer_button,
-.layer_panel_row .lp_collapse_button {
+.visibility_toggle,
+.new_layer_button,
+.delete_layer_button,
+.lp_collapse_button {
 	width: 18px;
 	height: 18px;
 	margin-right: 4px;
 
-	background-color: gray;
+	background-color: white;
 	
 	display: inline;
 	float: right;
@@ -82,22 +82,30 @@
 	cursor: pointer;
 }
 
-.layer_panel_row .new_layer_button {
+.visibility_toggle.guiBtnToggled {
+	background-color: gray;
+}
+
+.new_layer_button {
 	float: left;
 	background-color: blue;
 }
 
-.layer_panel_row .delete_layer_button {
+.delete_layer_button {
 	float: left;
 	background-color: red;
 }
 
-.layer_panel_row .lp_collapse_button {
+.lp_collapse_button {
 	margin-right: 0px;
+	background-color: black;
+}
+
+.lp_collapse_button.guiBtnToggled {
 	background-color: gray;
 }
 
-.layer_panel_row .color_well {
+.color_well {
 	width: 16px;
 	height: 16px;
 	margin: 1px;
