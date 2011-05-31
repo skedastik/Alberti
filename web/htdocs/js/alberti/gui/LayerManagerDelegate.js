@@ -10,31 +10,33 @@ function LayerManagerDelegate(layerManager, layerPanel) {
 	this.layerPanel = layerPanel;
 	
 	this.mapMethod("insertLayer", "insertLayerDelegate");
-	this.mapMethod("deleteCurrentLayer", "deleteCurrentLayerDelegate");
+	this.mapMethod("deleteLayer", "deleteLayerDelegate");
 	this.mapMethod("switchToLayer", "switchToLayerDelegate");
 	this.mapMethod("setLayerVisibility", "setLayerVisibilityDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
 
-LayerManagerDelegate.prototype.insertLayerDelegate = function(layer, before) {
-	var currentLayer = this.delegatedObject.currentLayer;
+LayerManagerDelegate.prototype.insertLayerDelegate = function(newLayer, layerNumber, before) {
+	if (layerNumber === undefined) {
+		layerNumber = this.delegatedObject.currentLayer;
+	}
 	
 	if (before) {
-		// Layer is being inserted before current layer, so use current layer as 'beforeRow' arg
-		this.layerPanel.insertNewRow(layer.name, currentLayer);
+		// Layer is being inserted before target layer, so use target layer as 'beforeRow' arg
+		this.layerPanel.insertNewRow(newLayer.name, layerNumber);
 	} else {
-		if (currentLayer == this.delegatedObject.layers.length - 1) {
+		if (layerNumber == this.delegatedObject.layers.length - 1) {
 			// Layer is being inserted above topmost layer, so 'beforeRow' arg is not needed
-			this.layerPanel.insertNewRow(layer.name);
+			this.layerPanel.insertNewRow(newLayer.name);
 		} else {
-			// Layer is being inserted above non-topmost layer, so use row above current row as 'beforeRow' arg
-			this.layerPanel.insertNewRow(layer.name, currentLayer + 1);
+			// Layer is being inserted above non-topmost layer, so use row above target row as 'beforeRow' arg
+			this.layerPanel.insertNewRow(newLayer.name, layerNumber + 1);
 		}
 	}
 };
 
-LayerManagerDelegate.prototype.deleteCurrentLayerDelegate = function() {
-	this.layerPanel.deleteRow(this.delegatedObject.currentLayer);
+LayerManagerDelegate.prototype.deleteLayerDelegate = function(layerNumber) {
+	this.layerPanel.deleteRow(layerNumber);
 };
 
 LayerManagerDelegate.prototype.switchToLayerDelegate = function(layerNumber) {
