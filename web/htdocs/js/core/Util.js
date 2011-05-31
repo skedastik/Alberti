@@ -80,7 +80,7 @@ var Util = {
 	// "units" will be an empty string if the value was unitless.
 	parseValue: function(value) {
 		var type = typeof value;
-		var quanity;
+		var quantity;
 		var units = "";
 		
 		Util.assert(
@@ -91,22 +91,18 @@ var Util = {
 		if (type == "number") {
 			quantity = value;
 		} else if (type == "string"){
-			var tokens = value.match(/^([0-9]+(\.[0-9]+)?)\s*(.*)/);
+			// var tokens = value.match(/^([0-9]+(\.[0-9]+)?)\s*(.*)/);
+			var tokens = value.match(/^\s*(-?[0-9]+(\.[0-9]+)?)\s*([^\s\-0-9]+)?\s*$|^\s*(-?)(([^\s\-0-9]+)\s*)?([0-9]+(\.[0-9]+)?)\s*$/);
 			
-			if (tokens !== null) {
-				units = tokens[3];
-				quanity = tokens[1];
-			} else {
-				tokens = value.match(/^([^0-9]*)\s*([0-9]+(\.[0-9]+)?)/);
-				
-				Util.assert(tokens !== null, "Util::parseValue found no numerical quantity in string '"+value+"'");
-				
-				units = tokens[1];
-				quanity = tokens[2];
-			}
+			Util.assert(tokens !== null, "Util::parseValue found malformed quantity, or ambiguous units in string '"+value+"'");
+			
+			Dbug.log(tokens);
+			
+			quantity = parseFloat(tokens[1] ? tokens[1] : tokens[4]+tokens[7]);
+			units = tokens[3] ? tokens[3] : tokens[6];
 		}
 		
-		return {"quantity":parseFloat(quantity), "units":units};
+		return {"quantity":quantity, "units":units};
 	},
 	
 	// Returns x rounded to the nearest multiple of n
