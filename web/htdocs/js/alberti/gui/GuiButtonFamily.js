@@ -9,38 +9,40 @@
  
 function GuiButtonFamily() {
 	this.buttons = [];
-	this.currentToggled = -1;         // The currently toggled button's index
+	this.lastToggledButton = null;
 }
 
 // Expects a previously-added GuiButton object. Toggles it 'on'.
 GuiButtonFamily.prototype.toggleButton = function(button) {
-	var index = this.buttons.indexOf(button);
+	Util.assert(this.buttons.indexOf(button) >= 0, "Invalid GuiButton object passed to GuiButtonFamily::toggleButton.");
 	
-	Util.assert(index >= 0, "Invalid GuiButton object passed to GuiButtonFamily::toggleButton.");
-	
-	if (this.currentToggled >= 0) {
-		this.buttons[this.currentToggled].toggle(false);
+	// If a previous button in the family was toggled on, toggle it off
+	if (this.lastToggledButton) {
+		this.lastToggledButton.toggle(false);
 	}
 	
-	this.buttons[index].toggle(true);
-	this.currentToggled = index;
+	button.toggle(true);
+	this.lastToggledButton = button;
 };
 
 GuiButtonFamily.prototype.addButton = function(button) {
-	if (this.buttons.indexOf(button) < 0) {
-		this.buttons.push(button);
-	}
+	Util.assert(
+		this.buttons.indexOf(button) < 0,
+		"Duplicate GuiButton object passed to GuiButtonFamily::addButton."
+	);
+	
+	this.buttons.push(button);
 };
 
 GuiButtonFamily.prototype.removeButton = function(button) {
 	var index = this.buttons.indexOf(button);
 	
-	if (index >= 0) {
-		this.buttons.splice(index, 1);
-	}
+	Util.assert(index >= 0, "Invalid GuiButton object passed to GuiButtonFamily::removeButton.");
 	
-	// The currently toggled button is being removed, so set currentToggled to -1
-	if (index == this.currentToggled) {
-		this.currentToggled = -1;
+	this.buttons.splice(index, 1);
+	
+	// The currently toggled button is being removed, so set lastToggledButton to null
+	if (this.lastToggledButton == button) {
+		this.lastToggledButton = null;
 	}
 };
