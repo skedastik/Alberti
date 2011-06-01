@@ -19,27 +19,24 @@
 /* * * * * * * * * * * Order below is NOT important. * * * * * * * * * * * */
 
 #background {
-/*	fill: black;*/
 	visibility: hidden;
 }
 
 #master {
+	pointer-events: none;      /* Prevent selection of SVG objects */
 	fill: none;
 }
 
 #workspace {
-	pointer-events: visible;
 	stroke: #7788ff;
 }
 
 #overlay {
-	pointer-events: none;
 	stroke: red;
 	fill: none;
 }
 
 #underlay {
-	pointer-events: none;
 	stroke: red;
 	stroke-opacity: 0.2;
 /*	stroke: #ffc8c8;*/
@@ -55,10 +52,10 @@ text {
 	font-size: 11px;
 }
 
-text, body {
+text, body, #workspace {
 	pointer-events: none;
 	
-	/* currently, these are the best options to prevent text selection */
+	/* Currently, these are the best options for preventing text/object selection */
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
