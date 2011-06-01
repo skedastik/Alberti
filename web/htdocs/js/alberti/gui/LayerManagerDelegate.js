@@ -59,5 +59,5 @@ LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber
 };
 
 LayerManagerDelegate.prototype.setLayerNameDelegate = function(layerNumber, newName) {
-	this.layerPanel.rows[layerNumber].layerNameSpan.innerHTML = newName;
+	this.layerPanel.rows[layerNumber].layerNameDiv.innerHTML = newName;
 };

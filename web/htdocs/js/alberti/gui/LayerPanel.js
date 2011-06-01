@@ -163,7 +163,7 @@ LayerPanel.prototype.handleCollapseButton = function(button, evt) {
 
 LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
 	var row = this.rows[button.getId()];
-	row.layerNameGuiField.activate(row.layerNameSpan.innerHTML);
+	row.layerNameGuiField.activate(row.layerNameDiv.innerHTML);
 };
 
 LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
@@ -222,10 +222,10 @@ function LayerPanelRow(rowBtnFamily, rowNumber, layerName, controlDelegate) {
 	).enable().toggle(true);
 	
 	// Create layer name text field/label
-	this.layerNameSpan = document.createElement("span");
-	this.layerNameSpan.className = "layer_name";
-	this.layerNameSpan.innerHTML = layerName;
-	this.layerNameButton = new GuiButton(rowNumber, this.layerNameSpan, controlDelegate, "handleLayerNameButton", false).enable();
+	this.layerNameDiv = document.createElement("div");
+	this.layerNameDiv.className = "layer_name";
+	this.layerNameDiv.innerHTML = layerName;
+	this.layerNameButton = new GuiButton(rowNumber, this.layerNameDiv, controlDelegate, "handleLayerNameButton", false).enable();
 	
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
@@ -239,7 +239,7 @@ function LayerPanelRow(rowBtnFamily, rowNumber, layerName, controlDelegate) {
 	this.layerNameGuiField = new GuiTextField(rowNumber, this.layerNameInput, controlDelegate, "handleLayerNameField", true);
 	
 	this.rowDiv.appendChild(this.layerNameInput);
-	this.rowDiv.appendChild(this.layerNameSpan);
+	this.rowDiv.appendChild(this.layerNameDiv);
 	this.rowDiv.appendChild(this.colorWellDiv);
 	this.rowDiv.appendChild(this.visibilityToggleDiv);
 }
