@@ -131,14 +131,16 @@
  *    // 9x "Cat has died."
  *    // 9x "0 lives remaining."
  * 
- * The first approach is "more correct", so that is the approach used. 
+ * The first approach is "more correct", so that is the default approach.
  * Furthermore, by executing the delegate method first, we ensure that it is
  * not exposed to inconsistent state (as the delegate method might be invoked
  * in the middle of an object method). However, in some cases the delegate 
  * method may need to perform some operation based on the outcome of the 
  * original method, in which case it would need to be invoked _after_ the 
- * object method. To do so, pass 'true' for mapMethod's optional third 
- * argument 'postInvocation'.
+ * object method. To do so, you may provide a post-delegate method via 
+ * mapMethod's optional third argument 'postDelegateMethodName'. To provide
+ * only a post-delegate method, without a pre-delegate method, pass null for
+ * the 'preDelegateMethodName' argument.
  * 
  * * */
  
@@ -197,7 +199,7 @@ Delegate.prototype.disableDelegation = function() {
 };
 
 // Map object method to internal method
-Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName, postInvocation) {
+Delegate.prototype.mapMethod = function(objectMethodName, preDelegateMethodName, postDelegateMethodName) {
 	// Assert that delegated object contains the given method
 	Util.assert(
 		this.delegatedObject[objectMethodName] !== undefined,
@@ -206,17 +208,17 @@ Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName, po
 	
 	// Override internal method
 	this[objectMethodName] = function() {
-		// If delegation is enabled, pre-invoke delegate method if postInvocation is false
-		if (this.delegationEnabled && !postInvocation) {
-			this[internalMethodName].apply(this, arguments);
+		// If delegation is enabled, invoke pre-delegate method if provided
+		if (this.delegationEnabled && preDelegateMethodName) {
+			this[preDelegateMethodName].apply(this, arguments);
 		}
 		
 		// Invoke delegated object's method
 		var returnVal = this.delegatedObject[objectMethodName].apply(this, arguments);
 		
-		// If delegation is enabled, post-invoke delegate method if postInvocation is true
-		if (this.delegationEnabled && postInvocation) {
-			this[internalMethodName].apply(this, arguments);
+		// If delegation is enabled, invoke post-delegate method if provided
+		if (this.delegationEnabled && postDelegateMethodName) {
+			this[postDelegateMethodName].apply(this, arguments);
 		}
 		
 		return returnVal;
