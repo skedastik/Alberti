@@ -223,7 +223,7 @@ LayerManager.prototype.setLayerVisibility = function(layerNumber, makeVisible) {
 		}
 	} else if (!targetLayer.hidden) {
 		Util.assert(
-			this.layers.length - this.numHiddenLayers > 1,
+			this.getNumberOfVisibleLayers() > 1,
 			"LayerManager::setLayerVisibility attempted to hide only visible layer."
 		);
 		
@@ -282,6 +282,10 @@ LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayerNumber) {
 	}
 	
 	return -1;
+};
+
+LayerManager.prototype.getNumberOfVisibleLayers = function() {
+	return this.layers.length - this.numHiddenLayers;
 };
 
 // Append the given Shape, optionally providing a target layer object 
