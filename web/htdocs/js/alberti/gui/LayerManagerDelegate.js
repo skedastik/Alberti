@@ -12,7 +12,7 @@ function LayerManagerDelegate(layerManager, layerPanel) {
 	this.mapMethod("insertLayer", "insertLayerDelegate");
 	this.mapMethod("deleteLayer", "deleteLayerDelegate");
 	this.mapMethod("switchToLayer", "switchToLayerDelegate");
-	this.mapMethod("setLayerVisibility", "setLayerVisibilityDelegate");
+	this.mapMethod("setLayerVisibility", "setLayerVisibilityDelegate", true);
 	this.mapMethod("setLayerName", "setLayerNameDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
@@ -51,7 +51,17 @@ LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber
 	if (makeVisible) {
 		row.rowButton.enable();
 		row.visibilityToggleButton.toggle(true);
+		
+		// Enable the layer visibility toggle if more than one layer becomes visible again
+		if (this.delegatedObject.getNumberOfVisibleLayers() == 2) {
+			this.layerPanel.rows[this.delegatedObject.currentLayer].visibilityToggleButton.enable();
+		}
 	} else {
+		// Disable the layer visibility toggle if only one visible layer remains
+		if (this.delegatedObject.getNumberOfVisibleLayers() == 1) {
+			this.layerPanel.rows[this.delegatedObject.currentLayer].visibilityToggleButton.disable();
+		}
+		
 		row.rowButton.disable();
 		row.visibilityToggleButton.toggle(false);
 		this.delegatedObject.clearSelections();
