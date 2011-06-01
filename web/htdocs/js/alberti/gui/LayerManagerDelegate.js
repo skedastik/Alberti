@@ -44,7 +44,6 @@ LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, laye
 
 LayerManagerDelegate.prototype.deleteLayerPreDelegate = function(layerNumber) {
 	this.layerPanel.deleteRow(layerNumber);
-	this.delegatedObject.clearSelections();      // Clear shape selections whenever a layer is deleted
 };
 
 LayerManagerDelegate.prototype.deleteLayerPostDelegate = function(layerNumber) {
@@ -74,7 +73,6 @@ LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber
 		
 		row.rowButton.disable();
 		row.visibilityToggleButton.toggle(false);
-		this.delegatedObject.clearSelections();
 	}
 };
 
