@@ -9,15 +9,17 @@ function LayerManagerDelegate(layerManager, layerPanel) {
 	LayerManagerDelegate.baseConstructor.call(this, layerManager);
 	this.layerPanel = layerPanel;
 	
-	this.mapMethod("insertLayer", "insertLayerDelegate");
-	this.mapMethod("deleteLayer", "deleteLayerDelegate");
+	this.lastVisibleRow = -1;        // For storing the last exclusively visible row
+	
+	this.mapMethod("insertLayer", "insertLayerPreDelegate", "insertLayerPostDelegate");
+	this.mapMethod("deleteLayer", "deleteLayerPreDelegate", "deleteLayerPostDelegate");
 	this.mapMethod("switchToLayer", "switchToLayerDelegate");
-	this.mapMethod("setLayerVisibility", "setLayerVisibilityDelegate", true);
+	this.mapMethod("setLayerVisibility", null, "setLayerVisibilityDelegate");
 	this.mapMethod("setLayerName", "setLayerNameDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
 
-LayerManagerDelegate.prototype.insertLayerDelegate = function(newLayer, layerNumber, before) {
+LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, layerNumber, before) {
 	if (layerNumber === undefined) {
 		layerNumber = this.delegatedObject.currentLayer;
 	}
@@ -36,9 +38,17 @@ LayerManagerDelegate.prototype.insertLayerDelegate = function(newLayer, layerNum
 	}
 };
 
-LayerManagerDelegate.prototype.deleteLayerDelegate = function(layerNumber) {
+LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, layerNumber, before) {
+	// TODO: Update visibility toggle after layer insertions
+};
+
+LayerManagerDelegate.prototype.deleteLayerPreDelegate = function(layerNumber) {
 	this.layerPanel.deleteRow(layerNumber);
 	this.delegatedObject.clearSelections();      // Clear shape selections whenever a layer is deleted
+};
+
+LayerManagerDelegate.prototype.deleteLayerPostDelegate = function(layerNumber) {
+	// TODO: Update visibility toggle after layer deletions
 };
 
 LayerManagerDelegate.prototype.switchToLayerDelegate = function(layerNumber) {
