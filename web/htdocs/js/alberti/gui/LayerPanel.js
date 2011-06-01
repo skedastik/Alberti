@@ -20,6 +20,7 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	
 	this.rows = [];                                // Array of LayerPanelRows
 	this.rowBtnFamily = new GuiButtonFamily();     // Each row div is used for a GuiButton in this family
+	this.rowIdCounter = 1;                         // Used to generate unique row ID strings
 	
 	// Add control strip buttons to control strip div's layer panel row
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
@@ -57,7 +58,7 @@ LayerPanel.prototype.loadLayers = function() {
 // bottommost row.
 LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 	// Generate div representing the layer row
-	var row = new LayerPanelRow(this.rowBtnFamily, this.rows.length, layerName, this);
+	var row = new LayerPanelRow(this.rowIdCounter++, this.rowBtnFamily, this.rows.length, layerName, this);
 	
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
@@ -131,17 +132,17 @@ LayerPanel.prototype.toggleCollapse = function() {
 };
 
 LayerPanel.prototype.handleRowButton = function(button, evt) {
-	// Only changes rows if the row itself was clicked, not one of the row's controls
+	// Only change rows if the row itself was clicked, not one of the row's controls
 	if (evt.target === button.htmlNode) {
 		// Only select row if it isn't already selected
 		if (!button.isToggled()) {
-			this.layerManager.switchToLayer(LayerPanel.getLayerForControl(button));
+			this.layerManager.switchToLayer(this.getRowContainingControl(button));
 		}
 	}
 };
 
 LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
-	this.layerManager.setLayerVisibility(LayerPanel.getLayerForControl(button), button.isToggled());
+	this.layerManager.setLayerVisibility(this.getRowContainingControl(button), button.isToggled());
 };
 
 LayerPanel.prototype.handleColorWell = function(button, evt) {
@@ -162,17 +163,22 @@ LayerPanel.prototype.handleCollapseButton = function(button, evt) {
 };
 
 LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
-	var row = this.rows[button.getId()];
+	var row = this.rows[this.getRowContainingControl(button)];
 	row.layerNameGuiField.activate(row.layerNameDiv.innerHTML);
 };
 
 LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
-	this.layerManager.setLayerName(LayerPanel.getLayerForControl(field), newLayerName);
+	// TODO: Do not allow empty layer name.
+	this.layerManager.setLayerName(this.getRowContainingControl(field), newLayerName);
 };
 
-// Helper function: get layer number from given control's ID
-LayerPanel.getLayerForControl = function(control) {
-	return parseInt(control.getId());
+// Get row number containing given control
+LayerPanel.prototype.getRowContainingControl = function(control) {
+	for (var i = 0, rLen = this.rows.length; i < rLen; i++) {
+		if (this.rows[i].rowId == control.getId()) {
+			return i;
+		}
+	}
 }
 
 /*
@@ -207,36 +213,38 @@ function LayerPanelControlStrip(cstripDiv, controlDelegate) {
  * 
  * * */
 
-function LayerPanelRow(rowBtnFamily, rowNumber, layerName, controlDelegate) {
+function LayerPanelRow(rowId, rowBtnFamily, rowNumber, layerName, controlDelegate) {
+	this.rowId = rowId;
+	
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowNumber, this.rowDiv, controlDelegate, "handleRowButton", false, "", true).enable();
+	this.rowButton = new GuiButton(rowId, this.rowDiv, controlDelegate, "handleRowButton", false, "", true).enable();
 	rowBtnFamily.addButton(this.rowButton);
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
 	this.visibilityToggleDiv.className = "visibility_toggle";
 	this.visibilityToggleButton = new GuiButton(
-		rowNumber, this.visibilityToggleDiv, controlDelegate, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
+		rowId, this.visibilityToggleDiv, controlDelegate, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
 	).enable().toggle(true);
 	
 	// Create layer name text field/label
 	this.layerNameDiv = document.createElement("div");
 	this.layerNameDiv.className = "layer_name";
 	this.layerNameDiv.innerHTML = layerName;
-	this.layerNameButton = new GuiButton(rowNumber, this.layerNameDiv, controlDelegate, "handleLayerNameButton", false).enable();
+	this.layerNameButton = new GuiButton(rowId, this.layerNameDiv, controlDelegate, "handleLayerNameButton", false).enable();
 	
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
 	this.colorWellDiv.className = "color_well";
-	this.colorWellButton = new GuiButton(rowNumber, this.colorWellDiv, controlDelegate, "handleColorWell", false, "Pick Color").enable();
+	this.colorWellButton = new GuiButton(rowId, this.colorWellDiv, controlDelegate, "handleColorWell", false, "Pick Color").enable();
 	// TODO: Color picker functionality
 	
 	// Create the layer name text field
 	this.layerNameInput = document.createElement("input");
 	this.layerNameInput.className = "layer_name_input";
-	this.layerNameGuiField = new GuiTextField(rowNumber, this.layerNameInput, controlDelegate, "handleLayerNameField", true);
+	this.layerNameGuiField = new GuiTextField(rowId, this.layerNameInput, controlDelegate, "handleLayerNameField", true);
 	
 	this.rowDiv.appendChild(this.layerNameInput);
 	this.rowDiv.appendChild(this.layerNameDiv);
