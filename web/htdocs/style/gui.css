@@ -29,6 +29,7 @@
 	significantly in Safari. For now, we must live with solid borders. One
 	day, the borders will fall.
 	
+	-o-box-shadow: 1px 1px 2px #888;
 	-moz-box-shadow: 1px 1px 2px #888;
 	-webkit-box-shadow: 1px 1px 2px #888;
 */
@@ -64,6 +65,12 @@
 .layer_name {
 	float: left;
 	cursor: text;
+	
+	min-width: 25px;
+	max-width: 150px;
+	
+	display: block;
+	overflow: hidden;
 }
 
 .visibility_toggle,
@@ -115,8 +122,20 @@
 	
 	border-radius: 8px;
 	background-color: #7788ff;
+	
+	-o-box-shadow: inset -1px -1px 0px #bbc;
 	-moz-box-shadow: inset -1px -1px 0px #bbc;
 	-webkit-box-shadow: inset -1px -1px 0px #bbc;
 	
 	cursor: pointer;
+}
+
+.layer_name_input {
+	position: absolute;
+	margin: -3px 0px 0px -3px;
+	
+	width: 212px;
+	
+	font-family: "Lucida Grande", Arial, sans-serif;
+	font-size: 14px;
 }
