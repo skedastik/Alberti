@@ -108,10 +108,9 @@ UndoManager.prototype.recordStop = function() {
 
 // Invoke the topmost undo action, and transfer it to the redo stack.
 UndoManager.prototype.undo = function() {
-	Dbug.log("--- UNDO -------");
+	Dbug.log("UNDO");
 	
-	// Disable self while performing undo action or else the undo action
-	// might register further undo actions.
+	// Disable self while performing undo action or else the undo action might register further undo actions.
 	this.disable();
 	
 	if (this.undoStack.length > 0) {
@@ -127,7 +126,7 @@ UndoManager.prototype.undo = function() {
 			
 				// Undo actions may be null
 				if (theAction.undo) {
-					Dbug.log(theAction.name+(theAction.cascades ? " (cascades)" : ""));
+					Dbug.log("   "+theAction.name+(theAction.cascades ? " (cascades)" : ""));
 					theAction.undo();
 				}
 			}
@@ -153,10 +152,9 @@ UndoManager.prototype.undo = function() {
 
 // Invoke the topmost redo action, and transfer it to the undo stack.
 UndoManager.prototype.redo = function() {
-	Dbug.log("--- REDO -------");
+	Dbug.log("REDO");
 	
-	// Disable self while performing redo action or else the redo action
-	// might register further undo actions.
+	// Disable self while performing redo action or else the redo action might register further undo actions.
 	this.disable();
 	
 	if (this.redoStack.length > 0) {
@@ -168,7 +166,7 @@ UndoManager.prototype.redo = function() {
 		
 			// Redo buffered actions in natural order of array
 			for (i = 0, aLen = action.length; i < aLen; i++) {
-				Dbug.log(action[i].name+(action[i].cascades ? " (cascades)" : ""));
+				Dbug.log("   "+action[i].name+(action[i].cascades ? " (cascades)" : ""));
 				action[i].redo();
 			}
 		
