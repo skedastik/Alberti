@@ -32,6 +32,18 @@ function LayerManager(layerGroup, undoManager) {
 	this.intersections = new Intersection();
 }
 
+// Set name of layer with given index. Undoable.
+LayerManager.prototype.setLayerName = function(layerNumber, newName) {
+	var oldName = this.layers[layerNumber].name;
+	this.layers[layerNumber].name = newName;
+	
+	// Make it undoable
+	this.undoManager.push("Change Layer Name", this,
+		this.setLayerName, [layerNumber, newName],
+		this.setLayerName, [layerNumber, oldName]
+	);
+};
+
 // Generate and insert a new layer, optionally providing its name. Returns the
 // new layer.
 LayerManager.prototype.newLayer = function(name) {
