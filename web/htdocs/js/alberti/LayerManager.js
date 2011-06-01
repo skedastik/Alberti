@@ -100,7 +100,7 @@ LayerManager.prototype.insertLayer = function(newLayer, layerNumber, before) {
 	// Register undo action for insertion
 	this.undoManager.push("Insert Layer", this,
 		this.insertLayer, [newLayer, layerNumber],
-		this.deleteLayer, [insertIndex]
+		this.deleteLayer, [insertIndex, true]          // invert deleteLayer method's switch-direction on undo
 	);
 	
 	// Layer-switch undo will cascade automatically
@@ -110,8 +110,9 @@ LayerManager.prototype.insertLayer = function(newLayer, layerNumber, before) {
 // Delete the layer with the given index. If only one layer exists, an 
 // exception is thrown. Current layer becomes the next visible layer above the 
 // specified layer, or, if there is nothing above, the next visible layer 
-// below. Layer deletions are automatically registered with the undo manager.
-LayerManager.prototype.deleteLayer = function(layerNumber) {
+// below. You may invert this behavior by passing 'true' for 'invertSwitch'. 
+// Layer deletions are automatically registered with the undo manager.
+LayerManager.prototype.deleteLayer = function(layerNumber, invertSwitch) {
 	Util.assert(this.layers.length > 1, "LayerManager::deleteLayer attempted to delete only remaining layer.");
 	
 	// Clear selections before deleting layer
@@ -144,7 +145,11 @@ LayerManager.prototype.deleteLayer = function(layerNumber) {
 	//
 	// TODO: Check for hidden layers. Automatically reveal a hidden layer and
 	// switch to it if no visible layer is available.
-	this.switchToLayer(layerNumber < this.layers.length - 1 ? layerNumber : layerNumber - 1);
+	if (invertSwitch) {
+		this.switchToLayer(layerNumber > 0 ? layerNumber - 1 : layerNumber);
+	} else {
+		this.switchToLayer(layerNumber < this.layers.length - 1 ? layerNumber : layerNumber - 1);
+	}
 	
 	// Register the layer deletion with the undo manager. If the bottommost
 	// layer is being deleted, the redo action must insert before rather than 
