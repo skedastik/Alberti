@@ -132,15 +132,12 @@
  *    // 9x "0 lives remaining."
  * 
  * The first approach is "more correct", so that is the default approach.
- * Furthermore, by executing the delegate method first, we ensure that it is
- * not exposed to inconsistent state (as the delegate method might be invoked
- * in the middle of an object method). However, in some cases the delegate 
- * method may need to perform some operation based on the outcome of the 
- * original method, in which case it would need to be invoked _after_ the 
- * object method. To do so, you may provide a post-delegate method via 
- * mapMethod's optional third argument 'postDelegateMethodName'. To provide
- * only a post-delegate method, without a pre-delegate method, pass null for
- * the 'preDelegateMethodName' argument.
+ * However, in some cases the delegate method may need to perform some 
+ * operation based on the outcome of the original method, in which case it 
+ * would need to be invoked _after_ the object method. To do so, you may 
+ * provide a post-delegate method via mapMethod's optional third argument 
+ * 'postDelegateMethodName'. To provide only a post-delegate method, without a 
+ * pre-delegate method, pass null for the 'preDelegateMethodName' argument.
  * 
  * * */
  
