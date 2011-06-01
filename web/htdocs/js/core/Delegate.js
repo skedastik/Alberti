@@ -45,6 +45,9 @@
  * method of Stack 'data'. This is automatically performed by the Delegate
  * class, _after_ invoking pushDelegate.
  * 
+ * Delegate::mapMethod has an optional third argument discussed below at the
+ * bottom of the LIMITATIONS section.
+ * 
  * You can disable delegation by calling Delegate::disableDelegation.
  * Subsequent calls to object methods will invoke the object method directly,
  * without invoking the delegate method. To re-enable, use 'enableDelegation'.
@@ -130,8 +133,12 @@
  * 
  * The first approach is "more correct", so that is the approach used. 
  * Furthermore, by executing the delegate method first, we ensure that it is
- * not exposed to inconsistent state (as the delegate method might have been
- * invoked in the middle of an object method).
+ * not exposed to inconsistent state (as the delegate method might be invoked
+ * in the middle of an object method). However, in some cases the delegate 
+ * method may need to perform some operation based on the outcome of the 
+ * original method, in which case it would need to be invoked _after_ the 
+ * object method. To do so, pass 'true' for mapMethod's optional third 
+ * argument 'postInvocation'.
  * 
  * * */
  
@@ -190,7 +197,7 @@ Delegate.prototype.disableDelegation = function() {
 };
 
 // Map object method to internal method
-Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName) {
+Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName, postInvocation) {
 	// Assert that delegated object contains the given method
 	Util.assert(
 		this.delegatedObject[objectMethodName] !== undefined,
@@ -199,13 +206,18 @@ Delegate.prototype.mapMethod = function(objectMethodName, internalMethodName) {
 	
 	// Override internal method
 	this[objectMethodName] = function() {
-		// If delegation is enabled, invoke internal delegate method
-		if (this.delegationEnabled) {
+		// If delegation is enabled, pre-invoke delegate method if postInvocation is false
+		if (this.delegationEnabled && !postInvocation) {
 			this[internalMethodName].apply(this, arguments);
 		}
 		
 		// Invoke delegated object's method
 		var returnVal = this.delegatedObject[objectMethodName].apply(this, arguments);
+		
+		// If delegation is enabled, post-invoke delegate method if postInvocation is true
+		if (this.delegationEnabled && postInvocation) {
+			this[internalMethodName].apply(this, arguments);
+		}
 		
 		return returnVal;
 	};
