@@ -23,7 +23,7 @@ Zap.zoomTransitionAccel = -1.0;           // transition animation acceleration
 
 // Mouse wheel events are generated too quickly by the trackpad. Limit how 
 // many mouse wheel events are processed per second.
-Zap.maxWheelEvtPerSec = 10;
+Zap.maxWheelEvtPerSec = 30;
 Zap.wheelEvtRefreshMs = Math.round(1000 / Zap.maxWheelEvtPerSec);
 
 function Zap(masterGroup, autoScale, bertiDoc, toolTip) {
