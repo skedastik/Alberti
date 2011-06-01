@@ -46,12 +46,14 @@ LayerManagerDelegate.prototype.switchToLayerDelegate = function(layerNumber) {
 };
 
 LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber, makeVisible) {
+	var row = this.layerPanel.rows[layerNumber];
+	
 	if (makeVisible) {
-		// Layer is being shown, so enable selection of the layer row
-		this.layerPanel.rows[layerNumber].rowButton.enable();
+		row.rowButton.enable();
+		row.visibilityToggleButton.toggle(true);
 	} else {
-		// Layer is being hidden, so disable selection of the layer row, and clear shape selections
-		this.layerPanel.rows[layerNumber].rowButton.disable();
+		row.rowButton.disable();
+		row.visibilityToggleButton.toggle(false);
 		this.delegatedObject.clearSelections();
 	}
 };
