@@ -114,6 +114,9 @@ LayerManager.prototype.insertLayer = function(newLayer, layerNumber, before) {
 LayerManager.prototype.deleteLayer = function(layerNumber) {
 	Util.assert(this.layers.length > 1, "LayerManager::deleteLayer attempted to delete only remaining layer.");
 	
+	// Clear selections before deleting layer
+	this.clearSelections();
+	
 	var targetLayer = this.layers[layerNumber];
 	
 	// Remove the layer's SVG group node from the SVG tree
@@ -136,7 +139,7 @@ LayerManager.prototype.deleteLayer = function(layerNumber) {
 	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
 	this.intersections.flush();
 	
-	// Switch to another layer before deleting current layer, otherwise undo
+	// Switch to another layer before deleting target layer, otherwise undo
 	// will attempt to switch to the deleted layer before it is re-inserted.
 	//
 	// TODO: Check for hidden layers. Automatically reveal a hidden layer and
@@ -163,23 +166,21 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 // Switch to the layer with the given index. Automatically registers an undo 
 // action. An exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(layerNumber) {
-	// if (layerNumber != this.currentLayer) {
-		Util.assert(
-			layerNumber >= 0 && layerNumber < this.layers.length,
-			"Invalid layer passed to LayerManager::switchToLayer."
-		);
-		
-		Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
-		
-		// Register the layer switch with the undo manager. This is a cascading undo.
-		this.undoManager.push("Change Current Layer", this,
-			this.switchToLayer, [layerNumber],
-			this.switchToLayer, [this.currentLayer],
-			true
-		);
-		
-		this.currentLayer = layerNumber;
-	// }
+	Util.assert(
+		layerNumber >= 0 && layerNumber < this.layers.length,
+		"Invalid layer passed to LayerManager::switchToLayer."
+	);
+	
+	Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
+	
+	// Register the layer switch with the undo manager. This is a cascading undo.
+	this.undoManager.push("Change Current Layer", this,
+		this.switchToLayer, [layerNumber],
+		this.switchToLayer, [this.currentLayer],
+		true
+	);
+	
+	this.currentLayer = layerNumber;
 };
 
 // Switch to next visible layer above current layer, wrapping around if necessary
@@ -203,6 +204,9 @@ LayerManager.prototype.setLayerVisibility = function(layerNumber, makeVisible) {
 	var targetLayer = this.layers[layerNumber];
 	
 	Util.assert(targetLayer, "Invalid layer passed to LayerManager::setLayerVisibility.");
+	
+	// Clear selections before changing layer visibility
+	this.clearSelections();
 	
 	if (makeVisible) {
 		if (targetLayer.hidden) {
