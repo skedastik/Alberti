@@ -17,7 +17,7 @@
 }
 
 #layer_panel_control_strip {
-	border-bottom: 1px solid #888;
+	border-bottom: 1px solid #333;
 	border-bottom-right-radius: 13px;
 	color: #888;
 	background-color: #fff;
@@ -33,14 +33,16 @@
 	-moz-box-shadow: 1px 1px 2px #888;
 	-webkit-box-shadow: 1px 1px 2px #888;
 */
-	border-right: 1px solid #888;
+	border-right: 1px solid #333;
 }
 
 .layer_panel_row {
 	width: 210px;
 	height: 17px;
 	padding: 4px 4px 5px 16px;
-	border-bottom: 1px solid #666;
+	border-bottom: 1px solid #444;
+	
+	overflow: hidden;
 	
 	cursor: pointer;
 }
@@ -72,6 +74,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	-o-text-overflow: ellipsis;
 }
 
 .visibility_toggle,
@@ -91,6 +94,10 @@
 
 .visibility_toggle.guiBtnToggled {
 	background-color: gray;
+}
+
+.visibility_toggle.guiBtnDisabled {
+	background-color: black;
 }
 
 .new_layer_button {
@@ -122,16 +129,20 @@
 	border-radius: 8px;
 	background-color: #7788ff;
 	
-	-o-box-shadow: inset -1px -1px 0px #bbc;
-	-moz-box-shadow: inset -1px -1px 0px #bbc;
-	-webkit-box-shadow: inset -1px -1px 0px #bbc;
+	box-shadow: inset -1px -1px 0px rgba(255, 255, 255, 0.75), inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+	-o-box-shadow: inset -1px -1px 0px rgba(255, 255, 255, 0.75), inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: inset -1px -1px 0px rgba(255, 255, 255, 0.75), inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: inset -1px -1px 0px rgba(255, 255, 255, 0.75), inset 1px 1px 3px rgba(0, 0, 0, 0.5);
 	
 	cursor: pointer;
 }
 
 .layer_name_input {
-	position: absolute;
-	margin: -3px 0px 0px -3px;
+	position: relative;
+	left: -5px;
+	top: -3px;
+	
+	margin: 0;
 	
 	width: 212px;
 	
