@@ -1,11 +1,12 @@
 /*
  * GuiButton.js
+ * extends GuiControl
  * 
  * Turn an HTML element into a generic GUI button.
  * 
  * USAGE
  * 
- * The constructor expects an id string for the button (it need not be 
+ * The constructor expects an ID string for the button (it need not be 
  * unique). Argument 'elt' should be an HTML element that will serve as the 
  * button. Event listeners will be registered on this element when the button 
  * is enabled. If the 'autoToggle' argument is set to true, the button will 
@@ -36,13 +37,9 @@
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
-function GuiButton(id, elt, autoToggle, delegate, action, tooltip, respondMouseDown) {
-	GuiButton.baseConstructor.call(this);
-	this.id = id;
-	this.htmlNode = elt;
+function GuiButton(id, elt, delegate, action, autoToggle, tooltip, respondMouseDown) {
+	GuiButton.baseConstructor.call(this, id, elt, delegate, action);
 	this.autoToggle = autoToggle;
-	this.delegate = delegate;
-	this.action = action;
 	this.respondMouseDown = respondMouseDown;
 	
 	this.tooltipOn = "";
@@ -62,11 +59,7 @@ function GuiButton(id, elt, autoToggle, delegate, action, tooltip, respondMouseD
 	this.disable();
 	this.toggle(false);
 }
-Util.extend(GuiButton, EventHandler);
-
-GuiButton.prototype.getId = function() {
-	return this.id;
-};
+Util.extend(GuiButton, GuiControl);
 
 // Returns true if button is toggled to 'on' state, false otherwise.
 GuiButton.prototype.isToggled = function() {
@@ -123,6 +116,5 @@ GuiButton.prototype.click = GuiButton.prototype.mousedown = function(evt) {
 		this.toggle();
 	}
 	
-	// Invoke the delegate object's action method
-	this.delegate[this.action](this, evt);
+	this.invokeAction(this, evt);
 };
