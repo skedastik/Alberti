@@ -13,6 +13,7 @@ function LayerManagerDelegate(layerManager, layerPanel) {
 	this.mapMethod("deleteLayer", "deleteLayerDelegate");
 	this.mapMethod("switchToLayer", "switchToLayerDelegate");
 	this.mapMethod("setLayerVisibility", "setLayerVisibilityDelegate");
+	this.mapMethod("setLayerName", "setLayerNameDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
 
@@ -53,4 +54,8 @@ LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber
 		this.layerPanel.rows[layerNumber].rowButton.disable();
 		this.delegatedObject.clearSelections();
 	}
+};
+
+LayerManagerDelegate.prototype.setLayerNameDelegate = function(layerNumber, newName) {
+	this.layerPanel.rows[layerNumber].layerNameSpan.innerHTML = newName;
 };

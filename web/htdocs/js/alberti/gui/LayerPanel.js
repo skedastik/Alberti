@@ -135,13 +135,13 @@ LayerPanel.prototype.handleRowButton = function(button, evt) {
 	if (evt.target === button.htmlNode) {
 		// Only select row if it isn't already selected
 		if (!button.isToggled()) {
-			this.layerManager.switchToLayer(parseInt(button.id));
+			this.layerManager.switchToLayer(LayerPanel.getLayerForControl(button));
 		}
 	}
 };
 
 LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
-	this.layerManager.setLayerVisibility(parseInt(button.id), button.isToggled());
+	this.layerManager.setLayerVisibility(LayerPanel.getLayerForControl(button), button.isToggled());
 };
 
 LayerPanel.prototype.handleColorWell = function(button, evt) {
@@ -161,6 +161,20 @@ LayerPanel.prototype.handleCollapseButton = function(button, evt) {
 	button.toggle();
 };
 
+LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
+	var row = this.rows[button.getId()];
+	row.layerNameGuiField.activate(row.layerNameSpan.innerHTML);
+};
+
+LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
+	this.layerManager.setLayerName(LayerPanel.getLayerForControl(field), newLayerName);
+};
+
+// Helper function: get layer number from given control's ID
+LayerPanel.getLayerForControl = function(control) {
+	return parseInt(control.getId());
+}
+
 /*
  * LayerPanelControlStrip
  * 
@@ -168,18 +182,18 @@ LayerPanel.prototype.handleCollapseButton = function(button, evt) {
  * 
  * * */
 
-function LayerPanelControlStrip(cstripDiv, buttonDelegate) {
+function LayerPanelControlStrip(cstripDiv, controlDelegate) {
 	this.newLayerDiv = document.createElement("div");
 	this.newLayerDiv.className = "new_layer_button";
-	this.newLayerButton = new GuiButton("new_layer", this.newLayerDiv, false, buttonDelegate, "handleNewLayerButton", "New Layer").enable();
+	this.newLayerButton = new GuiButton("new_layer", this.newLayerDiv, controlDelegate, "handleNewLayerButton", false, "New Layer").enable();
 	
 	this.deleteLayerDiv = document.createElement("div");
 	this.deleteLayerDiv.className = "delete_layer_button";
-	this.deleteLayerButton = new GuiButton("delete_layer", this.deleteLayerDiv, false, buttonDelegate, "handleDeleteLayerButton", "Delete Selected Layer").enable();
+	this.deleteLayerButton = new GuiButton("delete_layer", this.deleteLayerDiv, controlDelegate, "handleDeleteLayerButton", false, "Delete Selected Layer").enable();
 	
 	this.lpCollapseDiv = document.createElement("div");
 	this.lpCollapseDiv.className = "lp_collapse_button";
-	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, false, buttonDelegate, "handleCollapseButton", "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
+	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, controlDelegate, "handleCollapseButton", false, "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
 	
 	cstripDiv.appendChild(this.newLayerDiv);
 	cstripDiv.appendChild(this.deleteLayerDiv);
@@ -193,32 +207,38 @@ function LayerPanelControlStrip(cstripDiv, buttonDelegate) {
  * 
  * * */
 
-function LayerPanelRow(rowBtnFamily, rowNumber, layerName, buttonDelegate) {
+function LayerPanelRow(rowBtnFamily, rowNumber, layerName, controlDelegate) {
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowNumber, this.rowDiv, false, buttonDelegate, "handleRowButton", "", true).enable();
+	this.rowButton = new GuiButton(rowNumber, this.rowDiv, controlDelegate, "handleRowButton", false, "", true).enable();
 	rowBtnFamily.addButton(this.rowButton);
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
 	this.visibilityToggleDiv.className = "visibility_toggle";
 	this.visibilityToggleButton = new GuiButton(
-		rowNumber, this.visibilityToggleDiv, true, buttonDelegate, "handleVisibilityToggle", "Hide Layer, Show Layer"
+		rowNumber, this.visibilityToggleDiv, controlDelegate, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
 	).enable().toggle(true);
 	
 	// Create layer name text field/label
 	this.layerNameSpan = document.createElement("span");
 	this.layerNameSpan.className = "layer_name";
 	this.layerNameSpan.innerHTML = layerName;
-	// TODO: Dynamic text field label class
+	this.layerNameButton = new GuiButton(rowNumber, this.layerNameSpan, controlDelegate, "handleLayerNameButton", false).enable();
 	
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
 	this.colorWellDiv.className = "color_well";
-	this.colorWellButton = new GuiButton(rowNumber, this.colorWellDiv, false, buttonDelegate, "handleColorWell", "Pick Color").enable();
+	this.colorWellButton = new GuiButton(rowNumber, this.colorWellDiv, controlDelegate, "handleColorWell", false, "Pick Color").enable();
 	// TODO: Color picker functionality
 	
+	// Create the layer name text field
+	this.layerNameInput = document.createElement("input");
+	this.layerNameInput.className = "layer_name_input";
+	this.layerNameGuiField = new GuiTextField(rowNumber, this.layerNameInput, controlDelegate, "handleLayerNameField", true);
+	
+	this.rowDiv.appendChild(this.layerNameInput);
 	this.rowDiv.appendChild(this.layerNameSpan);
 	this.rowDiv.appendChild(this.colorWellDiv);
 	this.rowDiv.appendChild(this.visibilityToggleDiv);
