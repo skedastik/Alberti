@@ -44,8 +44,8 @@ LayerPanel.prototype.setController = function(controller) {
 //    setLayerName(rowId, newLayerName)
 //    
 // Returns the new row's ID string.
-LayerPanel.prototype.insertNewRow = function(layerName, beforeRowIndex) {
-	var row = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, this);
+LayerPanel.prototype.insertNewRow = function(layerName, isHidden, beforeRowIndex) {
+	var row = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, isHidden, this);
 	
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
@@ -215,21 +215,25 @@ function LayerPanelControlStrip(cstripDiv, controller) {
  * 
  * * */
 
-function LayerPanelRow(rowId, rowBtnFamily, layerName, controller) {
+function LayerPanelRow(rowId, rowBtnFamily, layerName, isHidden, controller) {
 	this.rowId = rowId;
 	
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", true).enable();
+	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", true);
 	rowBtnFamily.addButton(this.rowButton);
+	
+	if (!isHidden) {
+		this.rowButton.enable();
+	}
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
 	this.visibilityToggleDiv.className = "visibility_toggle";
 	this.visibilityToggleButton = new GuiButton(
 		rowId, this.visibilityToggleDiv, controller, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
-	).enable().toggle(true);
+	).enable().toggle(!isHidden);
 	
 	// Create layer name text field/label
 	this.layerNameDiv = document.createElement("div");
