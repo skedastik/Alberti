@@ -18,13 +18,13 @@ function LayerManagerDelegate(layerManager, lpController) {
 Util.extend(LayerManagerDelegate, Delegate);
 
 LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLayer, before) {
-	refLayer = refLayer ? refLayer : this.delegatedObject.currentLayer;
+	refLayer = refLayer ? refLayer : this.currentLayer;
 	
 	if (before) {
 		// Layer is being inserted before reference layer, so use reference layer as 'beforeRow' arg
 		this.lpController.insertNewRow(newLayer, refLayer);
 	} else {
-		if (newLayer == this.delegatedObject.getTopmostLayer()) {
+		if (newLayer == this.getTopmostLayer()) {
 			// Layer is being inserted above topmost layer, so 'beforeRow' arg is not needed
 			this.lpController.insertNewRow(newLayer);
 		} else {
@@ -35,12 +35,12 @@ LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLa
 };
 
 LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, refLayer, before) {
-	// TODO: Update visibility toggle after layer insertions
+	this.lpController.updateButtons();
 };
 
 LayerManagerDelegate.prototype.deleteLayerDelegate = function(targetLayer, invertSwitch) {
 	this.lpController.deleteRow(targetLayer);
-	// TODO: Update visibility toggle after layer deletions
+	this.lpController.updateButtons();
 };
 
 LayerManagerDelegate.prototype.switchToLayerDelegate = function(targetLayer) {
@@ -48,7 +48,7 @@ LayerManagerDelegate.prototype.switchToLayerDelegate = function(targetLayer) {
 };
 
 LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(targetLayer, makeVisible) {
-	this.lpController.updateVisibilityToggle(targetLayer, makeVisible);
+	this.lpController.updateButtons();
 };
 
 LayerManagerDelegate.prototype.setLayerNameDelegate = function(targetLayer, newLayerName) {
