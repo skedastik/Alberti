@@ -35,8 +35,7 @@ function LayerManager(layerGroup, undoManager) {
 // Generate and insert a new layer, optionally providing its name. Returns the new layer.
 LayerManager.prototype.newLayer = function(name) {
 	var newLayer = new Layer().generate();
-	newLayer.setName(name ? name : "Layer "+(this.layerNameCounter++));
-	
+	newLayer.setName(name ? name : "Layer "+this.layerNameCounter);
 	this.insertLayer(newLayer);
 	
 	return newLayer;
@@ -49,6 +48,8 @@ LayerManager.prototype.newLayer = function(name) {
 // sets current layer to inserted layer. Layer insertions are automatically 
 // registered with the undo manager.
 LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
+	this.layerNameCounter++;
+	
 	// Increment the hidden layer counter if new layer is hidden
 	if (newLayer.isHidden()) {
 		this.numHiddenLayers++;
