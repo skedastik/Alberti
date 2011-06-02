@@ -18,6 +18,7 @@ function Layer(svgNode) {
 Util.extend(Layer, Group);
 
 Layer.prototype.initialize = function() {
+	Layer.superclass.initialize.call(this);
 	this.name = "";
 	this.hidden = false;
 };
