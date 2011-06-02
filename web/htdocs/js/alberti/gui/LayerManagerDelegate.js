@@ -1,15 +1,13 @@
 /*
  * LayerManagerDelegate.js
  * 
- * Delegation between LayerManager and LayerPanel.
+ * Propagates LayerManager mutations to LayerPanelController.
  * 
  * * */
 
-function LayerManagerDelegate(layerManager, layerPanel) {
+function LayerManagerDelegate(layerManager, lpController) {
 	LayerManagerDelegate.baseConstructor.call(this, layerManager);
-	this.layerPanel = layerPanel;
-	
-	this.lastVisibleRow = -1;        // For storing the last exclusively visible row
+	this.lpController = lpController;
 	
 	this.mapMethod("insertLayer", "insertLayerPreDelegate", "insertLayerPostDelegate");
 	this.mapMethod("deleteLayer", "deleteLayerPreDelegate", "deleteLayerPostDelegate");
@@ -19,63 +17,49 @@ function LayerManagerDelegate(layerManager, layerPanel) {
 }
 Util.extend(LayerManagerDelegate, Delegate);
 
-LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, layerNumber, before) {
-	if (layerNumber === undefined) {
-		layerNumber = this.delegatedObject.currentLayer;
-	}
+LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLayer, before) {
+	refLayer = refLayer ? refLayer : this.delegatedObject.currentLayer;
+	
+	Dbug.log("about to insert");
 	
 	if (before) {
-		// Layer is being inserted before target layer, so use target layer as 'beforeRow' arg
-		this.layerPanel.insertNewRow(newLayer.name, layerNumber);
+		Dbug.log("refLayer:");
+		Dbug.log(refLayer);
+		// Layer is being inserted before reference layer, so use reference layer as 'beforeRow' arg
+		this.lpController.insertNewRow(newLayer, refLayer);
 	} else {
-		if (layerNumber == this.delegatedObject.layers.length - 1) {
+		if (newLayer == this.delegatedObject.getTopmostLayer()) {
 			// Layer is being inserted above topmost layer, so 'beforeRow' arg is not needed
-			this.layerPanel.insertNewRow(newLayer.name);
+			this.lpController.insertNewRow(newLayer);
 		} else {
-			// Layer is being inserted above non-topmost layer, so use row above target row as 'beforeRow' arg
-			this.layerPanel.insertNewRow(newLayer.name, layerNumber + 1);
+			// Layer is being inserted above non-topmost layer, so use layer above reference layer as 'beforeLayer' arg
+			this.lpController.insertNewRow(newLayer, this.layers[this.layers.indexOf(refLayer) + 1]);
 		}
 	}
+	
+	Dbug.log("about to insert");
 };
 
-LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, layerNumber, before) {
+LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, refLayer, before) {
 	// TODO: Update visibility toggle after layer insertions
 };
 
-LayerManagerDelegate.prototype.deleteLayerPreDelegate = function(layerNumber) {
-	this.layerPanel.deleteRow(layerNumber);
+LayerManagerDelegate.prototype.deleteLayerPreDelegate = function(targetLayer, invertSwitch) {
+	this.lpController.deleteRow(targetLayer);
 };
 
-LayerManagerDelegate.prototype.deleteLayerPostDelegate = function(layerNumber) {
+LayerManagerDelegate.prototype.deleteLayerPostDelegate = function(targetLayer, invertSwitch) {
 	// TODO: Update visibility toggle after layer deletions
 };
 
-LayerManagerDelegate.prototype.switchToLayerDelegate = function(layerNumber) {
-	this.layerPanel.selectRow(layerNumber);
+LayerManagerDelegate.prototype.switchToLayerDelegate = function(targetLayer) {
+	this.lpController.selectRow(targetLayer);
 };
 
-LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(layerNumber, makeVisible) {
-	var row = this.layerPanel.rows[layerNumber];
-	
-	if (makeVisible) {
-		row.rowButton.enable();
-		row.visibilityToggleButton.toggle(true);
-		
-		// Enable the layer visibility toggle if more than one layer becomes visible again
-		if (this.delegatedObject.getNumberOfVisibleLayers() == 2) {
-			this.layerPanel.rows[this.delegatedObject.currentLayer].visibilityToggleButton.enable();
-		}
-	} else {
-		// Disable the layer visibility toggle if only one visible layer remains
-		if (this.delegatedObject.getNumberOfVisibleLayers() == 1) {
-			this.layerPanel.rows[this.delegatedObject.currentLayer].visibilityToggleButton.disable();
-		}
-		
-		row.rowButton.disable();
-		row.visibilityToggleButton.toggle(false);
-	}
+LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(targetLayer, makeVisible) {
+	this.lpController.updateVisibilityToggle(targetLayer, makeVisible);
 };
 
-LayerManagerDelegate.prototype.setLayerNameDelegate = function(layerNumber, newName) {
-	this.layerPanel.rows[layerNumber].layerNameDiv.innerHTML = newName;
+LayerManagerDelegate.prototype.setLayerNameDelegate = function(targetLayer, newLayerName) {
+	this.lpController.updateRowLayerName(targetLayer, newLayerName);
 };

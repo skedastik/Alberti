@@ -1,9 +1,8 @@
 /*
  * LayerPanel.js
  * 
- * GUI for manipulating layers. A LayerManager serves as the data source for 
- * the layer panel. Be sure to call setLayerManager before performing 
- * operations on the LayerPanel object.
+ * GUI for manipulating layers. Be sure to call setController before 
+ * performing operations on the LayerPanel object.
  * 
  * * */
 
@@ -16,49 +15,38 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	this.dynamicDivNode = dynamicDiv;              // The div containing layer "row" divs
 	this.cstripDivNode = cstripDiv;                // The div containing the layer panel's control strip layer panel row
 	
-	this.layerManager = null;
-	
 	this.rows = [];                                // Array of LayerPanelRows
 	this.rowBtnFamily = new GuiButtonFamily();     // Each row div is used for a GuiButton in this family
 	this.rowIdCounter = 1;                         // Used to generate unique row ID strings
 	
-	// Add control strip buttons to control strip div's layer panel row
+	// Add control strip buttons to control strip div
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
 	
 	this.isCollapsed = false;
-	this.collapseAnimation = null;                 // Collapse Animation object
+	this.collapseAnimation = null;
 }
 Util.extend(LayerPanel, EventHandler);
 
-LayerPanel.prototype.setLayerManager = function(layerManager) {
-	// A LayerManagerDelegate serves as the data source for the layer panel
-	this.layerManager = layerManager;
+// Object 'controller' will handle layer row controls
+LayerPanel.prototype.setController = function(controller) {
+	this.controller = controller;
 };
 
-// Generates layer panel rows from existing layers in layer manager
-LayerPanel.prototype.loadLayers = function() {
-	
-	// Clear existing layer panel rows
-	this.dynamicDivNode.innerHTML = "";
-	this.rows = [];
-	
-	// Iterate through layers adding layer panel rows
-	var layers = this.layerManager.layers;
-	for (var i = 0, len = layers.length; i < len; i++) {
-		this.insertNewRow(layers[i].name);
-	}
-	
-	// Select the row corresponding to the current layer
-	this.selectRow(this.layerManager.currentLayer);
-};
-
-// Create a single row div element w/ the given Alberti layer name. You may 
-// optionally specify a row number to insert before (i.e. directly below) that 
-// row number, otherwise the row is placed above all other rows. Row 0 is the
-// bottommost row.
-LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
-	// Generate div representing the layer row
-	var row = new LayerPanelRow(this.rowIdCounter++, this.rowBtnFamily, this.rows.length, layerName, this);
+// Create a single layer row handled by the given controller object. The row
+// displays the given layer name. You may optionally specify a row index
+// to insert before (i.e. directly below) that row, otherwise the row is
+// placed above all other rows. The controller object must handle the 
+// following methods:
+//
+//    switchToLayer(rowId)
+//    setLayerVisibility(rowId, makeVisible)
+//    newLayer()
+//    deleteCurrentLayer()
+//    setLayerName(rowId, newLayerName)
+//    
+// Returns the new row's ID string.
+LayerPanel.prototype.insertNewRow = function(layerName, beforeRowIndex) {
+	var row = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, this);
 	
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
@@ -66,15 +54,14 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 	// DOM document in reverse order, as we want new rows to visually stack on
 	// top of older rows.
 	
-	if (beforeRow !== undefined) {
+	if (beforeRowIndex !== undefined) {
 		Util.assert(
-			beforeRow >= 0 && beforeRow < this.rows.length,
+			beforeRowIndex >= 0 && beforeRowIndex < this.rows.length,
 			"Invalid 'beforeRow' argument passed to LayerPanel::createRowDiv"
 		);
 		
-		// Insert new row directly below 'beforeRow'.
-		this.dynamicDivNode.insertBefore(row.rowDiv, this.rows[beforeRow].rowDiv.nextSibling);
-		this.rows.splice(beforeRow, 0, row);
+		this.dynamicDivNode.insertBefore(row.rowDiv, this.rows[beforeRowIndex].rowDiv.nextSibling);
+		this.rows.splice(beforeRowIndex, 0, row);
 	} else {
 		// Insert at the top of the panel by default (before all other rows in the DOM tree)
 		if (this.rows.length > 0) {
@@ -85,28 +72,36 @@ LayerPanel.prototype.insertNewRow = function(layerName, beforeRow) {
 		
 		this.rows.push(row);
 	}
+	
+	return row.rowId;
 };
 
-// Delete the specified row
-LayerPanel.prototype.deleteRow = function(rowNumber) {
+// Delete the row with given row index
+LayerPanel.prototype.deleteRow = function(rowIndex) {
 	Util.assert(
-		rowNumber >= 0 && rowNumber < this.rows.length,
-		"Invalid 'rowNumber' argument passed to LayerPanel::deleteRow"
+		rowIndex >= 0 && rowIndex < this.rows.length,
+		"Invalid 'rowIndex' argument passed to LayerPanel::deleteRow"
 	);
 	
-	var row = this.rows[rowNumber];
+	var row = this.rows[rowIndex];
 	
 	this.dynamicDivNode.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
-	this.rows.splice(rowNumber, 1);
+	this.rows.splice(rowIndex, 1);
+};
+
+// Clear existing layer panel rows
+LayerPanel.prototype.clearAllRows = function() {
+	this.dynamicDivNode.innerHTML = "";
+	this.rows = [];
 };
 
 // Highlight the specified row, signifying that it is selected
-LayerPanel.prototype.selectRow = function(rowNumber) {
-	this.rowBtnFamily.toggleButton(this.rows[rowNumber].rowButton);
+LayerPanel.prototype.selectRow = function(rowIndex) {
+	this.rowBtnFamily.toggleButton(this.rows[rowIndex].rowButton);
 };
 
-// Collapse the layer panel if 'collapseFlag' is true, reveal it otherwise
+// Collapse and reveal the layer panel
 LayerPanel.prototype.toggleCollapse = function() {
 	this.isCollapsed = !this.isCollapsed;
 	
@@ -136,25 +131,25 @@ LayerPanel.prototype.handleRowButton = function(button, evt) {
 	if (evt.target === button.htmlNode) {
 		// Only select row if it isn't already selected
 		if (!button.isToggled()) {
-			this.layerManager.switchToLayer(this.getRowContainingControl(button));
+			this.controller.switchToLayer(button.id);
 		}
 	}
 };
 
 LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
-	this.layerManager.setLayerVisibility(this.getRowContainingControl(button), button.isToggled());
+	this.controller.setLayerVisibility(button.id, button.isToggled());
 };
 
 LayerPanel.prototype.handleColorWell = function(button, evt) {
-	
+	// TODO
 };
 
 LayerPanel.prototype.handleNewLayerButton = function(button, evt) {
-	this.layerManager.newLayer();
+	this.controller.newLayer(button.id);
 };
 
 LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
-	this.layerManager.deleteCurrentLayer();
+	this.controller.deleteCurrentLayer(button.id);
 };
 
 LayerPanel.prototype.handleCollapseButton = function(button, evt) {
@@ -169,16 +164,24 @@ LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
 
 LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
 	// TODO: Do not allow empty layer name.
-	this.layerManager.setLayerName(this.getRowContainingControl(field), newLayerName);
+	this.controller.setLayerName(field.id, newLayerName);
 };
 
-// Get row number containing given control
-LayerPanel.prototype.getRowContainingControl = function(control) {
+// Get row index corresponding to row with the given ID string. Returns -1 if 
+// no such ID string found.
+LayerPanel.prototype.getRowWithId = function(rowId) {
 	for (var i = 0, rLen = this.rows.length; i < rLen; i++) {
-		if (this.rows[i].rowId == control.getId()) {
+		if (this.rows[i].rowId == rowId) {
 			return i;
 		}
 	}
+	
+	return -1;
+}
+
+// Get row index corresponding to given control
+LayerPanel.prototype.getRowContainingControl = function(control) {
+	return this.getRowWithId(control.getId());
 }
 
 /*
@@ -188,18 +191,18 @@ LayerPanel.prototype.getRowContainingControl = function(control) {
  * 
  * * */
 
-function LayerPanelControlStrip(cstripDiv, controlDelegate) {
+function LayerPanelControlStrip(cstripDiv, controller) {
 	this.newLayerDiv = document.createElement("div");
 	this.newLayerDiv.className = "new_layer_button";
-	this.newLayerButton = new GuiButton("new_layer", this.newLayerDiv, controlDelegate, "handleNewLayerButton", false, "New Layer").enable();
+	this.newLayerButton = new GuiButton("new_layer", this.newLayerDiv, controller, "handleNewLayerButton", false, "New Layer").enable();
 	
 	this.deleteLayerDiv = document.createElement("div");
 	this.deleteLayerDiv.className = "delete_layer_button";
-	this.deleteLayerButton = new GuiButton("delete_layer", this.deleteLayerDiv, controlDelegate, "handleDeleteLayerButton", false, "Delete Selected Layer").enable();
+	this.deleteLayerButton = new GuiButton("delete_layer", this.deleteLayerDiv, controller, "handleDeleteLayerButton", false, "Delete Selected Layer").enable();
 	
 	this.lpCollapseDiv = document.createElement("div");
 	this.lpCollapseDiv.className = "lp_collapse_button";
-	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, controlDelegate, "handleCollapseButton", false, "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
+	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, controller, "handleCollapseButton", false, "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
 	
 	cstripDiv.appendChild(this.newLayerDiv);
 	cstripDiv.appendChild(this.deleteLayerDiv);
@@ -213,38 +216,38 @@ function LayerPanelControlStrip(cstripDiv, controlDelegate) {
  * 
  * * */
 
-function LayerPanelRow(rowId, rowBtnFamily, rowNumber, layerName, controlDelegate) {
+function LayerPanelRow(rowId, rowBtnFamily, layerName, controller) {
 	this.rowId = rowId;
 	
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowId, this.rowDiv, controlDelegate, "handleRowButton", false, "", true).enable();
+	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", true).enable();
 	rowBtnFamily.addButton(this.rowButton);
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
 	this.visibilityToggleDiv.className = "visibility_toggle";
 	this.visibilityToggleButton = new GuiButton(
-		rowId, this.visibilityToggleDiv, controlDelegate, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
+		rowId, this.visibilityToggleDiv, controller, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
 	).enable().toggle(true);
 	
 	// Create layer name text field/label
 	this.layerNameDiv = document.createElement("div");
 	this.layerNameDiv.className = "layer_name";
 	this.layerNameDiv.innerHTML = layerName;
-	this.layerNameButton = new GuiButton(rowId, this.layerNameDiv, controlDelegate, "handleLayerNameButton", false).enable();
+	this.layerNameButton = new GuiButton(rowId, this.layerNameDiv, controller, "handleLayerNameButton", false).enable();
 	
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
 	this.colorWellDiv.className = "color_well";
-	this.colorWellButton = new GuiButton(rowId, this.colorWellDiv, controlDelegate, "handleColorWell", false, "Pick Color").enable();
+	this.colorWellButton = new GuiButton(rowId, this.colorWellDiv, controller, "handleColorWell", false, "Pick Color").enable();
 	// TODO: Color picker functionality
 	
 	// Create the layer name text field
 	this.layerNameInput = document.createElement("input");
 	this.layerNameInput.className = "layer_name_input";
-	this.layerNameGuiField = new GuiTextField(rowId, this.layerNameInput, controlDelegate, "handleLayerNameField", true);
+	this.layerNameGuiField = new GuiTextField(rowId, this.layerNameInput, controller, "handleLayerNameField", true);
 	
 	this.rowDiv.appendChild(this.layerNameInput);
 	this.rowDiv.appendChild(this.layerNameDiv);

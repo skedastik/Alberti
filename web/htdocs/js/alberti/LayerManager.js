@@ -9,7 +9,7 @@ function LayerManager(layerGroup, undoManager) {
 	this.layerGroup = layerGroup;      // contains all user-created layers
 	this.undoManager = undoManager;
 	this.layers = [];
-	this.currentLayer = -1;
+	this.currentLayer = null;
 	
 	// Hidden layer count
 	this.numHiddenLayers = 0;
@@ -31,18 +31,6 @@ function LayerManager(layerGroup, undoManager) {
 	// Shape intersections used for auto-snapping
 	this.intersections = new Intersection();
 }
-
-// Set name of layer with given index. Undoable.
-LayerManager.prototype.setLayerName = function(layerNumber, newName) {
-	var oldName = this.layers[layerNumber].name;
-	this.layers[layerNumber].name = newName;
-	
-	// Make it undoable
-	this.undoManager.push("Change Layer Name", this,
-		this.setLayerName, [layerNumber, newName],
-		this.setLayerName, [layerNumber, oldName]
-	);
-};
 
 // Generate and insert a new layer, optionally providing its name. Returns the
 // new layer.
@@ -74,37 +62,36 @@ LayerManager.prototype.newLayerFromGroup = function(group) {
 };
 
 // Inserts Layer object 'newLayer' above current layer by default. You may
-// optionally supply a reference layer with index 'layerNumber'. The new layer
-// will be inserted after this layer. Finally, you may optionally pass 'true' 
-// for 'before' in order to insert before the reference layer rather than 
-// after. Automatically sets current layer to inserted layer. Layer insertions 
-// are automatically registered with the undo manager.
-LayerManager.prototype.insertLayer = function(newLayer, layerNumber, before) {
-	if (layerNumber === undefined) {
-		layerNumber = this.currentLayer;
-	}
+// optionally supply a reference Layer object. The new layer will be inserted 
+// after this layer. Finally, you may optionally pass 'true' for 'before' in 
+// order to insert before the reference layer rather than after. Automatically 
+// sets current layer to inserted layer. Layer insertions are automatically 
+// registered with the undo manager.
+LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
+	refLayer = refLayer ? refLayer : this.currentLayer;
 	
 	if (this.layers.length > 0) {
 		if (before) {
-			this.layerGroup.attachChildBefore(newLayer.svgGroup, this.layers[layerNumber].svgGroup);
+			this.layerGroup.attachChildBefore(newLayer.svgGroup, refLayer.svgGroup);
 		} else {
-			this.layerGroup.attachChildAfter(newLayer.svgGroup, this.layers[layerNumber].svgGroup);
+			this.layerGroup.attachChildAfter(newLayer.svgGroup, refLayer.svgGroup);
 		}
 	} else {
 		this.layerGroup.attachChild(newLayer.svgGroup);
 	}
 	
-	var insertIndex = before ? layerNumber : layerNumber + 1;	
+	var insertIndex = this.layers.indexOf(refLayer);
+	insertIndex = before ? insertIndex : insertIndex + 1;	
 	this.layers.splice(insertIndex, 0, newLayer);
 	
 	// Register undo action for insertion
 	this.undoManager.push("Insert Layer", this,
-		this.insertLayer, [newLayer, layerNumber],
-		this.deleteLayer, [insertIndex, true]          // invert deleteLayer method's switch-direction on undo
+		this.insertLayer, [newLayer, refLayer, before],
+		this.deleteLayer, [newLayer, true]                    // invert deleteLayer method's switch-direction on undo
 	);
 	
 	// Layer-switch undo will cascade automatically
-	this.switchToLayer(insertIndex);
+	this.switchToLayer(newLayer);
 };
 
 // Delete the layer with the given index. If only one layer exists, an 
@@ -112,13 +99,11 @@ LayerManager.prototype.insertLayer = function(newLayer, layerNumber, before) {
 // specified layer, or, if there is nothing above, the next visible layer 
 // below. You may invert this behavior by passing 'true' for 'invertSwitch'. 
 // Layer deletions are automatically registered with the undo manager.
-LayerManager.prototype.deleteLayer = function(layerNumber, invertSwitch) {
+LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	Util.assert(this.layers.length > 1, "LayerManager::deleteLayer attempted to delete only remaining layer.");
 	
 	// Clear selections before deleting layer
 	this.clearSelections();
-	
-	var targetLayer = this.layers[layerNumber];
 	
 	// Remove the layer's SVG group node from the SVG tree
 	targetLayer.svgGroup.detach();
@@ -140,26 +125,32 @@ LayerManager.prototype.deleteLayer = function(layerNumber, invertSwitch) {
 	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
 	this.intersections.flush();
 	
-	// Switch to another layer before deleting target layer, otherwise undo
-	// will attempt to switch to the deleted layer before it is re-inserted.
-	//
-	// TODO: Check for hidden layers. Automatically reveal a hidden layer and
-	// switch to it if no visible layer is available.
-	if (invertSwitch) {
-		this.switchToLayer(layerNumber > 0 ? layerNumber - 1 : layerNumber);
-	} else {
-		this.switchToLayer(layerNumber < this.layers.length - 1 ? layerNumber : layerNumber - 1);
+	var targetIndex = this.layers.indexOf(targetLayer);
+	
+	if (targetLayer == this.currentLayer) {
+		// Switch to another layer _before_ deleting current layer, otherwise 
+		// undo will attempt to switch to the deleted layer before it is re-
+		// inserted.
+		//
+		// TODO: Check for hidden layers. Automatically reveal a hidden layer and
+		// switch to it if no visible layer is available.
+		if (invertSwitch) {
+			this.switchToLayer(targetIndex > 0 ? this.layers[targetIndex - 1] : this.layers[targetIndex + 1]);
+		} else {
+			this.switchToLayer(targetIndex < this.layers.length - 1 
+				? this.layers[targetIndex + 1] : this.layers[targetIndex - 1]);
+		}
 	}
 	
 	// Register the layer deletion with the undo manager. If the bottommost
 	// layer is being deleted, the redo action must insert before rather than 
 	// after.
 	this.undoManager.push("Delete Current Layer", this,
-		this.deleteLayer, [layerNumber],
-		this.insertLayer, [targetLayer, layerNumber == 0 ? layerNumber : layerNumber - 1, layerNumber == 0]
+		this.deleteLayer, [targetLayer],
+		this.insertLayer, [targetLayer, targetIndex == 0 ? this.layers[1] : this.layers[targetIndex - 1], targetIndex == 0]
 	);
 	
-	this.layers.splice(layerNumber, 1);
+	this.layers.splice(targetIndex, 1);
 	
 	this.undoManager.recordStop();
 };
@@ -168,46 +159,52 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 	this.deleteLayer(this.currentLayer);
 };
 
-// Switch to the layer with the given index. Automatically registers an undo 
+// Switch to the specified Layer object. Automatically registers an undo 
 // action. An exception is raised if attempting to switch to hidden layer.
-LayerManager.prototype.switchToLayer = function(layerNumber) {
-	Util.assert(
-		layerNumber >= 0 && layerNumber < this.layers.length,
-		"Invalid layer passed to LayerManager::switchToLayer."
-	);
-	
-	Util.assert(!this.layers[layerNumber].hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
+LayerManager.prototype.switchToLayer = function(targetLayer) {
+	Util.assert(this.layers.indexOf(targetLayer) >= 0, "Invalid layer passed to LayerManager::switchToLayer.");
+	Util.assert(!targetLayer.hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
 	
 	// Register the layer switch with the undo manager. This is a cascading undo.
 	this.undoManager.push("Change Current Layer", this,
-		this.switchToLayer, [layerNumber],
+		this.switchToLayer, [targetLayer],
 		this.switchToLayer, [this.currentLayer],
 		true
 	);
 	
-	this.currentLayer = layerNumber;
+	this.currentLayer = targetLayer;
 };
 
 // Switch to next visible layer above current layer, wrapping around if necessary
-LayerManager.prototype.switchToLayerAbove = function(arguments) {
-	var nextLayer = this.getNextHighestVisibleLayer();
-	this.switchToLayer(nextLayer >= 0 ? nextLayer : this.getNextHighestVisibleLayer(-1));
+LayerManager.prototype.switchToLayerAbove = function() {
+	var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
+	this.switchToLayer(nextLayer ? nextLayer : this.getNextHighestVisibleLayer());
 };
 
 // Switch to next visible layer below current layer, wrapping around if necessary
-LayerManager.prototype.switchToLayerBelow = function(arguments) {
-	var prevLayer = this.getNextLowestVisibleLayer();
-	this.switchToLayer(prevLayer >= 0 ? prevLayer : this.getNextLowestVisibleLayer(this.layers.length));
+LayerManager.prototype.switchToLayerBelow = function() {
+	var prevLayer = this.getNextLowestVisibleLayer(this.currentLayer);
+	this.switchToLayer(prevLayer ? prevLayer : this.getNextLowestVisibleLayer());
 };
 
-// Set the visibility of the layer with the given index. Pass true for 
-// 'makeVisible' to show the layer, false to hide it. If the current layer is 
-// hidden, current layer is switched to the next highest visible layer, or 
-// next lowest if next highest does not exist. At least one layer must remain 
-// visible at all times. Automatically registers an undo action.
-LayerManager.prototype.setLayerVisibility = function(layerNumber, makeVisible) {
-	var targetLayer = this.layers[layerNumber];
+// Set name of given Layer object. Undoable.
+LayerManager.prototype.setLayerName = function(targetLayer, newLayerName) {
+	var oldName = targetLayer.name;
+	targetLayer.name = newLayerName;
 	
+	// Make it undoable
+	this.undoManager.push("Change Layer Name", this,
+		this.setLayerName, [targetLayer, newLayerName],
+		this.setLayerName, [targetLayer, oldName]
+	);
+};
+
+// Set the visibility of given Layer object. Pass true for 'makeVisible' to 
+// show the layer, false to hide it. If the current layer is hidden, current 
+// layer is switched to the next highest visible layer, or next lowest if next 
+// highest does not exist. At least one layer must remain visible at all 
+// times. Automatically registers an undo action.
+LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {	
 	Util.assert(targetLayer, "Invalid layer passed to LayerManager::setLayerVisibility.");
 	
 	// Clear selections before changing layer visibility
@@ -225,9 +222,10 @@ LayerManager.prototype.setLayerVisibility = function(layerNumber, makeVisible) {
 		
 			// Make it undoable
 			this.undoManager.push("Show Layer", this,
-				this.setLayerVisibility, [layerNumber, true],
-				this.setLayerVisibility, [layerNumber, false]
+				this.setLayerVisibility, [targetLayer, true],
+				this.setLayerVisibility, [targetLayer, false]
 			);
+			
 			targetLayer.show();
 		}
 	} else if (!targetLayer.hidden) {
@@ -252,45 +250,54 @@ LayerManager.prototype.setLayerVisibility = function(layerNumber, makeVisible) {
 		// If current layer is being hidden, switch current layer to next
 		// highest visible layer, or next lowest if next highest does not 
 		// exist.
-		if (this.layers.indexOf(targetLayer) == this.currentLayer) {
-			var nextLayer = this.getNextHighestVisibleLayer();
-			var prevLayer = this.getNextLowestVisibleLayer();
-			this.switchToLayer(nextLayer >= 0 ? nextLayer : (prevLayer >= 0 ? prevLayer : this.currentLayer));
+		if (targetLayer == this.currentLayer) {
+			var nextLayer = this.getNextHighestVisibleLayer(targetLayer);
+			var prevLayer = this.getNextLowestVisibleLayer(targetLayer);
+			this.switchToLayer(nextLayer ? nextLayer : prevLayer);
 		}
 		
 		// Make it undoable
 		this.undoManager.push("Hide Layer", this,
-			this.setLayerVisibility, [layerNumber, false],
-			this.setLayerVisibility, [layerNumber, true]
+			this.setLayerVisibility, [targetLayer, false],
+			this.setLayerVisibility, [targetLayer, true]
 		);
+		
 		targetLayer.hide();
 		
 		this.undoManager.recordStop();
 	}
 };
 
-// Returns the index of the next highest visible layer from the layer with the
-// given index (defaults to current layer), or -1 if none found.
-LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayerNumber) {
-	for (var i = (fromLayerNumber ? fromLayerNumber : this.currentLayer) + 1, len = this.layers.length; i < len; i++) {
-		if (!this.layers[i].hidden) {
-			return i;
-		}
-	}
-	
-	return -1;
+LayerManager.prototype.getTopmostLayer = function() {
+	return this.layers[this.layers.length - 1];
 };
 
-// Returns the index of the next lowest visible layer from the layer with the
-// given index (defaults to current layer), or -1 if none found.
-LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayerNumber) {
-	for (var i = (fromLayerNumber ? fromLayerNumber : this.currentLayer) - 1; i >= 0; i--) {
+// Returns the next highest visible Layer from the specified Layer object, or 
+// from the lowest layer if none specified. Returns null if none found.
+LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayer) {
+	var fromIndex = fromLayer ? this.layers.indexOf(fromLayer) : -1;
+	
+	for (var i = fromIndex + 1, len = this.layers.length; i < len; i++) {
 		if (!this.layers[i].hidden) {
-			return i;
+			return this.layers[i];
 		}
 	}
 	
-	return -1;
+	return null;
+};
+
+// Returns the next lowest visible Layer from the specified Layer object, or 
+// from the highest layer if none specified. Returns null if none found.
+LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayer) {
+	var fromIndex = fromLayer ? this.layers.indexOf(fromLayer) : this.layers.length;
+	
+	for (var i = fromIndex - 1; i >= 0; i--) {
+		if (!this.layers[i].hidden) {
+			return this.layers[i];
+		}
+	}
+	
+	return null;
 };
 
 LayerManager.prototype.getNumberOfVisibleLayers = function() {
@@ -301,7 +308,7 @@ LayerManager.prototype.getNumberOfVisibleLayers = function() {
 // (defaults to the current layer). An Alberti sid is automatically assigned 
 // to the shape if it doesn't already have one. Returns the shape's Alberti 
 // sid.
-LayerManager.prototype.insertShape = function(newShape, layer) {	
+LayerManager.prototype.insertShape = function(newShape, targetLayer) {	
 	var sid = newShape.getSid();
 	
 	// Assign an Alberti sid if the shape does not already have one
@@ -312,7 +319,7 @@ LayerManager.prototype.insertShape = function(newShape, layer) {
 	
 	Util.assert(!this.shapeIndex[sid], "Duplicate shape passed to LayerManager::insertShape (sid '"+sid+"').");
 	
-	var targetLayer = layer ? layer : this.layers[this.currentLayer];
+	targetLayer = targetLayer ? targetLayer : this.currentLayer;
 	targetLayer.addShape(newShape);
 	
 	// Calculate new intersection points before the shape is added to the 

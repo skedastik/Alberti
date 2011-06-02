@@ -128,20 +128,24 @@ function UserInterface(bertiDoc) {
 	var cstripDiv = document.getElementById("layer_panel_control_strip");
 	this.layerPanel = new LayerPanel(mainDiv, dynamicDiv, cstripDiv);
 	
-	// Create layer manager delegate so that layer-related changes are reflected in GUI
-	this.layerManagerDelegate = new LayerManagerDelegate(this.bertiDoc.layerManager, this.layerPanel);
+	// Create controller for layer panel connect it to layer panel
+	this.lpController = new LayerPanelController(this.layerPanel);
+	this.layerPanel.setController(this.lpController);
 	
-	// Pass data to the layer panel
-	this.layerPanel.setLayerManager(this.layerManagerDelegate);
-	this.layerPanel.loadLayers();
+	// Create layer manager delegate and connect it to layer panel controller
+	this.lmDelegate = new LayerManagerDelegate(this.bertiDoc.layerManager, this.lpController);
+	this.lpController.setLayerManagerDelegate(this.lmDelegate);
+	
+	// Tell layer panel controller to populate layer panel with data
+	this.lpController.populateLayerPanel();
 	
 	// Initialize the toolset, and select the default tool
 	this.tools = [
-		{"tool" : new ToolSelection(this.masterGroup, this.layerManagerDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolSelection(this.masterGroup, this.lmDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorDefault },
-		{"tool" : new ToolLine(this.masterGroup, this.layerManagerDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolLine(this.masterGroup, this.lmDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair },
-		{"tool" : new ToolCircleArc(this.masterGroup, this.layerManagerDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolCircleArc(this.masterGroup, this.lmDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair }
 	];
 	this.currentTool = null;
@@ -212,7 +216,7 @@ UserInterface.prototype.keydown = function(evt) {
 		
 		case UserInterface.deleteKeyCode:
 		case UserInterface.backspaceKeyCode:
-			this.layerManagerDelegate.deleteSelectedShapes();
+			this.lmDelegate.deleteSelectedShapes();
 			
 			// Attempt to suppress backspace-key navigation.
 			evt.preventDefault();
@@ -244,11 +248,11 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 		
 		case UserInterface.arrowUpKeyCode:
-			this.layerManagerDelegate.switchToLayerAbove();
+			this.lmDelegate.switchToLayerAbove();
 			break;
 		
 		case UserInterface.arrowDownKeyCode:
-			this.layerManagerDelegate.switchToLayerBelow();
+			this.lmDelegate.switchToLayerBelow();
 			break;
 	}
 };
