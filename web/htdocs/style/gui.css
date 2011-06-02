@@ -99,6 +99,10 @@
 	background-color: black;
 }
 
+.delete_layer_button.guiBtnDisabled {
+	background-color: white;
+}
+
 .new_layer_button {
 	float: left;
 	background-color: blue;
