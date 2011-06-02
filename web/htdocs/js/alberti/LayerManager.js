@@ -32,8 +32,7 @@ function LayerManager(layerGroup, undoManager) {
 	this.intersections = new Intersection();
 }
 
-// Generate and insert a new layer, optionally providing its name. Returns the
-// new layer.
+// Generate and insert a new layer, optionally providing its name. Returns the new layer.
 LayerManager.prototype.newLayer = function(name) {
 	var newLayer = new Layer(new Group().generate());
 	newLayer.setName(name ? name : "Layer "+(this.layerNameCounter++));
@@ -43,15 +42,14 @@ LayerManager.prototype.newLayer = function(name) {
 	return newLayer;
 };
 
-// Generate a new layer from the given Group object and insert it. Returns the
-// new layer.
+// Generate a new layer from the given Group object and insert it. Returns the new layer.
 LayerManager.prototype.newLayerFromGroup = function(group) {
 	var newLayer = new Layer(group);
 	newLayer.setName(group.get("title"));
 	
 	this.layerNameCounter++;
 	
-	if (group.get("visibility") == "hidden") {
+	if (group.get("display") == "none") {
 		this.numHiddenLayers++;
 		newLayer.hide();
 	}
@@ -161,7 +159,6 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 // action. An exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(targetLayer) {
 	Util.assert(this.layers.indexOf(targetLayer) >= 0, "Invalid layer passed to LayerManager::switchToLayer.");
-	Util.assert(!targetLayer.hidden, "LayerManager::switchToLayer attempted to switch to a hidden layer.");
 	
 	// Register the layer switch with the undo manager. This is a cascading undo.
 	this.undoManager.push("Change Current Layer", this,
@@ -173,14 +170,18 @@ LayerManager.prototype.switchToLayer = function(targetLayer) {
 	this.currentLayer = targetLayer;
 };
 
+LayerManager.prototype.switchToHighestVisibleLayer = function() {
+	this.switchToLayer(this.getNextLowestVisibleLayer());
+};
+
 // Switch to next visible layer above current layer, wrapping around if necessary
-LayerManager.prototype.switchToLayerAbove = function() {
+LayerManager.prototype.switchToVisibleLayerAboveCurrentLayer = function() {
 	var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
 	this.switchToLayer(nextLayer ? nextLayer : this.getNextHighestVisibleLayer());
 };
 
 // Switch to next visible layer below current layer, wrapping around if necessary
-LayerManager.prototype.switchToLayerBelow = function() {
+LayerManager.prototype.switchToVisibleLayerBelowCurrentLayer = function() {
 	var prevLayer = this.getNextLowestVisibleLayer(this.currentLayer);
 	this.switchToLayer(prevLayer ? prevLayer : this.getNextLowestVisibleLayer());
 };
