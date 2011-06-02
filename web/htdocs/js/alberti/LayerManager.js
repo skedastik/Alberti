@@ -128,18 +128,16 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	var targetIndex = this.layers.indexOf(targetLayer);
 	
 	if (targetLayer == this.currentLayer) {
-		// Switch to another layer _before_ deleting current layer, otherwise 
+		// Current layer is being deleted; determine which layer to switch to
+		var nextLowest = this.getNextLowestVisibleLayer(targetLayer);
+		var nextHighest = this.getNextHighestVisibleLayer(targetLayer);
+		var fallback = invertSwitch ? (targetIndex > 0 ? nextLowest : nextHighest)
+			: (targetIndex < this.layers.length - 1 ? nextHighest : nextLowest);
+		
+		// Switch to fallback layer _before_ deleting current layer, otherwise 
 		// undo will attempt to switch to the deleted layer before it is re-
 		// inserted.
-		//
-		// TODO: Check for hidden layers. Automatically reveal a hidden layer and
-		// switch to it if no visible layer is available.
-		if (invertSwitch) {
-			this.switchToLayer(targetIndex > 0 ? this.layers[targetIndex - 1] : this.layers[targetIndex + 1]);
-		} else {
-			this.switchToLayer(targetIndex < this.layers.length - 1 
-				? this.layers[targetIndex + 1] : this.layers[targetIndex - 1]);
-		}
+		this.switchToLayer(fallback);
 	}
 	
 	// Register the layer deletion with the undo manager. If the bottommost
