@@ -30,9 +30,10 @@
  * 
  * Initialization of SvgObject properties
  * 
- * Initialization of object properties should take place in the SvgObject's
- * constructor or in the initialize method, but no operations should be 
- * performed on its SVG node. The reason for this is that the SVG node does 
+ * The inheriting class' constructor shouldn't initialize properties that are
+ * tied to SVG node attributes. These properties should be initialized in the 
+ * SvgObject's initialize method. The initialize method should not perform
+ * operations on its SVG node. The reason for this is that the SVG node may 
  * not exist yet. It is either created via SvgObject::generate below, or 
  * passed to the constructor. SvgObject conditionally calls initialize, 
  * depending on whether or not an SVG node was passed to its constructor (in 
