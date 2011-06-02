@@ -248,11 +248,11 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 		
 		case UserInterface.arrowUpKeyCode:
-			this.lmDelegate.switchToLayerAbove();
+			this.lmDelegate.switchToVisibleLayerAboveCurrentLayer();
 			break;
 		
 		case UserInterface.arrowDownKeyCode:
-			this.lmDelegate.switchToLayerBelow();
+			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
 			break;
 	}
 };
