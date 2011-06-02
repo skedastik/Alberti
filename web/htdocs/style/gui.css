@@ -52,6 +52,11 @@
 	background-repeat: repeat-x;
 }
 
+.layer_panel_row.guiBtnDisabled {
+	color: #686868;
+	text-shadow: none;
+}
+
 #layer_panel_control_strip .layer_panel_row {
 	border-bottom: 0;
 	cursor: auto;
