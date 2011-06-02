@@ -74,7 +74,7 @@ LayerPanelController.prototype.setLayerName = function(rowId, newLayerName) {
 LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
 	var rowId = this.layerPanel.insertNewRow(
 		newLayer.name,
-		newLayer.hidden,
+		newLayer.isHidden(),
 		beforeLayer ? this.getRowIndexForLayer(beforeLayer) : undefined
 	);
 	
@@ -101,12 +101,12 @@ LayerPanelController.prototype.updateButtons = function() {
 	for (var i = 0, len = this.lmDelegate.layers.length; i < len; i++) {
 		var layer = this.lmDelegate.layers[i];
 		var row = this.getRowForLayer(layer);
-		var enableRow = layer.hidden ? "disable" : "enable";
+		var enableRow = layer.isHidden() ? "disable" : "enable";
 		
 		row.rowButton[enableRow]();
-		row.visibilityToggleButton.toggle(!layer.hidden);
+		row.visibilityToggleButton.toggle(!layer.isHidden());
 		
-		if (!layer.hidden) {
+		if (!layer.isHidden()) {
 			row.visibilityToggleButton[enableOther]();
 		}
 	}
