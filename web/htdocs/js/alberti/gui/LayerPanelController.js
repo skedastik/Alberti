@@ -91,17 +91,21 @@ LayerPanelController.prototype.updateVisibilityToggle = function(targetLayer, ma
 		targetRow.rowButton.enable();
 		targetRow.visibilityToggleButton.toggle(true);
 		
-		// Enable the layer visibility toggle if more than one layer becomes visible again
+		// Enable the layer visibility toggle and delete layer button if more 
+		// than one layer becomes visible again
 		if (this.lmDelegate.getNumberOfVisibleLayers() == 2) {
 			currentRow.visibilityToggleButton.enable();
+			this.layerPanel.cstrip.deleteLayerButton.enable();
 		}
 	} else {
 		targetRow.rowButton.disable();
 		targetRow.visibilityToggleButton.toggle(false);
 		
-		// Disable the layer visibility toggle if only one visible layer remains
+		// Disable the layer visibility toggle and delete layer button if only 
+		// one visible layer remains
 		if (this.lmDelegate.getNumberOfVisibleLayers() == 1) {
 			currentRow.visibilityToggleButton.disable();
+			this.layerPanel.cstrip.deleteLayerButton.disable();
 		}
 	}
 };
