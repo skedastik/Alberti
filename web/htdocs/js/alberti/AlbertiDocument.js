@@ -102,4 +102,6 @@ AlbertiDocument.prototype.load = function() {
 		
 		curGroupNode = Util.nextNonTextSibling(curGroupNode);
 	}
+	
+	this.layerManager.switchToHighestVisibleLayer();
 };
