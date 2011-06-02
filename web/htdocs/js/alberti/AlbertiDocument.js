@@ -75,8 +75,8 @@ AlbertiDocument.prototype.load = function() {
 	// these will be <g> nodes corresponding to Layer objects.
 	while (curGroupNode != null) {
 		// Create a new layer for each <g> node encountered
-		var newGroup = new Group(curGroupNode);
-		this.layerManager.newLayerFromGroup(newGroup);
+		var newLayer = new Layer(curGroupNode);
+		this.layerManager.insertLayer(newLayer);
 		
 		// Iterate through the children of the <g> node. These will be various
 		// shape nodes corresponding to Shape objects.

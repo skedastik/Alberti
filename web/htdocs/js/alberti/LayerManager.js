@@ -34,25 +34,8 @@ function LayerManager(layerGroup, undoManager) {
 
 // Generate and insert a new layer, optionally providing its name. Returns the new layer.
 LayerManager.prototype.newLayer = function(name) {
-	var newLayer = new Layer(new Group().generate());
+	var newLayer = new Layer().generate();
 	newLayer.setName(name ? name : "Layer "+(this.layerNameCounter++));
-	
-	this.insertLayer(newLayer);
-	
-	return newLayer;
-};
-
-// Generate a new layer from the given Group object and insert it. Returns the new layer.
-LayerManager.prototype.newLayerFromGroup = function(group) {
-	var newLayer = new Layer(group);
-	newLayer.setName(group.get("title"));
-	
-	this.layerNameCounter++;
-	
-	if (group.get("display") == "none") {
-		this.numHiddenLayers++;
-		newLayer.hide();
-	}
 	
 	this.insertLayer(newLayer);
 	
@@ -66,16 +49,21 @@ LayerManager.prototype.newLayerFromGroup = function(group) {
 // sets current layer to inserted layer. Layer insertions are automatically 
 // registered with the undo manager.
 LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
+	// Increment the hidden layer counter if new layer is hidden
+	if (newLayer.isHidden()) {
+		this.numHiddenLayers++;
+	}
+	
 	refLayer = refLayer ? refLayer : this.currentLayer;
 	
 	if (this.layers.length > 0) {
 		if (before) {
-			this.layerGroup.attachChildBefore(newLayer.svgGroup, refLayer.svgGroup);
+			this.layerGroup.attachChildBefore(newLayer, refLayer);
 		} else {
-			this.layerGroup.attachChildAfter(newLayer.svgGroup, refLayer.svgGroup);
+			this.layerGroup.attachChildAfter(newLayer, refLayer);
 		}
 	} else {
-		this.layerGroup.attachChild(newLayer.svgGroup);
+		this.layerGroup.attachChild(newLayer);
 	}
 	
 	var insertIndex = this.layers.indexOf(refLayer);
@@ -103,8 +91,8 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	// Clear selections before deleting layer
 	this.clearSelections();
 	
-	// Remove the layer's SVG group node from the SVG tree
-	targetLayer.svgGroup.detach();
+	// Remove the layer from the SVG tree
+	targetLayer.detach();
 	
 	this.undoManager.recordStart();
 	
@@ -189,7 +177,7 @@ LayerManager.prototype.switchToVisibleLayerBelowCurrentLayer = function() {
 // Set name of given Layer object. Undoable.
 LayerManager.prototype.setLayerName = function(targetLayer, newLayerName) {
 	var oldName = targetLayer.name;
-	targetLayer.name = newLayerName;
+	targetLayer.setName(newLayerName);
 	
 	// Make it undoable
 	this.undoManager.push("Change Layer Name", this,
@@ -210,7 +198,7 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 	this.clearSelections();
 	
 	if (makeVisible) {
-		if (targetLayer.hidden) {
+		if (targetLayer.isHidden()) {
 			this.numHiddenLayers--;
 		
 			// Add intersection points of all shapes in the layer
@@ -227,7 +215,7 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 			
 			targetLayer.show();
 		}
-	} else if (!targetLayer.hidden) {
+	} else if (!targetLayer.isHidden()) {
 		Util.assert(
 			this.getNumberOfVisibleLayers() > 1,
 			"LayerManager::setLayerVisibility attempted to hide only visible layer."
@@ -277,7 +265,7 @@ LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayer) {
 	var fromIndex = fromLayer ? this.layers.indexOf(fromLayer) : -1;
 	
 	for (var i = fromIndex + 1, len = this.layers.length; i < len; i++) {
-		if (!this.layers[i].hidden) {
+		if (!this.layers[i].isHidden()) {
 			return this.layers[i];
 		}
 	}
@@ -291,7 +279,7 @@ LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayer) {
 	var fromIndex = fromLayer ? this.layers.indexOf(fromLayer) : this.layers.length;
 	
 	for (var i = fromIndex - 1; i >= 0; i--) {
-		if (!this.layers[i].hidden) {
+		if (!this.layers[i].isHidden()) {
 			return this.layers[i];
 		}
 	}
