@@ -9,23 +9,28 @@
  
 function LayerPanelController(layerPanel) {
 	this.layerPanel = layerPanel;
-	this.rowLayerMap = {};            // maps layer panel row ID strings to Layer objects
+	this.rowLayerMap = {};            // Maps layer panel row ID strings to Layer objects
 }
 
 LayerPanelController.prototype.setLayerManagerDelegate = function(lmDelegate) {
 	this.lmDelegate = lmDelegate;
 };
 
+// Returns a LayerPanelRow corresponding to the given Layer.
+LayerPanelController.prototype.getRowForLayer = function(layer) {
+	return this.layerPanel.rows[this.getRowIndexForLayer(layer)];
+};
+
 // Returns a layer panel row index corresponding to the given Layer. Throws an
 // exception if none found.
-LayerPanelController.prototype.getRowForLayer = function(layer) {
+LayerPanelController.prototype.getRowIndexForLayer = function(layer) {
 	for (var rowId in this.rowLayerMap) {
 		if (this.rowLayerMap[rowId] == layer) {
 			return this.layerPanel.getRowWithId(rowId);
 		}
 	}
 	
-	throw "Unrecognized layer passed to LayerPanelController::getRowForLayer";
+	throw "Unrecognized layer passed to LayerPanelController::getRowIndexForLayer";
 };
 
 // Generate layer panel rows from existing layers in layer manager
@@ -39,7 +44,7 @@ LayerPanelController.prototype.populateLayerPanel = function() {
 	}
 	
 	// Select the row corresponding to the current layer
-	this.layerPanel.selectRow(this.getRowForLayer(this.lmDelegate.currentLayer));
+	this.layerPanel.selectRow(this.getRowIndexForLayer(this.lmDelegate.currentLayer));
 };
 
 /* * * * * * * * * * Layer manager-related methods below * * * * * * * * * */
@@ -67,49 +72,48 @@ LayerPanelController.prototype.setLayerName = function(rowId, newLayerName) {
 /* * * * * * * * * * Layer panel-related methods below * * * * * * * * * * */
 
 LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
-	this.rowLayerMap[
-		this.layerPanel.insertNewRow(newLayer.name, beforeLayer ? this.getRowForLayer(beforeLayer) : undefined)
-	] = newLayer;
+	var rowId = this.layerPanel.insertNewRow(
+		newLayer.name,
+		newLayer.hidden,
+		beforeLayer ? this.getRowIndexForLayer(beforeLayer) : undefined
+	);
+	
+	this.rowLayerMap[rowId] = newLayer;
 };
 
 LayerPanelController.prototype.deleteRow = function(targetLayer) {
-	var targetRow = this.layerPanel.rows[this.getRowForLayer(targetLayer)];
+	var targetRow = this.getRowForLayer(targetLayer);
 	
-	this.layerPanel.deleteRow(this.getRowForLayer(targetLayer));
+	this.layerPanel.deleteRow(this.getRowIndexForLayer(targetLayer));
 	delete this.rowLayerMap[targetRow.rowId];
 };
 
 LayerPanelController.prototype.selectRow = function(targetLayer) {
-	this.layerPanel.selectRow(this.getRowForLayer(targetLayer));
+	this.layerPanel.selectRow(this.getRowIndexForLayer(targetLayer));
 };
 
-LayerPanelController.prototype.updateVisibilityToggle = function(targetLayer, makeVisible) {
-	var targetRow = this.layerPanel.rows[this.getRowForLayer(targetLayer)];
-	var currentRow = this.layerPanel.rows[this.getRowForLayer(this.lmDelegate.currentLayer)];
+// Update layer panel button states to match layers
+LayerPanelController.prototype.updateButtons = function() {
+	var numLayersVisible = this.lmDelegate.getNumberOfVisibleLayers();
+	var enableOther = numLayersVisible > 1 ? "enable" : "disable";
 	
-	if (makeVisible) {
-		targetRow.rowButton.enable();
-		targetRow.visibilityToggleButton.toggle(true);
+	// Disable/enable each row button if corresponding layer is hidden/shown
+	for (var i = 0, len = this.lmDelegate.layers.length; i < len; i++) {
+		var layer = this.lmDelegate.layers[i];
+		var row = this.getRowForLayer(layer);
+		var enableRow = layer.hidden ? "disable" : "enable";
 		
-		// Enable the layer visibility toggle and delete layer button if more 
-		// than one layer becomes visible again
-		if (this.lmDelegate.getNumberOfVisibleLayers() == 2) {
-			currentRow.visibilityToggleButton.enable();
-			this.layerPanel.cstrip.deleteLayerButton.enable();
-		}
-	} else {
-		targetRow.rowButton.disable();
-		targetRow.visibilityToggleButton.toggle(false);
+		row.rowButton[enableRow]();
+		row.visibilityToggleButton.toggle(!layer.hidden);
 		
-		// Disable the layer visibility toggle and delete layer button if only 
-		// one visible layer remains
-		if (this.lmDelegate.getNumberOfVisibleLayers() == 1) {
-			currentRow.visibilityToggleButton.disable();
-			this.layerPanel.cstrip.deleteLayerButton.disable();
+		if (!layer.hidden) {
+			row.visibilityToggleButton[enableOther]();
 		}
 	}
+	
+	this.layerPanel.cstrip.deleteLayerButton[enableOther]();
 };
 
 LayerPanelController.prototype.updateRowLayerName = function(targetLayer, newLayerName) {
-	this.layerPanel.rows[this.getRowForLayer(targetLayer)].layerNameDiv.innerHTML = newLayerName;
+	this.getRowForLayer(targetLayer).layerNameDiv.innerHTML = newLayerName;
 };
