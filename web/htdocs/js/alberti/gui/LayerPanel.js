@@ -32,11 +32,10 @@ LayerPanel.prototype.setController = function(controller) {
 	this.controller = controller;
 };
 
-// Create a single layer row handled by the given controller object. The row
-// displays the given layer name. You may optionally specify a row index
-// to insert before (i.e. directly below) that row, otherwise the row is
-// placed above all other rows. The controller object must handle the 
-// following methods:
+// Create a single layer row with the given layer name. You may optionally 
+// specify a row index to insert before (i.e. directly below) that row, 
+// otherwise the row is placed above all other rows. The controller object 
+// must handle the following methods:
 //
 //    switchToLayer(rowId)
 //    setLayerVisibility(rowId, makeVisible)
