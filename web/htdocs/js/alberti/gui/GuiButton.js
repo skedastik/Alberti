@@ -112,9 +112,12 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 
 // GuiButton can respond to both click or mousedown events
 GuiButton.prototype.click = GuiButton.prototype.mousedown = function(evt) {
-	if (this.autoToggle) {
-		this.toggle();
-	}
+	// Only invoke delegate's action if the button div itself was clicked
+	if (evt.target === this.htmlNode) {
+		if (this.autoToggle) {
+			this.toggle();
+		}
 	
-	this.invokeAction(this, evt);
+		this.invokeAction(this, evt);
+	}
 };
