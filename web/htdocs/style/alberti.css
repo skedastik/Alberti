@@ -28,7 +28,6 @@
 }
 
 #workspace {
-	stroke: #7788ff;
 }
 
 #overlay {
@@ -39,7 +38,6 @@
 #underlay {
 	stroke: red;
 	stroke-opacity: 0.2;
-/*	stroke: #ffc8c8;*/
 }
 
 #underlayimg {
@@ -47,14 +45,12 @@
 }
 
 text {
-	pointer-events: none;
 	font-family: "Lucida Grande", Arial, sans-serif;
 	font-size: 11px;
+	pointer-events: none;
 }
 
-text, body, #workspace {
-	pointer-events: none;
-	
+body {
 	/* Currently, these are the best options for preventing text/object selection */
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
