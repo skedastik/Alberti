@@ -15,7 +15,7 @@ function JsColorPicker(id, elt, delegate, action, inputElement) {
 		hash: true,
 		caps: false,
 		pickerOnfocus: false,
-		pickerPosition: "left",
+		pickerPosition: "top",
 		pickerFace: 3,
 		pickerBorder: 0,
 		pickerFaceColor: "black",
