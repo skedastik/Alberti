@@ -45,6 +45,9 @@ LayerPanelController.prototype.populateLayerPanel = function() {
 	
 	// Select the row corresponding to the current layer
 	this.layerPanel.selectRow(this.getRowIndexForLayer(this.lmDelegate.currentLayer));
+	
+	// Update layer panel button states
+	this.updateButtons();
 };
 
 /* * * * * * * * * * Layer manager-related methods below * * * * * * * * * */
