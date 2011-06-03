@@ -74,6 +74,13 @@ var Util = {
 	   element.className = element.className.replace(pattern, '');
 	},
 	
+	// Convert rgb string of form "rgb(r, g, b)" to hex string of form "#rrggbb"
+	rgbToHex: function(rgbString) {
+		return "#"+rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(function(x) {
+			return parseInt(x).toString(16)
+		}).join("");
+	},
+	
 	// Package a value, be it a string describing quantity and units, or a 
 	// number, into an object of the following format:
 	//    {"quantity":<number>, "units":<units-string>}
