@@ -38,7 +38,7 @@ JsColorPicker.prototype.activate = function() {
 JsColorPicker.prototype.deactivate = function() {
 	this.jscolor.hidePicker();
 	
-	window.addEventListener("mousedown", this, true);
+	window.removeEventListener("mousedown", this, true);
 	window.removeEventListener("click", this, true);
 	window.removeEventListener("keydown", this, true);
 	this.inputElement.removeEventListener("change", this, false);
