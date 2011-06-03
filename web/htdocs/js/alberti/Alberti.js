@@ -17,7 +17,7 @@ Alberti.refreshms = Math.round(1000 / Alberti.fpsMax);      // limit redraw rate
 
 Alberti.showToolTips = true;                            // Show tool helper tips?
 
-Alberti.maxUndos = 50;                                  // Maximum number of undo actions
+Alberti.maxUndos = 100;                                  // Maximum number of undo actions
 
 // All numerical SVG attributes are rounded to this decimal place so as to
 // leave an adequate number of significant digits for large numerical values. 
