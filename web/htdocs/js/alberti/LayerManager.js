@@ -187,16 +187,15 @@ LayerManager.prototype.setLayerName = function(targetLayer, newLayerName) {
 	);
 };
 
-// Set the color of the given Layer object. Undoable.
+// Set the color of the given Layer object. Undo-able.
 LayerManager.prototype.setLayerColor = function(targetLayer, newColor) {
 	var oldColor = targetLayer.color;
 	targetLayer.setColor(newColor);
 	
-	// Make it a cascading undo
+	// Make it undo-able
 	this.undoManager.push("Change Layer Color", this,
 		this.setLayerColor, [targetLayer, newColor],
-		this.setLayerColor, [targetLayer, oldColor],
-		true
+		this.setLayerColor, [targetLayer, oldColor]
 	);
 };
 
