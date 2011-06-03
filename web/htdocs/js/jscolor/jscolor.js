@@ -581,16 +581,28 @@ var jscolor = {
 				y+THIS.pickerBorder+THIS.pickerFace+THIS.pickerInset ];
 
 			// controls interaction
-			p.box.onmouseup =
+			// (modified to support continuous mouse movement outside picker
+			// box; original code commented out below)
 			p.box.onmouseout = function() { target.focus(); };
 			p.box.onmousedown = function() { abortBlur=true; };
-			p.box.onmousemove = function(e) { holdPad && setPad(e); holdSld && setSld(e); };
-			p.padM.onmouseup =
-			p.padM.onmouseout = function() { if(holdPad) { holdPad=false; jscolor.fireEvent(valueElement,'change'); } };
+			window.onmousemove = function(e) { holdPad && setPad(e); holdSld && setSld(e); };
+			window.onmouseup = function() {
+				if(holdPad) { holdPad=false; jscolor.fireEvent(valueElement,'change'); } 
+				if(holdSld) { holdSld=false; jscolor.fireEvent(valueElement,'change'); } 
+			};
 			p.padM.onmousedown = function(e) { holdPad=true; setPad(e); };
-			p.sldM.onmouseup =
-			p.sldM.onmouseout = function() { if(holdSld) { holdSld=false; jscolor.fireEvent(valueElement,'change'); } };
 			p.sldM.onmousedown = function(e) { holdSld=true; setSld(e); };
+			
+			// p.box.onmouseup =
+			// p.box.onmouseout = function() { target.focus(); };
+			// p.box.onmousedown = function() { abortBlur=true; };
+			// p.box.onmousemove = function(e) { holdPad && setPad(e); holdSld && setSld(e); };
+			// p.padM.onmouseup =
+			// p.padM.onmouseout = function() { if(holdPad) { holdPad=false; jscolor.fireEvent(valueElement,'change'); } };
+			// p.padM.onmousedown = function(e) { holdPad=true; setPad(e); };
+			// p.sldM.onmouseup =
+			// p.sldM.onmouseout = function() { if(holdSld) { holdSld=false; jscolor.fireEvent(valueElement,'change'); } };
+			// p.sldM.onmousedown = function(e) { holdSld=true; setSld(e); };
 
 			// picker
 			p.box.style.width = 4*THIS.pickerInset + 2*THIS.pickerFace + jscolor.images.pad[0] + 2*jscolor.images.arrow[0] + jscolor.images.sld[0] + 'px';
