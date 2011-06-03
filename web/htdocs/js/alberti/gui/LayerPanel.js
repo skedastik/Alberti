@@ -209,8 +209,8 @@ function LayerPanelControlStrip(cstripDiv, controller) {
 	this.lpCollapseDiv.className = "lp_collapse_button";
 	this.lpCollapseButton = new GuiButton("lp_collapse", this.lpCollapseDiv, controller, "handleCollapseButton", false, "Hide Layer Panel, Show Layer Panel").enable().toggle(true);
 	
-	cstripDiv.appendChild(this.newLayerDiv);
 	cstripDiv.appendChild(this.deleteLayerDiv);
+	cstripDiv.appendChild(this.newLayerDiv);
 	cstripDiv.appendChild(this.lpCollapseDiv);
 };
 
