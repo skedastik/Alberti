@@ -26,7 +26,7 @@ LayerPanelController.prototype.getRowForLayer = function(layer) {
 LayerPanelController.prototype.getRowIndexForLayer = function(layer) {
 	for (var rowId in this.rowLayerMap) {
 		if (this.rowLayerMap[rowId] == layer) {
-			return this.layerPanel.getRowWithId(rowId);
+			return this.layerPanel.getRowIndexForId(rowId);
 		}
 	}
 	
@@ -69,11 +69,16 @@ LayerPanelController.prototype.setLayerName = function(rowId, newLayerName) {
 	this.lmDelegate.setLayerName(this.rowLayerMap[rowId], newLayerName);
 };
 
+LayerPanelController.prototype.setLayerColor = function(rowId, newColor) {
+	this.lmDelegate.setLayerColor(this.rowLayerMap[rowId], newColor);
+};
+
 /* * * * * * * * * * Layer panel-related methods below * * * * * * * * * * */
 
 LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
 	var rowId = this.layerPanel.insertNewRow(
 		newLayer.name,
+		newLayer.color,
 		newLayer.isHidden(),
 		beforeLayer ? this.getRowIndexForLayer(beforeLayer) : undefined
 	);
@@ -115,5 +120,9 @@ LayerPanelController.prototype.updateButtons = function() {
 };
 
 LayerPanelController.prototype.updateRowLayerName = function(targetLayer, newLayerName) {
-	this.getRowForLayer(targetLayer).layerNameDiv.innerHTML = newLayerName;
+	this.getRowForLayer(targetLayer).setName(newLayerName);
+};
+
+LayerPanelController.prototype.updateRowColor = function(targetLayer, newColor) {
+	this.getRowForLayer(targetLayer).setColor(newColor);
 };

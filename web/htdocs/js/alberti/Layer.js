@@ -6,10 +6,11 @@
  * 
  * TODO
  * 
- * - Different stroke color per layer.
  * - Different stroke-width per layer.
  * 
  * * */
+
+Layer.defaultLayerColor = "#7788ff";
 
 function Layer(svgNode) {
 	Layer.baseConstructor.call(this, svgNode ? svgNode : Group.elementTag);
@@ -21,6 +22,7 @@ Layer.prototype.initialize = function() {
 	Layer.superclass.initialize.call(this);
 	this.name = "";
 	this.hidden = false;
+	this.color = Layer.defaultLayerColor;         // layer's line stroke color
 };
 
 // Inserts the given shape into the SVG tree
@@ -58,18 +60,25 @@ Layer.prototype.setName = function(name) {
 	this.set("title", name);
 };
 
+Layer.prototype.setColor = function(color) {
+	this.color = color;
+	this.set("stroke", color);
+};
+
 Layer.prototype.isHidden = function() {
 	return this.hidden;
 };
 
 Layer.prototype.push = function() {
 	Layer.superclass.push.call(this);
-	this.set("title", name);
+	this.set("title", this.name);
 	this.set("display", this.hidden ? "none" : "");
+	this.set("stroke", this.color);
 };
 
 Layer.prototype.pull = function() {
 	Layer.superclass.pull.call(this);
 	this.hidden = (this.get("display") == "none") ?  true : false;
 	this.name = this.get("title");
+	this.color = this.get("stroke");
 };

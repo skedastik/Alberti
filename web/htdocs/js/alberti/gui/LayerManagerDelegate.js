@@ -14,6 +14,7 @@ function LayerManagerDelegate(layerManager, lpController) {
 	this.mapMethod("switchToLayer", "switchToLayerDelegate");
 	this.mapMethod("setLayerVisibility", null, "setLayerVisibilityDelegate");
 	this.mapMethod("setLayerName", "setLayerNameDelegate");
+	this.mapMethod("setLayerColor", "setLayerColorDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
 
@@ -54,3 +55,8 @@ LayerManagerDelegate.prototype.setLayerVisibilityDelegate = function(targetLayer
 LayerManagerDelegate.prototype.setLayerNameDelegate = function(targetLayer, newLayerName) {
 	this.lpController.updateRowLayerName(targetLayer, newLayerName);
 };
+
+LayerManagerDelegate.prototype.setLayerColorDelegate = function(targetLayer, newColor) {
+	this.lpController.updateRowColor(targetLayer, newColor);
+};
+

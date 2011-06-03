@@ -44,8 +44,8 @@ LayerPanel.prototype.setController = function(controller) {
 //    setLayerName(rowId, newLayerName)
 //    
 // Returns the new row's ID string.
-LayerPanel.prototype.insertNewRow = function(layerName, isHidden, beforeRowIndex) {
-	var row = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, isHidden, this);
+LayerPanel.prototype.insertNewRow = function(layerName, color, isHidden, beforeRowIndex) {
+	var row = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, color, isHidden, this);
 	
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
@@ -140,7 +140,13 @@ LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
 };
 
 LayerPanel.prototype.handleColorWell = function(button, evt) {
-	// TODO
+	var row = this.getRowWithId(button.id);
+	row.jscolorPicker.setColor(row.getColor());
+	row.jscolorPicker.activate();
+};
+
+LayerPanel.prototype.handleJsColorPicker = function(jscolorPicker, color) {
+	this.controller.setLayerColor(jscolorPicker.id, color);
 };
 
 LayerPanel.prototype.handleNewLayerButton = function(button, evt) {
@@ -157,8 +163,8 @@ LayerPanel.prototype.handleCollapseButton = function(button, evt) {
 };
 
 LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
-	var row = this.rows[this.getRowContainingControl(button)];
-	row.layerNameGuiField.activate(row.layerNameDiv.innerHTML);
+	var row = this.getRowWithId(button.id);
+	row.layerNameGuiField.activate(row.getName());
 };
 
 LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
@@ -166,9 +172,13 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
 	this.controller.setLayerName(field.id, newLayerName);
 };
 
+LayerPanel.prototype.getRowWithId = function(rowId) {
+	return this.rows[this.getRowIndexForId(rowId)];
+};
+
 // Get row index corresponding to row with the given ID string. Returns -1 if 
 // no such ID string found.
-LayerPanel.prototype.getRowWithId = function(rowId) {
+LayerPanel.prototype.getRowIndexForId = function(rowId) {
 	for (var i = 0, rLen = this.rows.length; i < rLen; i++) {
 		if (this.rows[i].rowId == rowId) {
 			return i;
@@ -176,11 +186,6 @@ LayerPanel.prototype.getRowWithId = function(rowId) {
 	}
 	
 	return -1;
-}
-
-// Get row index corresponding to given control
-LayerPanel.prototype.getRowContainingControl = function(control) {
-	return this.getRowWithId(control.getId());
 }
 
 /*
@@ -215,7 +220,7 @@ function LayerPanelControlStrip(cstripDiv, controller) {
  * 
  * * */
 
-function LayerPanelRow(rowId, rowBtnFamily, layerName, isHidden, controller) {
+function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controller) {
 	this.rowId = rowId;
 	
 	// Generate div representing the layer row
@@ -244,8 +249,13 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, isHidden, controller) {
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
 	this.colorWellDiv.className = "color_well";
+	this.colorWellDiv.style.backgroundColor = color;
 	this.colorWellButton = new GuiButton(rowId, this.colorWellDiv, controller, "handleColorWell", false, "Pick Color").enable();
-	// TODO: Color picker functionality
+	
+	// Create hidden JSColor color input and JsColorPicker
+	this.jscolorInput = document.createElement("input");
+	this.jscolorInput.className = "color";
+	this.jscolorPicker = new JsColorPicker(rowId, this.colorWellDiv, controller, "handleJsColorPicker", this.jscolorInput);
 	
 	// Create the layer name text field
 	this.layerNameInput = document.createElement("input");
@@ -254,6 +264,24 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, isHidden, controller) {
 	
 	this.rowDiv.appendChild(this.layerNameInput);
 	this.rowDiv.appendChild(this.layerNameDiv);
+	this.rowDiv.appendChild(this.jscolorInput);
 	this.rowDiv.appendChild(this.colorWellDiv);
 	this.rowDiv.appendChild(this.visibilityToggleDiv);
 }
+
+LayerPanelRow.prototype.getName = function() {
+	return this.layerNameDiv.innerHTML;
+};
+
+LayerPanelRow.prototype.setName = function(name) {
+	this.layerNameDiv.innerHTML = newLayerName;
+};
+
+LayerPanelRow.prototype.getColor = function() {
+	return Util.rgbToHex(this.colorWellDiv.style.backgroundColor);
+};
+
+LayerPanelRow.prototype.setColor = function(color) {
+	this.colorWellDiv.style.backgroundColor = color;
+	this.jscolorPicker.setColor(color);
+};

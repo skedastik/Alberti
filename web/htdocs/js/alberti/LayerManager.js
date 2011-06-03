@@ -187,6 +187,19 @@ LayerManager.prototype.setLayerName = function(targetLayer, newLayerName) {
 	);
 };
 
+// Set the color of the given Layer object. Undoable.
+LayerManager.prototype.setLayerColor = function(targetLayer, newColor) {
+	var oldColor = targetLayer.color;
+	targetLayer.setColor(newColor);
+	
+	// Make it a cascading undo
+	this.undoManager.push("Change Layer Color", this,
+		this.setLayerColor, [targetLayer, newColor],
+		this.setLayerColor, [targetLayer, oldColor],
+		true
+	);
+};
+
 // Set the visibility of given Layer object. Pass true for 'makeVisible' to 
 // show the layer, false to hide it. If the current layer is hidden, current 
 // layer is switched to the next highest visible layer, or next lowest if next 
