@@ -13,21 +13,23 @@ function JsColorPicker(id, elt, delegate, action, inputElement) {
 	this.inputElement = inputElement;
 	this.jscolor = new jscolor.color(this.inputElement, {
 		hash: true,
+		caps: false,
 		pickerOnfocus: false,
-		pickerPosition: "top",
+		pickerPosition: "left",
 		pickerFace: 3,
 		pickerBorder: 0,
 		pickerFaceColor: "black",
 		pickerInsetColor: "white"
 	});
 	
-	this.originalColor = null;        // Color at beginning of activation
+	this.originalColor = null;          // color at activation
+	this.lastColor = null;              // last picked color
 }
 Util.extend(JsColorPicker, GuiControl);
 
 JsColorPicker.prototype.activate = function() {
-	this.jscolor.showPicker();
 	this.originalColor = this.getColor();
+	this.jscolor.showPicker();
 	
 	window.addEventListener("mousedown", this, true);
 	window.addEventListener("click", this, true);
@@ -45,6 +47,7 @@ JsColorPicker.prototype.deactivate = function() {
 };
 
 JsColorPicker.prototype.setColor = function(color) {
+	this.lastColor = color;
 	this.jscolor.fromString(color);
 };
 
@@ -54,45 +57,46 @@ JsColorPicker.prototype.getColor = function() {
 
 JsColorPicker.prototype.mousedown = function(evt) {
 	// Absorb mousedown event if outside picker
-	if (!this.clickedPicker(evt)) {
+	if (!this.clickWasInPicker(evt)) {
 		evt.stopPropagation();
 	}
 };
 
-JsColorPicker.prototype.clickedPicker = function(evt) {
+JsColorPicker.prototype.clickWasInPicker = function(evt) {
 	return evt.target.compareDocumentPosition(jscolor.picker.boxB) & Node.DOCUMENT_POSITION_CONTAINS;
 };
 
-// Invoke delegate action with the given color
-JsColorPicker.prototype.finalizeColor = function(color) {
+// Update delegate with the given color
+JsColorPicker.prototype.updateDelegate = function(color) {
 	// Do not invoke delegate action if color has not changed
-	if (this.getColor != this.originalColor) {
+	if (color != this.lastColor) {
+		this.lastColor = color;
 		this.invokeAction(this, color);
-	}
-	
-	this.deactivate();
-};
-
-JsColorPicker.prototype.click = function(evt) {
-	// If click wasn't directed at color picker, notify delegate of new color 
-	// selection, deactivate picker, and absorb click event.
-	if (!this.clickedPicker(evt)) {
-		this.finalizeColor(this.getColor());
-		evt.stopPropagation();
 	}
 };
 
 JsColorPicker.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
-		case UserInterface.enterKeyCode:
 		case UserInterface.escKeyCode:
 			// If user hit 'escape' key, reset color
-			this.finalizeColor(evt.keyCode == UserInterface.escKeyCode ? this.originalColor : this.getColor());
+			this.updateDelegate(this.originalColor);
+			
+		case UserInterface.enterKeyCode:
+			this.deactivate();
 			evt.stopPropagation();
 			break;
 	}
 };
 
 JsColorPicker.prototype.change = function(evt) {
-	this.invokeAction(this, this.getColor(), true);
+	// Update workspace colors with each pick
+	this.updateDelegate(this.getColor());
+};
+
+JsColorPicker.prototype.click = function(evt) {
+	// If click wasn't directed at color picker, deactivate picker, and absorb event.
+	if (!this.clickWasInPicker(evt)) {
+		this.deactivate();
+		evt.stopPropagation();
+	}
 };
