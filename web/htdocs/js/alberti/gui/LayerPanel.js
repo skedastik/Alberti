@@ -6,7 +6,8 @@
  * 
  * * */
 
-LayerPanel.collapseWidth            = "170px";     // How much is the layer panel collapsed?
+LayerPanel.defaultPosition          = "-10px";     // Layer panel's default position
+LayerPanel.collapsePosition         = "-180px";     // Layer panel's collapsed position
 LayerPanel.collapseTransitionLength = 0.25;        // Collapse animation length in seconds
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
@@ -116,9 +117,9 @@ LayerPanel.prototype.toggleCollapse = function() {
 	
 	this.collapseAnimation.add(
 		this.mainDivNode.style,
-		"left",
-		this.mainDivNode.style.left ? this.mainDivNode.style.left : "0px",
-		this.isCollapsed ? "-"+LayerPanel.collapseWidth : "0px",
+		"right",
+		this.mainDivNode.style.right ? this.mainDivNode.style.right : LayerPanel.defaultPosition,
+		this.isCollapsed ? LayerPanel.collapsePosition : LayerPanel.defaultPosition,
 		-1.0
 	);
 	
@@ -145,7 +146,7 @@ LayerPanel.prototype.handleColorWell = function(button, evt) {
 	row.jscolorPicker.activate();
 };
 
-LayerPanel.prototype.handleJsColorPicker = function(jscolorPicker, color) {
+LayerPanel.prototype.handleJsColorPicker = function(jscolorPicker, color, rewindUndos) {
 	this.controller.setLayerColor(jscolorPicker.id, color);
 };
 
@@ -263,10 +264,10 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controll
 	this.layerNameGuiField = new GuiTextField(rowId, this.layerNameInput, controller, "handleLayerNameField", true);
 	
 	this.rowDiv.appendChild(this.layerNameInput);
-	this.rowDiv.appendChild(this.layerNameDiv);
 	this.rowDiv.appendChild(this.jscolorInput);
 	this.rowDiv.appendChild(this.colorWellDiv);
 	this.rowDiv.appendChild(this.visibilityToggleDiv);
+	this.rowDiv.appendChild(this.layerNameDiv);
 }
 
 LayerPanelRow.prototype.getName = function() {
@@ -274,7 +275,7 @@ LayerPanelRow.prototype.getName = function() {
 };
 
 LayerPanelRow.prototype.setName = function(name) {
-	this.layerNameDiv.innerHTML = newLayerName;
+	this.layerNameDiv.innerHTML = name;
 };
 
 LayerPanelRow.prototype.getColor = function() {
