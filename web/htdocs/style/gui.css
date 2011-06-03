@@ -1,14 +1,14 @@
 #layer_panel {
 	position: absolute;
 	bottom: 26px;
-	margin-left: -10px;
+	right: -10px;
 	
 	font-family: "Lucida Grande", Arial, sans-serif;
 	font-size: 14px;
 }
 
 #layer_panel_dynamic {
-	border-top-right-radius: 13px;
+	border-top-left-radius: 13px;
 	color: #ddd;
 	text-shadow: 1px 1px 0px #222;
 	background-color: #000;
@@ -16,7 +16,7 @@
 
 #layer_panel_control_strip {
 	border-bottom: 1px solid #333;
-	border-bottom-right-radius: 13px;
+	border-bottom-left-radius: 13px;
 	color: #888;
 	background-color: #fff;
 }
@@ -27,17 +27,17 @@
 	significantly in Safari. For now, we must live with solid borders. One
 	day, the borders will fall.
 	
-	-o-box-shadow: 1px 1px 2px #888;
-	-moz-box-shadow: 1px 1px 2px #888;
-	-webkit-box-shadow: 1px 1px 2px #888;
+	-o-box-shadow: -1px 1px 2px #888;
+	-moz-box-shadow: -1px 1px 2px #888;
+	-webkit-box-shadow: -1px 1px 2px #888;
 */
-	border-right: 1px solid #333;
+	border-left: 1px solid #333;
 }
 
 .layer_panel_row {
 	width: 210px;
 	height: 17px;
-	padding: 4px 4px 5px 16px;
+	padding: 4px 14px 5px 4px;
 	border-bottom: 1px solid #444;
 	
 	overflow: hidden;
@@ -60,17 +60,11 @@
 	cursor: auto;
 }
 
-.layer_panel_row, .layer_name {
-	-webkit-user-select: none;
-	-moz-user-select: -moz-none;
-	-khtml-user-select: none;
-	user-select: none;
-}
-
 .layer_name {
 	float: left;
 	cursor: text;
 	
+	margin-left: 4px;
 	max-width: 150px;
 	
 	overflow: hidden;
@@ -85,11 +79,11 @@
 .lp_collapse_button {
 	width: 18px;
 	height: 18px;
-	margin-right: 4px;
+	margin-left: 4px;
 
 	background-color: white;
 	
-	float: right;
+	float: left;
 	
 	cursor: pointer;
 }
@@ -107,17 +101,17 @@
 }
 
 .new_layer_button {
-	float: left;
+	float: right;
 	background-color: blue;
 }
 
 .delete_layer_button {
-	float: left;
+	float: right;
 	background-color: red;
 }
 
 .lp_collapse_button {
-	margin-right: 0px;
+	margin-left: 0px;
 	background-color: black;
 }
 
@@ -130,7 +124,7 @@
 	height: 16px;
 	margin: 1px;
 	
-	float: right;
+	float: left;
 	
 	border-radius: 8px;
 	
@@ -144,12 +138,12 @@
 
 .layer_name_input {
 	position: relative;
-	left: -5px;
+	left: 4px;
 	top: -3px;
 	
 	margin: 0;
 	
-	width: 212px;
+	width: 164px;
 	
 	font-family: "Lucida Grande", Arial, sans-serif;
 	font-size: 14px;
@@ -157,14 +151,14 @@
 
 input.color {
 	position: relative;
-	margin-left: -7px;
-	left: 7px;
+	margin-right: -7px;
+	right: 4px;
 	
 	padding: 0;
 	
 	width: 1px;
 	height: 1px;
 	
-	float: right;
+	float: left;
 	visibility: hidden;
 }
