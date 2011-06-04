@@ -75,8 +75,8 @@
  * instance of an Array object. Attempting to do so will generate an 
  * exception.
  * 
- * Also, the delegated object may share a property name with the Delegate. An 
- * exception will be thrown if this is the case (though it is unlikely).
+ * Also, an exception will be thrown if the names of an object's properties 
+ * collide with its delegate's.
  * 
  * Finally, it was mentioned above that delegate methods are invoked _before_
  * corresponding object methods. The reason for this is to support recursive
@@ -86,7 +86,7 @@
  *       this.lives = 9;
  *    }
  *    
- *    Cat.prototype.die = function(lives) {
+ *    Cat.prototype.die = function() {
  *       console.log("Cat has died.");
  *       if (--this.lives > 0) {
  *          this.die();
