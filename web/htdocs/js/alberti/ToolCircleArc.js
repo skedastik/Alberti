@@ -44,6 +44,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 				this.registerShape(l, "radius_line");
 				this.sendShapeToUnderlay("radius_circle");
 			} else {
+				// Do not advance to next step if radius is 0
 				this.decrementStep();
 				break;
 			}
@@ -74,13 +75,18 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					break;
 					
 				case 1:
-					var deltaAngleLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
-					var deltaAnglePoint = Point.fromCoord(deltaAngleLine.p2).generate();
+					if (this.getShape("arc"+(stepNum - 1)).deltaAngle > 0) {
+						var deltaAngleLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
+						var deltaAnglePoint = Point.fromCoord(deltaAngleLine.p2).generate();
 					
-					this.registerShape(deltaAnglePoint, "delta_angle_point"+stepNum);
-					this.registerShape(deltaAngleLine, "delta_angle_line"+stepNum, true);
+						this.registerShape(deltaAnglePoint, "delta_angle_point"+stepNum);
+						this.registerShape(deltaAngleLine, "delta_angle_line"+stepNum, true);
 					
-					this.bakeShape("arc"+(stepNum - 1));
+						this.bakeShape("arc"+(stepNum - 1));
+					} else {
+						// Do not advance to next step if delta angle is 0
+						this.decrementStep();
+					}
 					break;
 			}
 			break;
