@@ -51,7 +51,6 @@ text {
 }
 
 body {
-	/* Currently, these are the best options for preventing text/object selection */
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
