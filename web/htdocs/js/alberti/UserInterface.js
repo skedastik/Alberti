@@ -151,14 +151,6 @@ function UserInterface(bertiDoc) {
 	this.currentTool = null;
 	this.setTool(UserInterface.defaultTool);
 	
-	// var img = new Image().generate();
-	// img.url = "images/scott_caple.tiff";
-	// img.center.x = img.center.y = 0;
-	// img.width = 1280;
-	// img.height = 1280;
-	// // img.set("opacity", "0.5");
-	// this.underlayGroup.attachChild(img);
-	
 	this.leftMouseDown = false;
 	
 	// Set up listeners at the window level
