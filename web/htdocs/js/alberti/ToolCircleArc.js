@@ -75,7 +75,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					break;
 					
 				case 1:
-					if (this.getShape("arc"+(stepNum - 1)).deltaAngle > 0) {
+					if (this.getShape("arc"+(stepNum - 1)).deltaAngle != 0) {
 						var deltaAngleLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
 						var deltaAnglePoint = Point.fromCoord(deltaAngleLine.p2).generate();
 					
