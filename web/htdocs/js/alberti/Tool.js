@@ -437,14 +437,7 @@ Tool.prototype.bake = function() {
 		var shapes = this.steps[i].shapes;
 		for (var name in shapes) {
 			if (shapes[name].bakeFlag) {
-				var shape = this.unregisterShape(name);
-				
-				// Register shape insertion with the undo manager
-				this.undoManager.push("Insert Shape", this.layerManager,
-					this.layerManager.insertShape, [shape],
-					this.layerManager.deleteShape, [shape]
-				);
-				this.layerManager.insertShape(shape);
+				this.layerManager.insertShape(this.unregisterShape(name));
 			}
 		}
 	}

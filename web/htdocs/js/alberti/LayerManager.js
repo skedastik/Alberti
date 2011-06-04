@@ -96,13 +96,7 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	
 	// Delete the layer's shapes in bulk.
 	while (targetLayer.shapes.length > 0) {
-		var shape = targetLayer.shapes.peek();
-		
-		this.undoManager.push("Delete Shape", this,
-			this.deleteShape, [shape, true],
-			this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]
-		);
-		this.deleteShape(shape, true);
+		this.deleteShape(targetLayer.shapes.peek(), true);
 	}
 	
 	// Flush the bulk deletion
@@ -304,7 +298,7 @@ LayerManager.prototype.getNumberOfVisibleLayers = function() {
 // Append the given Shape, optionally providing a target layer object 
 // (defaults to the current layer). An Alberti sid is automatically assigned 
 // to the shape if it doesn't already have one. Returns the shape's Alberti 
-// sid.
+// sid. Undo-able.
 LayerManager.prototype.insertShape = function(newShape, targetLayer) {	
 	var sid = newShape.getSid();
 	
@@ -328,12 +322,18 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	this.shapeCount++;
 	this.sidCounter++;
 	
+	// Make it undo-able
+	this.undoManager.push("Insert Shape", this,
+		this.insertShape, [newShape, targetLayer],
+		this.deleteShape, [newShape]
+	);
+	
 	return sid;
 };
 
 // Delete the given Shape. Pass true for bulk if you are deleting shapes in 
-// bulk (keeping in mind that you must later call the Intersection object's 
-// "flush" method). Returns the Shape object.
+// bulk (keeping in mind that you must later call the "flush" method of 
+// LayerManager's "intersections" ivar). Returns the Shape object.  Undo-able.
 LayerManager.prototype.deleteShape = function(shape, bulk) {
 	var sid = shape.getSid();
 	var layer = this.shapeIndex[sid].layer;
@@ -352,6 +352,12 @@ LayerManager.prototype.deleteShape = function(shape, bulk) {
 	this.intersections.testShape(shape, this.getVisibleShapes(),
 		bulk ? Intersection.bulkDeleteFlag : Intersection.deleteFlag);
 	
+	// Make it undo-able
+	this.undoManager.push("Delete Shape", this,
+		this.deleteShape, [shape, bulk],
+		this.insertShape, [shape, layer]
+	);
+	
 	return shape;
 };
 
@@ -364,13 +370,6 @@ LayerManager.prototype.deleteSelectedShapes = function() {
 		
 		// Deselect each deleted shape prior to deletion
 		this.deselectShape(shape);
-		
-		// Delete the shape, passing its layer number to the redo action so
-		// that it is added to the correct layer in case of a "redo"
-		this.undoManager.push("Delete Shape", this,
-			this.deleteShape, [shape, true],
-			this.insertShape, [shape, this.shapeIndex[shape.getSid()].layer]
-		);
 		this.deleteShape(shape, true);
 	}
 	
