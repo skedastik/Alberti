@@ -156,11 +156,7 @@ function Delegate(object, methodMap) {
 			"Delegated object has property '"+prop+"' with same name as internal property."
 		);
 		
-		if (typeof this.delegatedObject[prop] == "function") {
-			funcs.push(prop);
-		} else {
-			props.push(prop);
-		}
+		(typeof this.delegatedObject[prop] == "function" ? funcs : props).push(prop);
 	}
 	
 	// Generate getters and setters for each non-function property
