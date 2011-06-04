@@ -60,10 +60,10 @@ function UserInterface(bertiDoc) {
 	// staticUnderlayGroup contains non-interactive HUD elements, rendered 
 	// below all other groups, unaffected by dynamic coordinate system 
 	// transformations. It's origin is in the upper-left corner of the window.
-	this.staticUnderlayGroup = new Group(Alberti.svgDoc.getElementById("static_underlay"));
+	this.staticUnderlayGroup = new Group(document.getElementById("static_underlay"));
 	
 	// The root group is used to center the Alberti coordinate system's origin in the window
-	this.rootGroup = new Group(Alberti.svgDoc.getElementById("root"));
+	this.rootGroup = new Group(document.getElementById("root"));
 	
 	if (Alberti.crispLines) {
 		this.rootGroup.positionAbsolute(Alberti.halfOriginalWindowWidth, Alberti.halfOriginalWindowHeight);
@@ -76,12 +76,12 @@ function UserInterface(bertiDoc) {
 	// staticOverlayGroup contains non-interactive HUD elements, rendered 
 	// above all other groups, unaffected by dynamic coordinate system 
 	// transformations. Its origin is in the upper left corner of the window.
-	this.staticOverlayGroup = new Group(Alberti.svgDoc.getElementById("static_overlay"));
+	this.staticOverlayGroup = new Group(document.getElementById("static_overlay"));
 	
 	// masterGroup contains interactive elements and is used to perform 
 	// dynamic coordinate system transformations (namely, for panning and 
 	// zooming purposes)
-	this.masterGroup = new Group(Alberti.svgDoc.getElementById("master"));
+	this.masterGroup = new Group(document.getElementById("master"));
 	
 	if (Alberti.crispLines) {
 		this.masterGroup.set("class", "optimized");
@@ -89,11 +89,11 @@ function UserInterface(bertiDoc) {
 	
 	// underlayGroup contains UI elements that should be rendered beneath the
 	// workspace group, and beneath the center HUD
-	this.underlayGroup = new Group(Alberti.svgDoc.getElementById("underlay"));
+	this.underlayGroup = new Group(document.getElementById("underlay"));
 	
 	// The hud group contains the center HUD--an 'X' displayed at the center 
 	// of the workspace at all times.
-	this.hudGroup = new Group(Alberti.svgDoc.getElementById("hud"));
+	this.hudGroup = new Group(document.getElementById("hud"));
 	
 	// Hide the center HUD if an underlay image exists.
 	if (this.bertiDoc.underlayImage) {
@@ -102,11 +102,11 @@ function UserInterface(bertiDoc) {
 	
 	// overlayGroup contains UI elements that should be rendered above the 
 	// workspace group
-	this.overlayGroup = new Group(Alberti.svgDoc.getElementById("overlay"));
+	this.overlayGroup = new Group(document.getElementById("overlay"));
 	
 	// SVG has no shape element for individual points, so we use a special SVG
 	// group as a template.
-	var pointTemplate = new SvgContainer(Alberti.svgDoc.getElementById(Point.templateId));
+	var pointTemplate = new SvgContainer(document.getElementById(Point.templateId));
 	
 	// Register the center HUD, the master group, the Point template, and
 	// dashed-line styles for auto-scaling (see AutoScale.js for details).
@@ -114,7 +114,7 @@ function UserInterface(bertiDoc) {
 	this.autoScale.registerObject(this.masterGroup, AutoScale.lineWidth, Alberti.defaultLineWidth);
 	this.autoScale.registerObject(pointTemplate, AutoScale.scale, 1.0);
 	this.autoScale.registerObject(this.hudGroup, AutoScale.scale, 1.0);
-	this.autoScale.registerStyle(Alberti.svgDoc.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
+	this.autoScale.registerStyle(document.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
 	
 	// Create textual tool tips object
 	this.toolTip = new ToolTip(this.staticOverlayGroup);
@@ -280,6 +280,10 @@ UserInterface.prototype.mouseup = function(evt) {
 	if (evt.button == 0) {
 		this.leftMouseDown = false;
 	}
+};
+
+UserInterface.prototype.select = function(evt) {
+	Dbug.log("select event");
 };
 
 UserInterface.prototype.contextmenu = function(evt) {

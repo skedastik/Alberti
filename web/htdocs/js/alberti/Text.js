@@ -27,7 +27,7 @@ Text.prototype.initialize = function() {
 // Override SvgObject::generate since we need to generate a text node.
 Text.prototype.generate = function() {
 	Text.superclass.generate.call(this);
-	this.textNode = Alberti.svgDoc.createTextNode(this.textData);
+	this.textNode = document.createTextNode(this.textData);
 	this.svgNode.appendChild(this.textNode);
 	
 	return this;

@@ -16,14 +16,14 @@
 function AlbertiDocument() {
 	// The SVG group node with id "workspace" contains all user-created 
 	// layers, including the base layer.
-	var workspaceSvgNode = Alberti.svgDoc.getElementById("workspace");
+	var workspaceSvgNode = document.getElementById("workspace");
 	this.workspaceGroup = new Group(workspaceSvgNode);
 	
 	this.undoManager = new UndoManager(Alberti.maxUndos);
 	this.layerManager = new LayerManager(this.workspaceGroup, this.undoManager);
 	
 	// underlayImg will be null if there is no underlay image
-	var imgNode = Alberti.svgDoc.getElementById("underlayimg");
+	var imgNode = document.getElementById("underlayimg");
 	this.underlayImage = imgNode ? new FastImage(imgNode) : null;
 	
 	// Disable the undo manager during document load

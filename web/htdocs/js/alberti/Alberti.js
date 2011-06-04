@@ -5,7 +5,6 @@
  * 
  * * */
 
-Alberti.svgDoc  = window.document;                        // the SVG document
 Alberti.svgRoot;                                          // root SVG element--the <svg> node
 
 Alberti.svgns    = "http://www.w3.org/2000/svg";          // SVG XML namespace
@@ -45,7 +44,7 @@ Alberti.lineWidthDeltaOptimized = 0.01;
 Alberti.nonScalingLinesHack = true;
 
 function Alberti(evt) {
-	Alberti.svgRoot = Alberti.svgDoc.getElementById("svgroot");
+	Alberti.svgRoot = document.getElementById("svgroot");
 	
 	this.doc = new AlbertiDocument();
 	this.ui = new UserInterface(this.doc);

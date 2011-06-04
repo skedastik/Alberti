@@ -150,7 +150,7 @@ SvgObject.prototype.detach = function() {
 // Instantiate the actual SVG node. Returns self.
 SvgObject.prototype.generate = function() {
 	if (!this.svgNode) {
-		this.svgNode = Alberti.svgDoc.createElementNS(Alberti.svgns, this.svgTag);
+		this.svgNode = document.createElementNS(Alberti.svgns, this.svgTag);
 	}
 	
 	return this;
