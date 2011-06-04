@@ -27,7 +27,7 @@ CircleArc.prototype.initialize = function() {
 CircleArc.prototype.push = function() {
 	// m and n are the "endpoints" of the arc, needed for SVG's arc path format
 	var m = new Coord2D(this.center.x + this.radius * Math.sin(this.startAngle + Util.halfPi),
-			this.center.y + this.radius * -Math.cos(this.startAngle + Util.halfPi));
+		this.center.y + this.radius * -Math.cos(this.startAngle + Util.halfPi));
 	var n = new Coord2D(this.center.x + this.radius * Math.sin(this.startAngle + this.deltaAngle + Util.halfPi),
 		this.center.y + this.radius * -Math.cos(this.startAngle + this.deltaAngle + Util.halfPi));
 	
