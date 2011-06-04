@@ -213,6 +213,8 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 	if (makeVisible) {
 		if (targetLayer.isHidden()) {
 			this.numHiddenLayers--;
+			
+			targetLayer.show();
 		
 			// Add intersection points of all shapes in the layer
 			for (var i = 0, sLen = targetLayer.shapes.length; i < sLen; i++) {
@@ -225,8 +227,6 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 				this.setLayerVisibility, [targetLayer, true],
 				this.setLayerVisibility, [targetLayer, false]
 			);
-			
-			targetLayer.show();
 		}
 	} else if (!targetLayer.isHidden()) {
 		Util.assert(
