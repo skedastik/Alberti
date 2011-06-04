@@ -23,3 +23,13 @@ Shape.prototype.getBoundingBox = function() {
 		Util.roundToDecimal(svgRect.x + svgRect.width, Alberti.decimalPrecision),
 		Util.roundToDecimal(svgRect.y + svgRect.height, Alberti.decimalPrecision));
 };
+
+// Display the shape as selected
+Shape.prototype.displaySelected = function() {
+	this.set("class", "selected");
+};
+
+// Display the shape as deselected
+Shape.prototype.displayDeselected = function() {
+	this.set("class", "");
+};
