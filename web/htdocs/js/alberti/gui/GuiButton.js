@@ -19,8 +19,11 @@
  * string to display as a native tooltip (use empty string if no tool tip). 
  * If you specify a comma-separate tool tip string, the first string will be
  * used as the tool tip for the 'on' state, the second for the 'off' state.
- * Finally, you may optionally pass true for the 'respondMouseDown' argument 
- * if the button should respond to mousedown events rather than click events.
+ * You may optionally pass the mouse event type that the button should respond 
+ * to (e.g. "mouseup", "dblclick", etc.) via the 'eventType' argument 
+ * (defaults to "click"). Finally, you may pass 'true' for the
+ * 'respondsToBubbledEvents' argument if the button should respond to events
+ * bubbling up from children of the button's HTML element.
  * 
  * Buttons are disabled by default. Call GuiButton::enable to enable them.
  * Conversely, call GuiButton::disable to disable them.
@@ -37,13 +40,15 @@
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
-function GuiButton(id, elt, delegate, action, autoToggle, tooltip, respondMouseDown) {
+function GuiButton(id, elt, delegate, action, autoToggle, tooltip, eventType, respondsToBubbledEvents) {
 	GuiButton.baseConstructor.call(this, id, elt, delegate, action);
 	this.autoToggle = autoToggle;
-	this.respondMouseDown = respondMouseDown;
+	this.eventType = eventType ? eventType : "click";
+	this.respondsToBubbledEvents = respondsToBubbledEvents;
 	
 	this.tooltipOn = "";
 	this.tooltipOff = "";
+	
 	if (tooltip) {
 		var tokens = tooltip.toString().match(/^\s*([^,]+?)\s*(,\s*(.+?)\s*)?$/);
 		
@@ -52,6 +57,9 @@ function GuiButton(id, elt, delegate, action, autoToggle, tooltip, respondMouseD
 		this.tooltipOn = tokens[1];
 		this.tooltipOff = tokens[3] ? tokens[3] : this.tooltipOn;
 	}
+	
+	// Generate event handler method for button's event type
+	this[this.eventType] = this.respond;
 	
 	this.enabled = true;
 	this.toggleOn = true;
@@ -71,7 +79,7 @@ GuiButton.prototype.enable = function() {
 	if (!this.enabled) {
 		this.enabled = true;
 		Util.removeHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.addEventListener(this.respondMouseDown ? "mousedown" : "click", this, false);
+		this.htmlNode.addEventListener(this.eventType, this, false);
 	}
 	
 	return this;
@@ -82,7 +90,7 @@ GuiButton.prototype.disable = function() {
 	if (this.enabled) {
 		this.enabled = false;
 		Util.addHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.removeEventListener(this.respondMouseDown ? "mousedown" : "click", this, false);
+		this.htmlNode.removeEventListener(this.eventType, this, false);
 	}
 	
 	return this;
@@ -110,10 +118,11 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 	return this;
 };
 
-// GuiButton can respond to both click or mousedown events
-GuiButton.prototype.click = GuiButton.prototype.mousedown = function(evt) {
-	// Only invoke delegate's action if the button div itself was clicked
-	if (evt.target === this.htmlNode) {
+// Respond to the given mouse event
+GuiButton.prototype.respond = function(evt) {
+	// Only invoke delegate's action if the button div itself was clicked, or
+	// if the button responds to bubbling events.
+	if (evt.target === this.htmlNode || this.respondsToBubbledEvents) {
 		if (this.autoToggle) {
 			this.toggle();
 		}
