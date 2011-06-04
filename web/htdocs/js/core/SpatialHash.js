@@ -172,33 +172,30 @@ SpatialHash.prototype.remove = function(coordArray) {
 		var bucket = this.buckets[bucketIndex];
 		
 		if (bucket.dirty) {
-			var nodes = [];
+			var validNodes = [];
 			var k = 0;
 			
 			for (var j = 0, bLen = bucket.nodes.length; j < bLen; j++) {
 				var node = bucket.nodes[j];
 				
 				if (node) {
-					nodes.push(node);
+					validNodes.push(node);
 					
 					// This node's entry in the fast lookup table needs to be 
 					// updated with the new node index.
-					this.fastLookup[this.getLookupIndex(node)].nodeIndex = k;
-					
-					k++;
+					this.fastLookup[this.getLookupIndex(node)].nodeIndex = k++;
 				}
 			}
 			
 			// Clear null nodes from dirty buckets
-			bucket.nodes = nodes;
+			bucket.nodes = validNodes;
+			bucket.dirty = false;
 
 			// Delete the bucket if it no longer contains any nodes
 			if (bucket.nodes.length == 0) {
 				this.bucketCount--;
 				delete this.buckets[bucketIndex];
 			}
-			
-			bucket.dirty = false;
 		}
 	}
 };
