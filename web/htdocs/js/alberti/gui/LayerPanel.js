@@ -92,8 +92,9 @@ LayerPanel.prototype.deleteRow = function(rowIndex) {
 
 // Clear existing layer panel rows
 LayerPanel.prototype.clearAllRows = function() {
-	this.dynamicDivNode.innerHTML = "";
-	this.rows = [];
+	for (var i = this.rows.length - 1; i >= 0; i--) {
+		this.deleteRow(i);
+	}
 };
 
 // Highlight the specified row, signifying that it is selected
@@ -127,8 +128,8 @@ LayerPanel.prototype.toggleCollapse = function() {
 };
 
 LayerPanel.prototype.handleRowButton = function(button, evt) {
-	// Only change rows if the row itself was clicked, not one of the row's controls
-	if (evt.target === button.htmlNode) {
+	// Only change rows if the row itself, or the row's layer name was clicked
+	if (evt.target == button.htmlNode || evt.target == this.getRowWithId(button.id).layerNameDiv) {
 		// Only select row if it isn't already selected
 		if (!button.isToggled()) {
 			this.controller.switchToLayer(button.id);
@@ -227,7 +228,7 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controll
 	// Generate div representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", true);
+	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", "mousedown", true);
 	rowBtnFamily.addButton(this.rowButton);
 	
 	if (!isHidden) {
@@ -245,7 +246,7 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controll
 	this.layerNameDiv = document.createElement("div");
 	this.layerNameDiv.className = "layer_name";
 	this.layerNameDiv.innerHTML = layerName;
-	this.layerNameButton = new GuiButton(rowId, this.layerNameDiv, controller, "handleLayerNameButton", false).enable();
+	this.layerNameButton = new GuiButton(rowId, this.layerNameDiv, controller, "handleLayerNameButton", false, "", "dblclick").enable();
 	
 	// Create color well that allows user to change layer color
 	this.colorWellDiv = document.createElement("div");
