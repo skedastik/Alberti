@@ -92,7 +92,7 @@ LayerPanelRow.prototype.setColor = function(color) {
 LayerPanelRow.prototype.float = function(x, y) {
 	if (!this.floating) {
 		this.floating = true;
-		this.floatPosition = new Coord2D(x, y);
+		this.setFloatPosition(x, y);
 		
 		this.rowDiv.style.position = "absolute";
 		Util.addHtmlClass(this.rowDiv, "floating");
@@ -104,11 +104,15 @@ LayerPanelRow.prototype.float = function(x, y) {
 
 // Translate layer row. Has no effect if row is not floating.
 LayerPanelRow.prototype.translateFloatPosition = function(dx, dy) {
+	this.setFloatPosition(this.floatPosition.x + dx, this.floatPosition.y + dy);
+};
+
+// Set layer row position. Has no effect if row is not floating.
+LayerPanelRow.prototype.setFloatPosition = function(x, y) {
 	if (this.floating) {
-		this.floatPosition.x += dx;
-		this.floatPosition.y += dy;
-		
-		this.rowDiv.style.left = this.floatPosition.x+"px";
-		this.rowDiv.style.top = this.floatPosition.y+"px";
+		this.floatPosition.x = x;
+		this.floatPosition.y = y;
+		this.rowDiv.style.left = x+"px";
+		this.rowDiv.style.top = y+"px";
 	}
 };
