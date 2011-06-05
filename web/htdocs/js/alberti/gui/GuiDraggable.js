@@ -82,5 +82,6 @@ GuiDraggable.prototype.setDropTarget = function(control) {
 
 GuiDraggable.prototype.click =
 GuiDraggable.prototype.dblclick = function(evt) {
-	evt.stopPropagation();
+	evt.stopPropagation();                           // Absorb click on children
+	evt.preventDefault();                            // Absorb click on self
 };
