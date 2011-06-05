@@ -169,9 +169,21 @@ LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
 	row.layerNameGuiField.activate(row.getName());
 };
 
-LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
+LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 	// TODO: Do not allow empty layer name.
 	this.controller.setLayerName(field.id, newLayerName);
+};
+
+LayerPanel.prototype.handleBeginDragRow = function(dragger, evt) {
+	Dbug.log("Drag begin!");
+};
+
+LayerPanel.prototype.handleDragRow = function(dragger, dx, dy, evt) {
+	Dbug.log("Drag!");
+};
+
+LayerPanel.prototype.handleDropRow = function(dragger, evt) {
+	Dbug.log("Drop!");
 };
 
 LayerPanel.prototype.getRowWithId = function(rowId) {
@@ -234,6 +246,9 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controll
 	if (!isHidden) {
 		this.rowButton.enable();
 	}
+	
+	// Make the row draggable
+	this.rowDragger = new GuiDraggable(this.rowButton, "handleBeginDragRow", "handleDragRow", "handleDropRow", 10).enable();
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
