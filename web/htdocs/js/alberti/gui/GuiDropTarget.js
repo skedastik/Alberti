@@ -76,9 +76,11 @@ GuiDropTarget.prototype.mouseout = function(evt) {
 
 GuiDropTarget.prototype.mousemove = function(evt) {
 	if (this.motiveDraggableIsValid()) {
+		var pos = this.control.getClientPosition();
+		
 		// The mouse position relative to the position of the drop target
-		var dx = evt.clientX - Util.getGlobalX(this.control.htmlNode);
-		var dy = evt.clientY - Util.getGlobalY(this.control.htmlNode);
+		var dx = evt.clientX - pos.x;
+		var dy = evt.clientY - pos.y;
 		
 		this.control.invokeAction(this.mouseMoveAction, this.control, dx, dy, evt);
 	}
