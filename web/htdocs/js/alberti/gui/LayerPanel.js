@@ -142,6 +142,8 @@ LayerPanel.prototype.getRowIndexForId = function(rowId) {
 	return -1;
 }
 
+/* * * * * * * * * * * Control handler methods below * * * * * * * * * * * */
+
 LayerPanel.prototype.handleRowButton = function(button, evt) {
 	// Only change rows if the row itself, or the row's layer name was clicked
 	if (evt.target == button.htmlNode || evt.target == this.getRowWithId(button.getId()).layerNameDiv) {
@@ -151,8 +153,6 @@ LayerPanel.prototype.handleRowButton = function(button, evt) {
 		}
 	}
 };
-
-/* * * * * * * * * * * Control handler methods below * * * * * * * * * * * */
 
 LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
 	this.controller.setLayerVisibility(button.getId(), button.isToggled());
