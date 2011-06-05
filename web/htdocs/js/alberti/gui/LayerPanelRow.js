@@ -15,7 +15,7 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controll
 	// Create GuiButton representing the layer row
 	this.rowDiv = document.createElement("div");
 	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", "mousedown", true);
+	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", null, true);
 	rowBtnFamily.addButton(this.rowButton);
 	
 	if (!isHidden) {
@@ -24,7 +24,7 @@ function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controll
 	
 	// Make the row draggable
 	this.rowDragger = new GuiDraggable(
-		this.rowButton, "handleBeginDragRow", "handleDragRow", "handleDropRow", 2, "layer_row"
+		this.rowButton, "handleBeginDragRow", "handleDragRow", "handleDropRow", 3, "layer_row"
 	).enable();
 	
 	// Make the row a drop target for other layer rows
