@@ -60,7 +60,7 @@ DragHandler.prototype.mousedown = function(evt) {
 DragHandler.prototype.mousemove = function(evt) {
 	if (!this.currentlyDragging) {
 		if (Math.abs(evt.clientX - this.startX) > this.dragThreshold
-			|| Math.abs(evt.clientY - this.lastY) > this.dragThreshold
+			|| Math.abs(evt.clientY - this.startY) > this.dragThreshold
 		) {
 			// Only begin dragging when mouse has moved beyond drag threshold
 			this.currentlyDragging = true;
