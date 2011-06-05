@@ -34,5 +34,5 @@ GuiControl.prototype.invokeAction = function(action) {
 
 // Returns position of control's HTML element relative top-left of page as a Coord2D
 GuiControl.prototype.getClientPosition = function() {
-	return new Coord2D(Util.getclientX(this.htmlNode), Util.getclientY(this.htmlNode));
+	return new Coord2D(Util.getClientX(this.htmlNode), Util.getClientY(this.htmlNode));
 };
