@@ -24,7 +24,8 @@
  * * */
  
 function GuiTextField(id, elt, delegate, action, autoHide) {
-	GuiTextField.baseConstructor.call(this, id, elt, delegate, action);
+	GuiTextField.baseConstructor.call(this, id, elt, delegate);
+	this.action = action;
 	this.autoHide = autoHide;
 	
 	this.active = true;
@@ -82,7 +83,7 @@ GuiTextField.prototype.keydown = function(evt) {
 };
 
 GuiTextField.prototype.blur = function(evt) {
-	this.invokeAction(this, this.htmlNode.value);
+	this.invokeAction(this.action, this, this.htmlNode.value);
 	
 	// Focus changed, deactivate the field if it auto-hides
 	if (this.autoHide) {

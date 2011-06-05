@@ -9,7 +9,8 @@
  * * */
 
 function JsColorPicker(id, elt, delegate, action, inputElement) {
-	JsColorPicker.baseConstructor.call(this, id, elt, delegate, action);
+	JsColorPicker.baseConstructor.call(this, id, elt, delegate);
+	this.action = action;
 	this.inputElement = inputElement;
 	this.jscolor = new jscolor.color(this.inputElement, {
 		hash: true,
@@ -71,7 +72,7 @@ JsColorPicker.prototype.updateDelegate = function(color) {
 	// Do not invoke delegate action if color has not changed
 	if (color != this.lastColor) {
 		this.lastColor = color;
-		this.invokeAction(this, color);
+		this.invokeAction(this.action, this, color);
 	}
 };
 

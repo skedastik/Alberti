@@ -41,7 +41,8 @@ GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
 function GuiButton(id, elt, delegate, action, autoToggle, tooltip, eventType, respondsToBubbledEvents) {
-	GuiButton.baseConstructor.call(this, id, elt, delegate, action);
+	GuiButton.baseConstructor.call(this, id, elt, delegate);
+	this.action = action;
 	this.autoToggle = autoToggle;
 	this.eventType = eventType ? eventType : "click";
 	this.respondsToBubbledEvents = respondsToBubbledEvents;
@@ -127,6 +128,6 @@ GuiButton.prototype.respond = function(evt) {
 			this.toggle();
 		}
 	
-		this.invokeAction(this, evt);
+		this.invokeAction(this.action, this, evt);
 	}
 };
