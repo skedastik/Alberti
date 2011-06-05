@@ -64,7 +64,7 @@ JsColorPicker.prototype.mousedown = function(evt) {
 };
 
 JsColorPicker.prototype.clickWasInPicker = function(evt) {
-	return evt.target.compareDocumentPosition(jscolor.picker.boxB) & Node.DOCUMENT_POSITION_CONTAINS;
+	return Util.hasChild(jscolor.picker.boxB, evt.target);
 };
 
 // Update delegate with the given color
