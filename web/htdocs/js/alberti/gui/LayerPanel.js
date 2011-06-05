@@ -191,27 +191,28 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 	this.controller.setLayerName(field.getId(), newLayerName);
 };
 
-LayerPanel.prototype.handleBeginDragRow = function(dragger, evt) {
+LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
+	var pos = control.getClientPosition();
+	this.getRowWithId(control.getId()).float(pos.x, pos.y);
+};
+
+LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
+	this.getRowWithId(control.getId()).translateFloatPosition(dx, dy);
+};
+
+LayerPanel.prototype.handleDropRow = function(control, evt) {
 	
 };
 
-LayerPanel.prototype.handleDragRow = function(dragger, dx, dy, evt) {
+LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
 	
 };
 
-LayerPanel.prototype.handleDropRow = function(dragger, evt) {
+LayerPanel.prototype.handleRowExitDropTarget = function(control, evt) {
 	
 };
 
-LayerPanel.prototype.handleRowEnterDropTarget = function(dragger, evt) {
-	
-};
-
-LayerPanel.prototype.handleRowExitDropTarget = function(dragger, evt) {
-	
-};
-
-LayerPanel.prototype.handleRowMoveWithinDropTarget = function(dragger, dx, dy, evt) {
+LayerPanel.prototype.handleRowMoveWithinDropTarget = function(control, dx, dy, evt) {
 	
 };
 
