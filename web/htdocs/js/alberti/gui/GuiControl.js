@@ -2,10 +2,13 @@
  * GuiControl.js
  * extends EventHandler
  * 
- * An abstract GUI control class. The constructor expects four arguments. 'id' 
- * is an ID string. 'elt' is an HTML element representing the control. The 
- * 'delegate' argument is a reference to a controller object, and 'action' is
- * a method name belonging to that object.
+ * A generic GUI control class.
+ * 
+ * USAGE
+ * 
+ * The constructor expects three arguments. 'id' is an ID string. 'elt' is an 
+ * HTML element representing the control. The 'delegate' argument is a 
+ * reference to a controller object.
  * 
  * * */
  
@@ -27,4 +30,9 @@ GuiControl.prototype.invokeAction = function(action) {
 		var args = Array.prototype.slice.call(arguments, 1);
 		this.delegate[action].apply(this.delegate, args);
 	}
+};
+
+// Returns position of control's HTML element relative top-left of page as a Coord2D
+GuiControl.prototype.getClientPosition = function() {
+	return new Coord2D(Util.getclientX(this.htmlNode), Util.getclientY(this.htmlNode));
 };
