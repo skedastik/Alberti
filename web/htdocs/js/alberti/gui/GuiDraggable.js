@@ -53,6 +53,10 @@ GuiDraggable.prototype.disable = function() {
 GuiDraggable.prototype.onDragBegin = function(evt) {
 	GuiDraggable.motiveDraggable = this;
 	this.control.invokeAction(this.beginDragAction, this.control, evt);
+	
+	// Absorb click events during dragging so child elements don't get activated
+	this.control.htmlNode.addEventListener("click", this, true);
+	this.control.htmlNode.addEventListener("dblclick", this, true);
 };
 
 GuiDraggable.prototype.onDrag = function(dx, dy, evt) {
@@ -63,11 +67,20 @@ GuiDraggable.prototype.onDrop = function(evt) {
 	GuiDraggable.motiveDraggable = null;
 	this.control.invokeAction(this.dropAction, this.control, this.currentDropTarget, evt);
 	
-	// Clear current drop target when the control is dropped
-	this.currentDropTarget = null;
+	// Dropped, stop absorbing click events after a short timeout. The timeout
+	// is necessary because clicks and double clicks occur after a mouseup.
+	window.setTimeout(function() {
+		this.control.htmlNode.removeEventListener("click", this, true);
+		this.control.htmlNode.removeEventListener("dblclick", this, true);
+	}.bindTo(this), 1);
 };
 
 // Automatically invoked by GuiDropTarget
 GuiDraggable.prototype.setDropTarget = function(control) {
 	this.currentDropTarget = control;
+};
+
+GuiDraggable.prototype.click =
+GuiDraggable.prototype.dblclick = function(evt) {
+	evt.stopPropagation();
 };
