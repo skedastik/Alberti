@@ -193,8 +193,16 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 };
 
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
+	var rowHeight = control.htmlNode.clientHeight + 1;
+	
+	// Insert a vanishing row in floating row's place
+	var index = this.getRowIndexForId(control.getId());
+	var row = this.rows[index];
+	this.insertRow(LayerPanelRow.createVanishingRow(rowHeight), index);
+	
+	// Separate row from panel, adjusting its position to account for vanishing row
 	var pos = control.getClientPosition();
-	this.getRowWithId(control.getId()).float(pos.x, pos.y);
+	row.float(pos.x, pos.y + rowHeight);
 };
 
 LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
