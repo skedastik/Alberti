@@ -27,6 +27,9 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	// Add control strip buttons to control strip div
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
 	
+	// Parameters for layer row drag/drop
+	this.insertionIndex = -1;
+	
 	this.isCollapsed = false;
 	this.collapseAnimation = null;
 }
@@ -41,13 +44,10 @@ LayerPanel.prototype.setController = function(controller) {
 // optionally specify a row index to insert before (i.e. directly below) that 
 // row, otherwise the row is placed above all other rows.
 LayerPanel.prototype.newRow = function(layerName, color, isHidden, beforeRowIndex) {
-	var newRow = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, color, isHidden, this);
-	this.insertRow(newRow)
-	
-	return newRow.rowId;
+	return this.insertRow(new LayerPanelRow("row"+this.rowIdCounter++, layerName, color, isHidden, this)).rowId;
 };
 
-// Insert given LayerPanelRow, optionally before the given row index.
+// Insert given LayerPanelRow, optionally before the given row index. Returns same row.
 LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
@@ -73,6 +73,11 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 		
 		this.rows.push(newRow);
 	}
+	
+	// Add new row to layer panel's row button family
+	this.rowBtnFamily.addButton(newRow.rowButton);
+	
+	return newRow;
 };
 
 // Delete the row with given row index
@@ -195,10 +200,13 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
 	var rowHeight = control.htmlNode.clientHeight + 1;
 	
-	// Insert a vanishing row in floating row's place
+	// Insert a vanishing row in dragged row's place
 	var index = this.getRowIndexForId(control.getId());
 	var row = this.rows[index];
-	this.insertRow(LayerPanelRow.createVanishingRow(rowHeight), index);
+	this.insertRow(LayerPanelRow.createVanishingRow(rowHeight, function() {
+		// Callback should delete vanishing row
+		this.deleteRow(index);
+	}.bindTo(this)), index);
 	
 	// Separate row from panel, adjusting its position to account for vanishing row
 	var pos = control.getClientPosition();
@@ -214,6 +222,7 @@ LayerPanel.prototype.handleDropRow = function(control, evt) {
 };
 
 LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
+	this.insertionIndex = getRowIndexForId(control.getId());
 	
 };
 
