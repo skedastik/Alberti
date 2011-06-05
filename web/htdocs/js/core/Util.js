@@ -40,7 +40,7 @@ var Util = {
 	},
 	
 	// Get y-coordinate of element's origin relative to top of page
-	getclientY: function(element) {
+	getClientY: function(element) {
 	   var y = 0;
 
 	   do {
@@ -51,7 +51,7 @@ var Util = {
 	},
 	
 	// Get x-coordinate of element's origin relative to left of page
-	getclientX: function(element) {
+	getClientX: function(element) {
 	   var x = 0;
 
 	   do {
