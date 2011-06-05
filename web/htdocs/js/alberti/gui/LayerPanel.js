@@ -211,7 +211,7 @@ LayerPanel.prototype.handleRowExitDropTarget = function(dragger, evt) {
 	
 };
 
-LayerPanel.prototype.handleRowMoveWithinDropTarget = function(dragger, evt) {
+LayerPanel.prototype.handleRowMoveWithinDropTarget = function(dragger, dx, dy, evt) {
 	
 };
 

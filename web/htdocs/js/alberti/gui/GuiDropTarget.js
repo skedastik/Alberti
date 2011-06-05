@@ -51,10 +51,11 @@ GuiDropTarget.prototype.disable = function() {
 	return this;
 };
 
+// Returns true if the currently dragged GuiDraggable has the same drop target class.
 GuiDropTarget.prototype.motiveDraggableIsValid = function() {
 	return (
 		GuiDraggable.motiveDraggable 
-		&& GuiDraggable.motiveDraggable.control != this.control
+		&& GuiDraggable.motiveDraggable.control != this.control                   // exclude self
 		&& GuiDraggable.motiveDraggable.dropTargetClass == this.dropTargetClass
 	);
 };
@@ -75,7 +76,10 @@ GuiDropTarget.prototype.mouseout = function(evt) {
 
 GuiDropTarget.prototype.mousemove = function(evt) {
 	if (this.motiveDraggableIsValid()) {
-		// TODO: Return coordinates relative to control origin
-		this.control.invokeAction(this.mouseMoveAction, this.control, evt);
+		// The mouse position relative to the position of the drop target
+		var dx = evt.clientX - Util.getGlobalX(this.control.htmlNode);
+		var dy = evt.clientY - Util.getGlobalY(this.control.htmlNode);
+		
+		this.control.invokeAction(this.mouseMoveAction, this.control, dx, dy, evt);
 	}
 };
