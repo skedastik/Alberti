@@ -23,6 +23,8 @@ GuiControl.prototype.getId = function() {
 
 // Invoke the given action with following arguments
 GuiControl.prototype.invokeAction = function(action) {
-	var args = Array.prototype.slice.call(arguments, 1);
-	this.delegate[action].apply(this.delegate, args);
+	if (this.delegate[action]) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		this.delegate[action].apply(this.delegate, args);
+	}
 };
