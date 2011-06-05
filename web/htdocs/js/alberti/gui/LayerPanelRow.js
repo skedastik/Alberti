@@ -5,6 +5,9 @@
  * 
  * * */
 
+// Length of vanishing row animation for drag/drop purposes
+LayerPanelRow.vanishAnimationLength = 0.1;
+
 function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controller) {
 	this.rowId = rowId;
 	
@@ -116,3 +119,25 @@ LayerPanelRow.prototype.setFloatPosition = function(x, y) {
 		this.rowDiv.style.top = y+"px";
 	}
 };
+
+// Generate a pseudo-row with given height (in pixels) that will shrink and 
+// vanish once inserted.
+LayerPanelRow.createVanishingRow = function(height) {
+	height = height+"px";
+	
+	var pseudoRow = {rowDiv: document.createElement("div")};
+	pseudoRow.rowDiv.style.height = height;
+	
+	// Create vanishing animation
+	var animation = new Animation(LayerPanelRow.vanishAnimationLength, function() {
+		if (pseudoRow.rowDiv.parentNode) {
+			// Remove vanishing row from doc once shrink animation concludes
+			pseudoRow.rowDiv.parentNode.removeChild(pseudoRow.rowDiv);
+		}
+	});
+	
+	animation.add(pseudoRow.rowDiv.style, "height", height, "0px", -1.0);
+	animation.begin();
+	
+	return pseudoRow;
+}
