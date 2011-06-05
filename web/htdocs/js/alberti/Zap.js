@@ -27,7 +27,7 @@ Zap.maxWheelEvtPerSec = 30;
 Zap.wheelEvtRefreshMs = Math.round(1000 / Zap.maxWheelEvtPerSec);
 
 function Zap(masterGroup, autoScale, bertiDoc, toolTip) {
-	DragHandler.baseConstructor.call(this);
+	Zap.baseConstructor.call(this);
 	this.masterGroup = masterGroup;
 	this.autoScale = autoScale;
 	this.bertiDoc = bertiDoc;
