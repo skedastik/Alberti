@@ -79,7 +79,7 @@ LayerPanelController.prototype.setLayerColor = function(rowId, newColor) {
 /* * * * * * * * * * Layer panel-related methods below * * * * * * * * * * */
 
 LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
-	var rowId = this.layerPanel.insertNewRow(
+	var rowId = this.layerPanel.newRow(
 		newLayer.name,
 		newLayer.color,
 		newLayer.isHidden(),
