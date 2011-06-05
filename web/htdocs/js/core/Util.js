@@ -39,6 +39,33 @@ var Util = {
 		}
 	},
 	
+	// Get y-coordinate of element's origin relative to top of page
+	getGlobalY: function(element) {
+	   var y = 0;
+
+	   do {
+	      y += element.offsetTop;
+	   } while ((element = element.offsetParent));
+
+	   return y;
+	},
+	
+	// Get x-coordinate of element's origin relative to left of page
+	getGlobalX: function(element) {
+	   var x = 0;
+
+	   do {
+	      x += element.offsetLeft;
+	   } while ((element = element.offsetParent));
+
+	   return x;
+	},
+	
+	// Returns true if parent element has the given child element, false otherwise
+	hasChild: function(parent, child) {
+		return child ? (child.compareDocumentPosition(parent) & Node.DOCUMENT_POSITION_CONTAINS ? true : false) : false;
+	},
+	
 	// Get first non-text child of specified element (null if none found)
 	firstNonTextChild: function(element) {
 		if (element.firstChild) {
