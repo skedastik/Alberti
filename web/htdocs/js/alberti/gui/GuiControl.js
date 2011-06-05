@@ -9,12 +9,11 @@
  * 
  * * */
  
-function GuiControl(id, elt, delegate, action) {
+function GuiControl(id, elt, delegate) {
 	GuiControl.baseConstructor.call(this);
 	this.id = id;
 	this.htmlNode = elt;
 	this.delegate = delegate;
-	this.action = action;
 }
 Util.extend(GuiControl, EventHandler);
 
@@ -22,7 +21,8 @@ GuiControl.prototype.getId = function() {
 	return this.id;
 };
 
-// Invoke the delegate's action method with the given arguments
-GuiControl.prototype.invokeAction = function() {
-	this.delegate[this.action].apply(this.delegate, arguments);
+// Invoke the given action with following arguments
+GuiControl.prototype.invokeAction = function(action) {
+	var args = Array.prototype.slice.call(arguments, 1);
+	this.delegate[action].apply(this.delegate, args);
 };
