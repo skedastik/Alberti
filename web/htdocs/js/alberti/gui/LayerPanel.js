@@ -187,8 +187,9 @@ LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
 };
 
 LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
-	// TODO: Do not allow empty layer name.
-	this.controller.setLayerName(field.getId(), newLayerName);
+	if (newLayerName != "" && !newLayerName.match(/^\s+$/)) {
+		this.controller.setLayerName(field.getId(), newLayerName);
+	}
 };
 
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
