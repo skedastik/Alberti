@@ -83,7 +83,7 @@ GuiTextField.prototype.keydown = function(evt) {
 };
 
 GuiTextField.prototype.blur = function(evt) {
-	this.invokeAction(this.action, this, this.htmlNode.value);
+	this.invokeAction(this.action, this, this.htmlNode.value, evt);
 	
 	// Focus changed, deactivate the field if it auto-hides
 	if (this.autoHide) {
