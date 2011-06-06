@@ -54,7 +54,7 @@ GuiDropTarget.prototype.disable = function() {
 // Returns true if the currently dragged GuiDraggable has the same drop target class.
 GuiDropTarget.prototype.motiveDraggableIsValid = function() {
 	return (
-		GuiDraggable.motiveDraggable ? true : false
+		(GuiDraggable.motiveDraggable ? true : false)
 		&& GuiDraggable.motiveDraggable.control != this.control                   // exclude self
 		&& GuiDraggable.motiveDraggable.dropTargetClass == this.dropTargetClass
 	);
