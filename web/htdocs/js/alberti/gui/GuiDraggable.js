@@ -91,3 +91,10 @@ GuiDraggable.prototype.dblclick = function(evt) {
 	evt.stopPropagation();                           // Absorb click on children
 	evt.preventDefault();                            // Absorb click on self
 };
+
+GuiDraggable.prototype.mousedown = function(evt) {
+	// Don't initiate dragging if mousedown started in a text input
+	if (evt.target.tagName != "input") {
+		GuiDraggable.superclass.mousedown.call(this, evt);
+	}
+};
