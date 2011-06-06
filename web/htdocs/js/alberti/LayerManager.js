@@ -151,14 +151,18 @@ LayerManager.prototype.switchToHighestVisibleLayer = function() {
 
 // Switch to next visible layer above current layer, wrapping around if necessary
 LayerManager.prototype.switchToVisibleLayerAboveCurrentLayer = function() {
-	var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
-	this.switchToLayer(nextLayer ? nextLayer : this.getNextHighestVisibleLayer());
+	if (this.layers.length > 1) {
+		var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
+		this.switchToLayer(nextLayer ? nextLayer : this.getNextHighestVisibleLayer());
+	}
 };
 
 // Switch to next visible layer below current layer, wrapping around if necessary
 LayerManager.prototype.switchToVisibleLayerBelowCurrentLayer = function() {
-	var prevLayer = this.getNextLowestVisibleLayer(this.currentLayer);
-	this.switchToLayer(prevLayer ? prevLayer : this.getNextLowestVisibleLayer());
+	if (this.layers.length > 1) {
+		var prevLayer = this.getNextLowestVisibleLayer(this.currentLayer);
+		this.switchToLayer(prevLayer ? prevLayer : this.getNextLowestVisibleLayer());
+	}
 };
 
 // Set name of given Layer object. Undoable.
