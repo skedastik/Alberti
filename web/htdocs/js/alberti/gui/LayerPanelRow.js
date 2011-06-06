@@ -7,15 +7,9 @@
 
 // Class names for styling purposes
 LayerPanelRow.styleFloating = "floating"
-LayerPanelRow.styleDropTargetBelow = "drop_target_below";
-LayerPanelRow.styleDropTargetAbove = "drop_target_above";
 
 function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	this.rowId = rowId;
-	
-	// Used for drag and drop
-	this.floating = false;
-	this.floatPosition = new Coord2D(0, 0);
 	
 	// Create GuiButton representing the layer row
 	this.rowDiv = document.createElement("div");
@@ -89,37 +83,4 @@ LayerPanelRow.prototype.getColor = function() {
 LayerPanelRow.prototype.setColor = function(color) {
 	this.colorWellDiv.style.backgroundColor = color;
 	this.jscolorPicker.setColor(color);
-};
-
-// Detach the layer panel row from its current parent and append it to the
-// document body as an absolutely-positioned element at (x,y).
-LayerPanelRow.prototype.float = function(x, y) {
-	if (!this.floating) {
-		this.floating = true;
-		this.setFloatPosition(x, y);
-		
-		this.rowDiv.style.position = "absolute";
-		Util.addHtmlClass(this.rowDiv, LayerPanelRow.styleFloating);
-		
-		if (this.rowDiv.parentNode) {
-			this.rowDiv.parentNode.removeChild(this.rowDiv);
-		}
-		
-		document.body.appendChild(this.rowDiv);
-	}
-};
-
-// Translate layer row. Has no effect if row is not floating.
-LayerPanelRow.prototype.translateFloatPosition = function(dx, dy) {
-	this.setFloatPosition(this.floatPosition.x + dx, this.floatPosition.y + dy);
-};
-
-// Set layer row position. Has no effect if row is not floating.
-LayerPanelRow.prototype.setFloatPosition = function(x, y) {
-	if (this.floating) {
-		this.floatPosition.x = x;
-		this.floatPosition.y = y;
-		this.rowDiv.style.left = x+"px";
-		this.rowDiv.style.top = y+"px";
-	}
 };
