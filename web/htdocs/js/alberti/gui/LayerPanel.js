@@ -161,11 +161,10 @@ LayerPanel.prototype.createFloatingRow = function(row) {
 		var rowButton = row.rowButton;
 		var rowPos = rowButton.getClientPosition();
 	
-		this.floatingRow = document.createElement("div");
+		this.floatingRow = row.rowDiv.cloneNode(true);
 		this.halfFloatingRowHeight = Math.round(rowButton.htmlNode.clientHeight / 2);
 	
-		this.floatingRow.className = "layer_panel_row "+LayerPanelRow.styleFloating;
-		this.floatingRow.innerHTML = rowButton.htmlNode.innerHTML;
+		Util.addHtmlClass(this.floatingRow, LayerPanelRow.styleFloating);
 		this.floatingRow.style.position = "absolute";
 		this.setFloatingRowPosition(rowPos.x, rowPos.y);
 		
