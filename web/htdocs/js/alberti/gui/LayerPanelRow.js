@@ -8,6 +8,11 @@
 // Class names for styling purposes
 LayerPanelRow.styleFloating = "floating"
 
+// Layer row metrics
+LayerPanelRow.rowHeight = 26;
+LayerPanelRow.halfRowHeight = 13;
+LayerPanelRow.rowInnerHeight = 17;
+
 function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	this.rowId = rowId;
 	
