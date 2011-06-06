@@ -40,6 +40,7 @@ function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	// Create layer name text field/label
 	this.layerNameDiv = document.createElement("div");
 	this.layerNameDiv.className = "layer_name";
+	this.layerNameDiv.setAttribute("unselectable", "on");        // For Opera's sake
 	this.layerNameDiv.innerHTML = layerName;
 	this.layerNameButton = new GuiButton(
 		rowId, this.layerNameDiv, controller, "handleLayerNameButton", false, "", "dblclick"
