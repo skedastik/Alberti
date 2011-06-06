@@ -14,9 +14,6 @@ function LayerManager(layerGroup, undoManager) {
 	// Hidden layer count
 	this.numHiddenLayers = 0;
 	
-	// Used to generate layer names
-	this.layerNameCounter = 1;
-	
 	// shapeIndex contains shape records of all user-created shapes, mapped to 
 	// Alberti sid attributes. Each shape record is an object with two 
 	// properties: "shape" being a reference to the Shape object, and "layer" 
@@ -35,7 +32,7 @@ function LayerManager(layerGroup, undoManager) {
 // Generate and insert a new layer, optionally providing its name. Returns the new layer.
 LayerManager.prototype.newLayer = function(name) {
 	var newLayer = new Layer().generate();
-	newLayer.setName(name ? name : "Layer "+this.layerNameCounter);
+	newLayer.setName(name ? name : "Layer "+Layer.counter);
 	this.insertLayer(newLayer);
 	
 	return newLayer;
@@ -48,8 +45,6 @@ LayerManager.prototype.newLayer = function(name) {
 // sets current layer to inserted layer. Layer insertions are automatically 
 // registered with the undo manager.
 LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
-	this.layerNameCounter++;
-	
 	// Increment the hidden layer counter if new layer is hidden
 	if (newLayer.isHidden()) {
 		this.numHiddenLayers++;

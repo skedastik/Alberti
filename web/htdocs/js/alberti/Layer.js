@@ -10,11 +10,14 @@
  * 
  * * */
 
+Layer.counter = 0;                        // For generating unique layer names
 Layer.defaultLayerColor = "#7788ff";
 
 function Layer(svgNode) {
 	Layer.baseConstructor.call(this, svgNode ? svgNode : Group.elementTag);
 	this.shapes = [];
+	
+	Layer.counter++;
 }
 Util.extend(Layer, Group);
 
