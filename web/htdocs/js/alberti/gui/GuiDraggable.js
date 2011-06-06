@@ -54,6 +54,9 @@ GuiDraggable.prototype.onDragBegin = function(evt) {
 	GuiDraggable.motiveDraggable = this;
 	this.control.invokeAction(this.beginDragAction, this.control, evt);
 	
+	// Now that the control is being dragged, make it transparent to mouse events
+	this.control.htmlNode.style.pointerEvents = "none";
+	
 	// Absorb click events during dragging so child elements don't get activated
 	this.control.htmlNode.addEventListener("click", this, true);
 	this.control.htmlNode.addEventListener("dblclick", this, true);
@@ -67,8 +70,11 @@ GuiDraggable.prototype.onDrop = function(evt) {
 	GuiDraggable.motiveDraggable = null;
 	this.control.invokeAction(this.dropAction, this.control, this.currentDropTarget, evt);
 	
-	// Dropped, stop absorbing click events after a short timeout. The timeout
-	// is necessary because clicks and double clicks occur after a mouseup.
+	// Dragging stopped, so restore control's pointer-events property to "all"
+	this.control.htmlNode.style.pointerEvents = "all";
+	
+	// Stop absorbing click events after a short timeout. The timeout is
+	// necessary because clicks and double clicks occur after a mouseup.
 	window.setTimeout(function() {
 		this.control.htmlNode.removeEventListener("click", this, true);
 		this.control.htmlNode.removeEventListener("dblclick", this, true);
