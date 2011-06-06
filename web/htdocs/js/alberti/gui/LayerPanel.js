@@ -14,9 +14,7 @@ LayerPanel.defaultPosition          = "0px";        // Layer panel's default pos
 LayerPanel.collapsePosition         = "-160px";     // Layer panel's collapsed (hidden) position
 LayerPanel.collapseTransitionLength = 0.25;         // Collapse animation length in seconds
 LayerPanel.rowInsertAnimationLength = 0.1;          // Length of row insertion/removal for drag/drop purposes
-LayerPanel.rowSnapAnimationLength   = 0.125;        // Length of floating row "bungee" animation for drag/drop purposes
-
-LayerPanel.floatingRowOpacity       = 0.5;
+LayerPanel.rowSnapAnimationLength   = 0.125;        // Length of ghost row "bungee" animation for drag/drop purposes
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	LayerPanel.baseConstructor.call(this);
@@ -35,9 +33,9 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	this.collapseAnimation = null;
 	
 	// Parameters for layer row drag/drop
-	this.floatingRow = null;                      // A fixed-position row div that follows the mouse during drag
-	this.originalFloatPosition = null;            // Position of floating row at creation
-	this.floatPosition = new Coord2D(0, 0);       // Current position of floating row
+	this.ghostRow = null;                         // A fixed-position row div that follows the mouse during drag
+	this.ghostOriginalPosition = null;            // Position of ghost row at creation
+	this.ghostPosition = new Coord2D(0, 0);       // Current position of ghost row
 	this.dropTargetIndex = -1;                    // Index of dragged row's current drop target (another layer row)
 }
 Util.extend(LayerPanel, EventHandler);
@@ -169,47 +167,46 @@ LayerPanel.prototype.getRowIndexForId = function(rowId) {
 	return -1;
 }
 
-// Create a floating row on-demand for drag/drop purposes. Its contents will
+// Create a ghost row on-demand for drag/drop purposes. Its contents will
 // be copied from the given row.
-LayerPanel.prototype.createFloatingRow = function(row) {
-	if (!this.floatingRow) {
+LayerPanel.prototype.createGhostRow = function(row) {
+	if (!this.ghostRow) {
 		var rowButton = row.rowButton;
 		var rowPos = rowButton.getClientPosition();
 	
-		this.originalFloatPosition = rowPos.clone();
-		this.floatingRow = row.rowDiv.cloneNode(true);
+		this.ghostOriginalPosition = rowPos.clone();
+		this.ghostRow = row.rowDiv.cloneNode(true);
 	
-		// Make the floating row transparent to mouse events
-		this.floatingRow.style.pointerEvents = "none";
+		// Make the ghost row transparent to mouse events
+		this.ghostRow.style.pointerEvents = "none";
 		
-		Util.addHtmlClass(this.floatingRow, LayerPanelRow.styleFloating);
-		this.floatingRow.style.position = "fixed";
-		this.floatingRow.style.opacity = LayerPanel.floatingRowOpacity;
-		this.setFloatingRowPosition(rowPos.x, rowPos.y);
+		Util.addHtmlClass(this.ghostRow, LayerPanelRow.styleGhost);
+		this.ghostRow.style.position = "fixed";
+		this.setGhostRowPosition(rowPos.x, rowPos.y);
 	
-		document.body.appendChild(this.floatingRow);
+		document.body.appendChild(this.ghostRow);
 	}
 };
 
-LayerPanel.prototype.deleteFloatingRow = function() {
-	if (this.floatingRow) {
-		this.floatingRow.parentNode.removeChild(this.floatingRow);
-		this.floatingRow = null;
+LayerPanel.prototype.deleteGhostRow = function() {
+	if (this.ghostRow) {
+		this.ghostRow.parentNode.removeChild(this.ghostRow);
+		this.ghostRow = null;
 	}
 };
 
-// Set the floating row position
-LayerPanel.prototype.setFloatingRowPosition = function(x, y) {
-	if (this.floatingRow) {
-		this.floatPosition.x = x;
-		this.floatPosition.y = y;
-		this.floatingRow.style.left = x+"px";
-		this.floatingRow.style.top = y+"px";
+// Set the ghost row position
+LayerPanel.prototype.setGhostRowPosition = function(x, y) {
+	if (this.ghostRow) {
+		this.ghostPosition.x = x;
+		this.ghostPosition.y = y;
+		this.ghostRow.style.left = x+"px";
+		this.ghostRow.style.top = y+"px";
 	}
 };
 
-LayerPanel.prototype.translateFloatingRow = function(dx, dy) {
-	this.setFloatingRowPosition(this.floatPosition.x + dx, this.floatPosition.y + dy);
+LayerPanel.prototype.translateGhostRow = function(dx, dy) {
+	this.setGhostRowPosition(this.ghostPosition.x + dx, this.ghostPosition.y + dy);
 };
 
 /* * * * * * * * * * * Control handler methods below * * * * * * * * * * * */
@@ -263,13 +260,13 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 };
 
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
-	// Now that dragging has begun, create a floating row
-	this.createFloatingRow(this.getRowWithId(control.getId()));
+	// Now that dragging has begun, create a ghost row
+	this.createGhostRow(this.getRowWithId(control.getId()));
 };
 
 LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
-	// Update floating row position to mouse position
-	this.translateFloatingRow(dx, dy);
+	// Update ghost row position to mouse position
+	this.translateGhostRow(dx, dy);
 };
 
 LayerPanel.prototype.handleDropRow = function(control, evt) {
@@ -279,16 +276,17 @@ LayerPanel.prototype.handleDropRow = function(control, evt) {
 	this.dropTargetIndex = (this.dropTargetIndex >= 0) ? this.dropTargetIndex : draggedRowIndex;
 	
 	var updateRows = function() {
-		this.deleteFloatingRow();
+		this.deleteGhostRow();
 		this.moveRow(draggedRowIndex, this.dropTargetIndex);      // Move the dragged row to its new position
 		this.dropTargetIndex = -1;                                // Reset drop target index
 	}.bindTo(this);
 	
-	// If user doesn't drop row on another row, animate the 
+	// If user drops row outside of a valid drop target, display "bungee" 
+	// effect of ghost row snapping back to its original position.
 	if (this.dropTargetIndex == draggedRowIndex) {
 		var animation = new Animation(LayerPanel.rowSnapAnimationLength, updateRows);
-		animation.add(this.floatingRow.style, "left", this.floatPosition.x+"px", this.originalFloatPosition.x+"px", -1.0);
-		animation.add(this.floatingRow.style, "top", this.floatPosition.y+"px", this.originalFloatPosition.y+"px", -1.0);
+		animation.add(this.ghostRow.style, "left", this.ghostPosition.x+"px", this.ghostOriginalPosition.x+"px", -1.0);
+		animation.add(this.ghostRow.style, "top", this.ghostPosition.y+"px", this.ghostOriginalPosition.y+"px", -1.0);
 		animation.begin();
 	} else {
 		updateRows();

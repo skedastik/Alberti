@@ -6,7 +6,7 @@
  * * */
 
 // Class names for styling purposes
-LayerPanelRow.styleFloating = "floating"
+LayerPanelRow.styleGhost = "ghost";
 
 // Layer row metrics
 LayerPanelRow.rowHeight = 26;
