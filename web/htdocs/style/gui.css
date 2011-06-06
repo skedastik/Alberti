@@ -1,5 +1,5 @@
 #layer_panel {
-	position: absolute;
+	position: fixed;
 	bottom: 26px;
 	right: 0px;
 }
@@ -44,13 +44,13 @@
 	text-shadow: none;
 }
 
-.layer_panel_row.floating {
-	opacity: 0.75;
+.layer_panel_row.ghost {
+	opacity: 0.5;
 	border-top-left-radius: 13px;
 	border-bottom-left-radius: 13px;
 	border-bottom: 0;
 	
-	background-image: url('../images/layer_row_floating.png');
+	background-image: url('../images/layer_row_ghost.png');
 	background-repeat: repeat-y;
 }
 
