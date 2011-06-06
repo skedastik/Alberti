@@ -5,8 +5,10 @@
  * 
  * * */
 
-// Length of vanishing row animation for drag/drop purposes
-LayerPanelRow.vanishAnimationLength = 0.1;
+// Class names for styling purposes
+LayerPanelRow.styleFloating = "floating"
+LayerPanelRow.styleDropTargetBelow = "drop_target_below";
+LayerPanelRow.styleDropTargetAbove = "drop_target_above";
 
 function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	this.rowId = rowId;
@@ -97,9 +99,12 @@ LayerPanelRow.prototype.float = function(x, y) {
 		this.setFloatPosition(x, y);
 		
 		this.rowDiv.style.position = "absolute";
-		Util.addHtmlClass(this.rowDiv, "floating");
+		Util.addHtmlClass(this.rowDiv, LayerPanelRow.styleFloating);
 		
-		this.rowDiv.parentNode.removeChild(this.rowDiv);
+		if (this.rowDiv.parentNode) {
+			this.rowDiv.parentNode.removeChild(this.rowDiv);
+		}
+		
 		document.body.appendChild(this.rowDiv);
 	}
 };
@@ -118,24 +123,3 @@ LayerPanelRow.prototype.setFloatPosition = function(x, y) {
 		this.rowDiv.style.top = y+"px";
 	}
 };
-
-// Generate a pseudo-row with given height (in pixels) that will shrink and 
-// vanish once inserted. 'callback' is invoked at end of animation.
-LayerPanelRow.createVanishingRow = function(height, callback) {
-	height = height+"px";
-	
-	var pseudoRow = {
-		rowDiv: document.createElement("div"),
-		rowButton: "dummy_button"
-	};
-	
-	pseudoRow.rowDiv.style.height = height;
-	
-	// Create vanishing animation
-	var animation = new Animation(LayerPanelRow.vanishAnimationLength, callback);
-	
-	animation.add(pseudoRow.rowDiv.style, "height", height, "0px", -1.0);
-	animation.begin();
-	
-	return pseudoRow;
-}
