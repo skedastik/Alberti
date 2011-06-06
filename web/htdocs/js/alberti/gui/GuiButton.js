@@ -36,7 +36,7 @@
  * 
  * * */
 
-// class names for various button states, for styling purposes
+// Class names for various button states, for styling purposes
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
