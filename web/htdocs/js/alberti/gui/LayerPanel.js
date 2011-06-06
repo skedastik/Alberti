@@ -13,6 +13,7 @@
 LayerPanel.defaultPosition          = "-10px";     // Layer panel's default position
 LayerPanel.collapsePosition         = "-180px";     // Layer panel's collapsed position
 LayerPanel.collapseTransitionLength = 0.25;        // Collapse animation length in seconds
+LayerPanel.rowVanishAnimationLength = 0.1;        // Length of vanishing row animation for drag/drop purposes
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	LayerPanel.baseConstructor.call(this);
@@ -28,7 +29,9 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
 	
 	// Parameters for layer row drag/drop
-	this.insertionIndex = -1;
+	this.floatingRow = null;
+	this.dropTargetIndex = -1;
+	this.halfFloatingRowHeight = 0;        // Calculate row height dynamically as clientHeight is 0 until visible
 	
 	this.isCollapsed = false;
 	this.collapseAnimation = null;
@@ -44,7 +47,10 @@ LayerPanel.prototype.setController = function(controller) {
 // optionally specify a row index to insert before (i.e. directly below) that 
 // row, otherwise the row is placed above all other rows.
 LayerPanel.prototype.newRow = function(layerName, color, isHidden, beforeRowIndex) {
-	return this.insertRow(new LayerPanelRow("row"+this.rowIdCounter++, layerName, color, isHidden, this)).rowId;
+	return this.insertRow(
+		new LayerPanelRow("row"+this.rowIdCounter++, layerName, color, isHidden, this),
+		beforeRowIndex
+	).rowId;
 };
 
 // Insert given LayerPanelRow, optionally before the given row index. Returns same row.
@@ -80,11 +86,11 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	return newRow;
 };
 
-// Delete the row with given row index
-LayerPanel.prototype.deleteRow = function(rowIndex) {
+// Remove the row with given row index from the layer panel
+LayerPanel.prototype.removeRow = function(rowIndex) {
 	Util.assert(
 		rowIndex >= 0 && rowIndex < this.rows.length,
-		"Invalid 'rowIndex' argument passed to LayerPanel::deleteRow"
+		"Invalid 'rowIndex' argument passed to LayerPanel::removeRow"
 	);
 	
 	var row = this.rows[rowIndex];
@@ -97,7 +103,7 @@ LayerPanel.prototype.deleteRow = function(rowIndex) {
 // Clear existing layer panel rows
 LayerPanel.prototype.clearAllRows = function() {
 	for (var i = this.rows.length - 1; i >= 0; i--) {
-		this.deleteRow(i);
+		this.removeRow(i);
 	}
 };
 
@@ -198,23 +204,34 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 };
 
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
-	var rowHeight = control.htmlNode.clientHeight + 1;
-	
-	// Insert a vanishing row in dragged row's place
 	var index = this.getRowIndexForId(control.getId());
 	var row = this.rows[index];
-	this.insertRow(LayerPanelRow.createVanishingRow(rowHeight, function() {
-		// Callback should delete vanishing row
-		this.deleteRow(index);
-	}.bindTo(this)), index);
-	
-	// Separate row from panel, adjusting its position to account for vanishing row
 	var pos = control.getClientPosition();
-	row.float(pos.x, pos.y + rowHeight);
+	
+	this.floatingRow = row;
+	this.halfFloatingRowHeight = Math.round(control.htmlNode.clientHeight / 2);
+	
+	// Create and insert a vanishing row in dragged row's place
+	var vanishingDiv = document.createElement("div")
+	this.dynamicDivNode.insertBefore(vanishingDiv, control.htmlNode);
+	
+	// Create animation for vanishing row
+	var animation = new Animation(LayerPanel.rowVanishAnimationLength, function() {
+		vanishingDiv.parentNode.removeChild(vanishingDiv);
+	}.bindTo(this));
+	
+	animation.add(vanishingDiv.style, "height", (control.htmlNode.clientHeight + 1)+"px", "0px", -1.0);
+	animation.begin();
+	
+	// Remove the dragged row from the layer panel
+	this.removeRow(index);
+	
+	// "Float" the row, adjusting its position to account for vanishing row
+	row.float(pos.x, pos.y);
 };
 
 LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
-	this.getRowWithId(control.getId()).translateFloatPosition(dx, dy);
+	this.floatingRow.translateFloatPosition(dx, dy);
 };
 
 LayerPanel.prototype.handleDropRow = function(control, evt) {
@@ -222,16 +239,31 @@ LayerPanel.prototype.handleDropRow = function(control, evt) {
 };
 
 LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
-	this.insertionIndex = getRowIndexForId(control.getId());
-	
+	// Nothing to be done
 };
 
 LayerPanel.prototype.handleRowExitDropTarget = function(control, evt) {
+	// Remove floating row CSS styling from last drop target
+	if (this.dropTargetIndex >= 0) {
+		if (this.dropTargetIndex == this.rows.length) {
+			// this
+		} else {
+			
+		}
+	}
 	
+	this.dropTargetIndex = -1;
+	
+	Dbug.log("New drop target index: "+this.dropTargetIndex);
 };
 
 LayerPanel.prototype.handleRowMoveWithinDropTarget = function(control, dx, dy, evt) {
+	var newDropTargetIndex = dy > this.halfFloatingRowHeight ? this.getRowIndexForId(control.getId())
+		: this.getRowIndexForId(control.getId()) + 1;
 	
+	Dbug.log("New drop target index: "+newDropTargetIndex);
+	
+	Util.addHtmlClass(control.htmlNode, LayerPanelRow.styleDropTarget);
 };
 
 /*
