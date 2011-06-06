@@ -10,8 +10,8 @@
  * 
  * * */
 
-LayerPanel.defaultPosition          = "-10px";     // Layer panel's default position
-LayerPanel.collapsePosition         = "-180px";     // Layer panel's collapsed position
+LayerPanel.defaultPosition          = "0px";     // Layer panel's default position
+LayerPanel.collapsePosition         = "-170px";     // Layer panel's collapsed position
 LayerPanel.collapseTransitionLength = 0.25;        // Collapse animation length in seconds
 LayerPanel.rowVanishAnimationLength = 0.1;        // Length of vanishing row animation for drag/drop purposes
  
@@ -283,16 +283,16 @@ LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
 };
 
 LayerPanel.prototype.handleRowExitDropTarget = function(control, evt) {
-	this.dropTargetIndex = -1;
+	// Nothing to be done
 };
 
 LayerPanel.prototype.handleRowMoveWithinDropTarget = function(control, dx, dy, evt) {
-	// If mouse is hovering within the top half of this row, dragged row will 
-	// be inserted above this row, below otherwise.
+	// If mouse is hovering within the top half of drop target row, dragged 
+	// row will be inserted above drop target row, below otherwise.
 	var dropBelow = dy > this.halfFloatingRowHeight;
 	this.dropTargetIndex = dropBelow ? this.getRowIndexForId(control.getId()) : this.getRowIndexForId(control.getId()) + 1;
 	
-	Dbug.log("Target index: "+this.dropTargetIndex+" triggered by control with id "+control.getId());
+	Dbug.log(this.dropTargetIndex);
 };
 
 /*
