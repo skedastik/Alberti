@@ -10,10 +10,13 @@
  * 
  * * */
 
-LayerPanel.defaultPosition          = "0px";     // Layer panel's default position
-LayerPanel.collapsePosition         = "-170px";     // Layer panel's collapsed position
-LayerPanel.collapseTransitionLength = 0.25;        // Collapse animation length in seconds
-LayerPanel.rowVanishAnimationLength = 0.1;        // Length of vanishing row animation for drag/drop purposes
+LayerPanel.defaultPosition          = "0px";        // Layer panel's default position
+LayerPanel.collapsePosition         = "-160px";     // Layer panel's collapsed (hidden) position
+LayerPanel.collapseTransitionLength = 0.25;         // Collapse animation length in seconds
+LayerPanel.rowInsertAnimationLength = 0.1;          // Length of row insertion/removal for drag/drop purposes
+LayerPanel.rowSnapAnimationLength   = 0.125;        // Length of floating row "bungee" animation for drag/drop purposes
+
+LayerPanel.floatingRowOpacity       = 0.5;
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	LayerPanel.baseConstructor.call(this);
@@ -28,14 +31,14 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	// Add control strip buttons to control strip div
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
 	
-	// Parameters for layer row drag/drop
-	this.floatingRow = null;
-	this.floatPosition = new Coord2D(0, 0); 
-	this.dropTargetIndex = -1;
-	this.halfFloatingRowHeight = 0;        // Calculate row height dynamically as clientHeight is 0 until visible
-	
-	this.isCollapsed = false;
+	this.isCollapsed = false;                      // Layer panel can be collapsed (i.e. hidden) by user
 	this.collapseAnimation = null;
+	
+	// Parameters for layer row drag/drop
+	this.floatingRow = null;                      // A fixed-position row div that follows the mouse during drag
+	this.originalFloatPosition = null;            // Position of floating row at creation
+	this.floatPosition = new Coord2D(0, 0);       // Current position of floating row
+	this.dropTargetIndex = -1;                    // Index of dragged row's current drop target (another layer row)
 }
 Util.extend(LayerPanel, EventHandler);
 
@@ -65,7 +68,7 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	if (beforeRowIndex !== undefined) {
 		Util.assert(
 			beforeRowIndex >= 0 && beforeRowIndex < this.rows.length,
-			"Invalid 'beforeRow' argument passed to LayerPanel::createRowDiv"
+			"Invalid 'beforeRowIndex' argument passed to LayerPanel::insertRow"
 		);
 		
 		this.dynamicDivNode.insertBefore(newRow.rowDiv, this.rows[beforeRowIndex].rowDiv.nextSibling);
@@ -87,7 +90,7 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	return newRow;
 };
 
-// Remove the row with given row index from the layer panel
+// Remove the row with given row index from the layer panel. Returns removed row.
 LayerPanel.prototype.removeRow = function(rowIndex) {
 	Util.assert(
 		rowIndex >= 0 && rowIndex < this.rows.length,
@@ -99,12 +102,24 @@ LayerPanel.prototype.removeRow = function(rowIndex) {
 	this.dynamicDivNode.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
 	this.rows.splice(rowIndex, 1);
+	
+	return row;
 };
 
 // Clear existing layer panel rows
 LayerPanel.prototype.clearAllRows = function() {
 	for (var i = this.rows.length - 1; i >= 0; i--) {
 		this.removeRow(i);
+	}
+};
+
+// Move row with index 'rowIndex' before index 'beforeRowIndex'. If second arg
+// is not specified, or it is higher than the highest index, moves row to 
+// topmost position.
+LayerPanel.prototype.moveRow = function(rowIndex, beforeRowIndex) {
+	if (rowIndex != beforeRowIndex) {
+		this.insertRow(this.removeRow(rowIndex), beforeRowIndex < rowIndex ? beforeRowIndex 
+			: (beforeRowIndex > this.rows.length ? undefined : beforeRowIndex - 1));
 	}
 };
 
@@ -161,15 +176,16 @@ LayerPanel.prototype.createFloatingRow = function(row) {
 		var rowButton = row.rowButton;
 		var rowPos = rowButton.getClientPosition();
 	
+		this.originalFloatPosition = rowPos.clone();
 		this.floatingRow = row.rowDiv.cloneNode(true);
-		this.halfFloatingRowHeight = Math.round(rowButton.htmlNode.clientHeight / 2);
 	
-		Util.addHtmlClass(this.floatingRow, LayerPanelRow.styleFloating);
-		this.floatingRow.style.position = "absolute";
-		this.setFloatingRowPosition(rowPos.x, rowPos.y);
-		
 		// Make the floating row transparent to mouse events
 		this.floatingRow.style.pointerEvents = "none";
+		
+		Util.addHtmlClass(this.floatingRow, LayerPanelRow.styleFloating);
+		this.floatingRow.style.position = "fixed";
+		this.floatingRow.style.opacity = LayerPanel.floatingRowOpacity;
+		this.setFloatingRowPosition(rowPos.x, rowPos.y);
 	
 		document.body.appendChild(this.floatingRow);
 	}
@@ -249,32 +265,34 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
 	// Now that dragging has begun, create a floating row
 	this.createFloatingRow(this.getRowWithId(control.getId()));
-	
-	// Create a vanishing row animation if row other than topmost was dragged
-	if (this.getRowIndexForId(control.getId()) < this.rows.length - 1) {
-		// Create and insert a vanishing row in dragged row's place
-		var vanishingDiv = document.createElement("div")
-		this.dynamicDivNode.insertBefore(vanishingDiv, control.htmlNode);
-
-		// Create animation for vanishing row
-		var animation = new Animation(LayerPanel.rowVanishAnimationLength, function() {
-			vanishingDiv.parentNode.removeChild(vanishingDiv);
-		}.bindTo(this));
-
-		animation.add(vanishingDiv.style, "height", (control.htmlNode.clientHeight + 1)+"px", "0px", -1.0);
-		animation.begin();
-	}
-	
-	// Hide the row being dragged
-	control.htmlNode.style.display = "none";
 };
 
 LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
+	// Update floating row position to mouse position
 	this.translateFloatingRow(dx, dy);
 };
 
 LayerPanel.prototype.handleDropRow = function(control, evt) {
-	this.dropTargetIndex = -1;
+	var draggedRowIndex = this.getRowIndexForId(control.getId());
+	
+	// Drop target index defaults to index of row being dragged
+	this.dropTargetIndex = (this.dropTargetIndex >= 0) ? this.dropTargetIndex : draggedRowIndex;
+	
+	var updateRows = function() {
+		this.deleteFloatingRow();
+		this.moveRow(draggedRowIndex, this.dropTargetIndex);      // Move the dragged row to its new position
+		this.dropTargetIndex = -1;                                // Reset drop target index
+	}.bindTo(this);
+	
+	// If user doesn't drop row on another row, animate the 
+	if (this.dropTargetIndex == draggedRowIndex) {
+		var animation = new Animation(LayerPanel.rowSnapAnimationLength, updateRows);
+		animation.add(this.floatingRow.style, "left", this.floatPosition.x+"px", this.originalFloatPosition.x+"px", -1.0);
+		animation.add(this.floatingRow.style, "top", this.floatPosition.y+"px", this.originalFloatPosition.y+"px", -1.0);
+		animation.begin();
+	} else {
+		updateRows();
+	}
 };
 
 LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
@@ -282,16 +300,14 @@ LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
 };
 
 LayerPanel.prototype.handleRowExitDropTarget = function(control, evt) {
-	// Nothing to be done
+	this.dropTargetIndex = -1;
 };
 
 LayerPanel.prototype.handleRowMoveWithinDropTarget = function(control, dx, dy, evt) {
 	// If mouse is hovering within the top half of drop target row, dragged 
 	// row will be inserted above drop target row, below otherwise.
-	var dropBelow = dy > this.halfFloatingRowHeight;
+	var dropBelow = dy > LayerPanelRow.halfRowHeight;
 	this.dropTargetIndex = dropBelow ? this.getRowIndexForId(control.getId()) : this.getRowIndexForId(control.getId()) + 1;
-	
-	Dbug.log(this.dropTargetIndex);
 };
 
 /*
