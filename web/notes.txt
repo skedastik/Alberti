@@ -7,6 +7,10 @@ TODO
 
 - Various 'throw' errors should be replaced with custom assertions.
 
+OPERA RELATED BUGS
+
+As of 6.2.2011, Opera does not support the pointer-events CSS property. This means no drag and drop.
+
 WEBKIT+GECKO SVG RELATED BUGS
 
 Line rendering issue:
