@@ -92,7 +92,7 @@ LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
 LayerPanelController.prototype.deleteRow = function(targetLayer) {
 	var targetRow = this.getRowForLayer(targetLayer);
 	
-	this.layerPanel.deleteRow(this.getRowIndexForLayer(targetLayer));
+	this.layerPanel.removeRow(this.getRowIndexForLayer(targetLayer));
 	delete this.rowLayerMap[targetRow.rowId];
 };
 
