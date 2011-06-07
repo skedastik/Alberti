@@ -10,18 +10,22 @@ function EventHandler() {
 }
 
 EventHandler.prototype.handleEvent = function(evt) {
-	if (evt.type == "mousemove") {
-		// Put a limit on how many mousemove events are processed per second
-		if (Date.now() - this.lastMouseMove < Alberti.refreshms) {
-			return;
-		} else {
-			this.lastMouseMove = Date.now();
-		}
-	} else if (evt.type == "mouseover" || evt.type == "mouseout") {
-		// Discard bubbling mouseover and mouseout events
-		if (evt.target != evt.currentTarget || Util.hasChild(evt.currentTarget, evt.relatedTarget)) {
-			return;
-		}
+	switch (evt.type) {
+		
+		case "mousemove":
+			if (Date.now() - this.lastMouseMove < Alberti.refreshms) {
+				return;      // Put a limit on how many mousemove events are processed per second
+			} else {
+				this.lastMouseMove = Date.now();
+			}
+			break;
+		
+		case "mouseover":
+		case "mouseout":
+			if (evt.relatedTarget != evt.currentTarget && !Util.hasChild(evt.currentTarget, evt.relatedTarget)) {
+				return;      // Discard mouseouts from children to other children or self
+			}
+			break;
 	}
 	
 	this[evt.type](evt);
