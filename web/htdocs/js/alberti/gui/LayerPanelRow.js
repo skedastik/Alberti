@@ -21,10 +21,6 @@ function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	this.rowDiv.className = "layer_panel_row";
 	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", null, true);
 	
-	if (!isHidden) {
-		this.rowButton.enable();
-	}
-	
 	// Make the row draggable
 	this.rowDragger = new GuiDraggable(
 		this.rowButton, "handleBeginDragRow", "handleDragRow", "handleDropRow", 3, "layer_row"
@@ -34,6 +30,12 @@ function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	this.rowDropTarget = new GuiDropTarget(
 		this.rowButton, "handleRowEnterDropTarget", "handleRowExitDropTarget", "handleRowMoveWithinDropTarget", "layer_row"
 	).enable();
+	
+	// Enable the row button after enabling the GuiDraggable and GuiDropTarget
+	// so that they receive events before GuiButton.
+	if (!isHidden) {
+		this.rowButton.enable();
+	}
 	
 	// Create button that toggles layer visibility
 	this.visibilityToggleDiv = document.createElement("div");
