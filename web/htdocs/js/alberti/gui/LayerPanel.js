@@ -260,8 +260,9 @@ LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
 };
 
 LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
-	// Now that dragging has begun, create a ghost row
+	// Now that dragging has begun, create a ghost row and reset drop target index
 	this.createGhostRow(this.getRowWithId(control.getId()));
+	this.dropTargetIndex = -1;
 };
 
 LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
@@ -272,18 +273,13 @@ LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
 LayerPanel.prototype.handleDropRow = function(control, evt) {
 	var draggedRowIndex = this.getRowIndexForId(control.getId());
 	
-	// Drop target index defaults to index of row being dragged
-	this.dropTargetIndex = (this.dropTargetIndex >= 0) ? this.dropTargetIndex : draggedRowIndex;
-	
 	var updateRows = function() {
 		this.deleteGhostRow();
-		this.moveRow(draggedRowIndex, this.dropTargetIndex);      // Move the dragged row to its new position
-		this.dropTargetIndex = -1;                                // Reset drop target index
+		this.moveRow(draggedRowIndex, this.dropTargetIndex >= 0 ? this.dropTargetIndex : draggedRowIndex);
 	}.bindTo(this);
 	
-	// If user drops row outside of a valid drop target, display "bungee" 
-	// effect of ghost row snapping back to its original position.
-	if (this.dropTargetIndex == draggedRowIndex) {
+	if (this.dropTargetIndex == -1) {
+		// User dropped row outside of a valid drop target, so perform bungee animation on ghost row
 		var animation = new Animation(LayerPanel.rowSnapAnimationLength, updateRows);
 		animation.add(this.ghostRow.style, "left", this.ghostPosition.x+"px", this.ghostOriginalPosition.x+"px", -1.0);
 		animation.add(this.ghostRow.style, "top", this.ghostPosition.y+"px", this.ghostOriginalPosition.y+"px", -1.0);
