@@ -22,7 +22,7 @@ EventHandler.prototype.handleEvent = function(evt) {
 		
 		case "mouseover":
 		case "mouseout":
-			if (evt.relatedTarget != evt.currentTarget && !Util.hasChild(evt.currentTarget, evt.relatedTarget)) {
+			if (evt.relatedTarget == evt.currentTarget || Util.hasChild(evt.currentTarget, evt.relatedTarget)) {
 				return;      // Discard mouseouts from children to other children or self
 			}
 			break;
