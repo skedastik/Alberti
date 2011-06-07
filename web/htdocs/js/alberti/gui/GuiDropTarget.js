@@ -55,7 +55,6 @@ GuiDropTarget.prototype.disable = function() {
 GuiDropTarget.prototype.motiveDraggableIsValid = function() {
 	return (
 		(GuiDraggable.motiveDraggable ? true : false)
-		&& GuiDraggable.motiveDraggable.control != this.control                   // exclude self
 		&& GuiDraggable.motiveDraggable.dropTargetClass == this.dropTargetClass
 	);
 };

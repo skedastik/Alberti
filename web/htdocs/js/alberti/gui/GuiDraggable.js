@@ -54,9 +54,6 @@ GuiDraggable.prototype.onDragBegin = function(evt) {
 	GuiDraggable.motiveDraggable = this;
 	this.control.invokeAction(this.beginDragAction, this.control, evt);
 	
-	// Now that the control is being dragged, make it transparent to mouse events
-	this.control.htmlNode.style.pointerEvents = "none";
-	
 	// Absorb click events during dragging so child elements don't get activated
 	this.control.htmlNode.addEventListener("click", this, true);
 	this.control.htmlNode.addEventListener("dblclick", this, true);
