@@ -50,6 +50,10 @@ text {
 	pointer-events: none;
 }
 
+body {
+	background-color: #eee;
+}
+
 body, div {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
