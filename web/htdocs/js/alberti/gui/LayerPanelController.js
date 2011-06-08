@@ -68,6 +68,10 @@ LayerPanelController.prototype.deleteCurrentLayer = function() {
 	this.lmDelegate.deleteCurrentLayer();
 };
 
+LayerPanelController.prototype.moveLayer = function(targetRowId, beforeRowId) {
+	this.lmDelegate.moveLayer(this.rowLayerMap[targetRowId], beforeRowId ? this.rowLayerMap[beforeRowId] : undefined);
+};
+
 LayerPanelController.prototype.setLayerName = function(rowId, newLayerName) {
 	this.lmDelegate.setLayerName(this.rowLayerMap[rowId], newLayerName);
 };
@@ -94,6 +98,12 @@ LayerPanelController.prototype.deleteRow = function(targetLayer) {
 	
 	this.layerPanel.removeRow(this.getRowIndexForLayer(targetLayer));
 	delete this.rowLayerMap[targetRow.rowId];
+};
+
+LayerPanelController.prototype.moveRow = function(targetLayer, beforeLayer) {
+	this.layerPanel.moveRow(
+		this.getRowIndexForLayer(targetLayer), beforeLayer ? this.getRowIndexForLayer(beforeLayer) : undefined
+	);
 };
 
 LayerPanelController.prototype.selectRow = function(targetLayer) {
