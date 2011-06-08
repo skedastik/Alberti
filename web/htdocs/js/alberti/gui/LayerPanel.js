@@ -55,7 +55,8 @@ LayerPanel.prototype.newRow = function(layerName, color, isHidden, beforeRowInde
 	).rowId;
 };
 
-// Insert given LayerPanelRow, optionally before the given row index. Returns same row.
+// Insert given LayerPanelRow, optionally before the given row index (defaults
+// to inserting above topmost row). Returns same row.
 LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
@@ -64,8 +65,7 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	// top of older rows.
 	
 	if (beforeRowIndex !== undefined) {
-		Util.assert(
-			beforeRowIndex >= 0 && beforeRowIndex < this.rows.length,
+		Util.assert(beforeRowIndex >= 0 && beforeRowIndex < this.rows.length,
 			"Invalid 'beforeRowIndex' argument passed to LayerPanel::insertRow"
 		);
 		
@@ -90,8 +90,7 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 
 // Remove the row with given row index from the layer panel. Returns removed row.
 LayerPanel.prototype.removeRow = function(rowIndex) {
-	Util.assert(
-		rowIndex >= 0 && rowIndex < this.rows.length,
+	Util.assert(rowIndex >= 0 && rowIndex < this.rows.length,
 		"Invalid 'rowIndex' argument passed to LayerPanel::removeRow"
 	);
 	
@@ -104,20 +103,30 @@ LayerPanel.prototype.removeRow = function(rowIndex) {
 	return row;
 };
 
-// Clear existing layer panel rows
-LayerPanel.prototype.clearAllRows = function() {
-	for (var i = this.rows.length - 1; i >= 0; i--) {
-		this.removeRow(i);
-	}
-};
 
 // Move row with index 'rowIndex' before index 'beforeRowIndex'. If second arg
 // is not specified, or it is higher than the highest index, moves row to 
 // topmost position.
 LayerPanel.prototype.moveRow = function(rowIndex, beforeRowIndex) {
-	if (rowIndex != beforeRowIndex) {
-		this.insertRow(this.removeRow(rowIndex), beforeRowIndex < rowIndex ? beforeRowIndex 
-			: (beforeRowIndex > this.rows.length ? undefined : beforeRowIndex - 1));
+	var targetRow = this.rows[rowIndex];
+	var beforeRow = beforeRowIndex !== undefined ? this.rows[beforeRowIndex] : null;
+	
+	this.dynamicDivNode.removeChild(targetRow.rowDiv);
+	this.rows.splice(rowIndex, 1);
+	
+	if (beforeRow) {
+		this.dynamicDivNode.insertBefore(targetRow.rowDiv, beforeRow.rowDiv.nextSibling);
+		this.rows.splice(beforeRowIndex, 0, targetRow);
+	} else {
+		this.dynamicDivNode.insertBefore(targetRow.rowDiv, this.rows.peek().rowDiv);
+		this.rows.push(targetRow);
+	}
+};
+
+// Clear existing layer panel rows
+LayerPanel.prototype.clearAllRows = function() {
+	for (var i = this.rows.length - 1; i >= 0; i--) {
+		this.removeRow(i);
 	}
 };
 
@@ -270,12 +279,21 @@ LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
 	this.translateGhostRow(dx, dy);
 };
 
-LayerPanel.prototype.handleDropRow = function(control, evt) {
+LayerPanel.prototype.handleDropRow = function(control, dropTargetControl, evt) {
 	var draggedRowIndex = this.getRowIndexForId(control.getId());
 	
 	var updateRows = function() {
 		this.deleteGhostRow();
-		this.moveRow(draggedRowIndex, this.dropTargetIndex >= 0 ? this.dropTargetIndex : draggedRowIndex);
+		
+		if (
+			this.dropTargetIndex >= 0 
+			&& draggedRowIndex != this.dropTargetIndex 
+			&& this.dropTargetIndex != draggedRowIndex + 1
+		) {
+			this.controller.moveLayer(control.getId(),
+				this.dropTargetIndex >= this.rows.length ? undefined : this.rows[this.dropTargetIndex].rowId
+			);
+		}
 	}.bindTo(this);
 	
 	if (this.dropTargetIndex == -1) {
