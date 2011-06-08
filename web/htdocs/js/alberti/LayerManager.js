@@ -130,6 +130,29 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 	this.deleteLayer(this.currentLayer);
 };
 
+// Move target layer below 'beforeLayer', or on top of all other layers if
+// 'beforeLayer' not specified. Undo-able.
+LayerManager.prototype.moveLayer = function(targetLayer, beforeLayer) {
+	var targetIndex = this.layers.indexOf(targetLayer);
+	
+	// Make it undo-able
+	this.undoManager.push("Move Layer", this,
+		this.moveLayer, [targetLayer, beforeLayer],
+		this.moveLayer, [targetLayer, targetIndex < this.layers.length - 1 ? this.layers[targetIndex + 1] : undefined]
+	);
+	
+	this.layers.splice(targetIndex, 1);
+	targetLayer.detach();
+	
+	if (beforeLayer) {
+		this.layers.splice(this.layers.indexOf(beforeLayer), 0, targetLayer);
+		this.layerGroup.attachChildBefore(targetLayer, beforeLayer);
+	} else {
+		this.layers.push(targetLayer);
+		this.layerGroup.attachChild(targetLayer);
+	}
+};
+
 // Switch to the specified Layer object. Automatically registers an undo 
 // action. An exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(targetLayer) {
