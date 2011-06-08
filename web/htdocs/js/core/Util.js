@@ -101,11 +101,11 @@ var Util = {
 	   element.className = element.className.replace(pattern, '');
 	},
 	
-	// Convert rgb string of form "rgb(r, g, b)" to hex string of form "#rrggbb"
+	// Convert rgb string of form "rgb(r, g, b)" to hex string of form 
+	// "#rrggbb". Returns original string if conversion failed.
 	rgbToHex: function(rgbString) {
-		return "#"+rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/).slice(1).map(function(x) {
-			return parseInt(x).toString(16)
-		}).join("");
+		var tokens = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+		return tokens ? "#"+tokens.slice(1).map(function(x) {return parseInt(x).toString(16)}).join("") : rgbString;
 	},
 	
 	// Package a value, be it a string describing quantity and units, or a 
