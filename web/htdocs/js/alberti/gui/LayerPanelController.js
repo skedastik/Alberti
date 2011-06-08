@@ -68,6 +68,10 @@ LayerPanelController.prototype.deleteCurrentLayer = function() {
 	this.lmDelegate.deleteCurrentLayer();
 };
 
+LayerPanelController.prototype.moveLayer = function(targetRowId, beforeRowId) {
+	this.lmDelegate.moveLayer(this.rowLayerMap[targetRowId], beforeRowId ? this.rowLayerMap[beforeRowId] : undefined);
+};
+
 LayerPanelController.prototype.setLayerName = function(rowId, newLayerName) {
 	this.lmDelegate.setLayerName(this.rowLayerMap[rowId], newLayerName);
 };
@@ -79,7 +83,7 @@ LayerPanelController.prototype.setLayerColor = function(rowId, newColor) {
 /* * * * * * * * * * Layer panel-related methods below * * * * * * * * * * */
 
 LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
-	var rowId = this.layerPanel.insertNewRow(
+	var rowId = this.layerPanel.newRow(
 		newLayer.name,
 		newLayer.color,
 		newLayer.isHidden(),
@@ -92,8 +96,14 @@ LayerPanelController.prototype.insertNewRow = function(newLayer, beforeLayer) {
 LayerPanelController.prototype.deleteRow = function(targetLayer) {
 	var targetRow = this.getRowForLayer(targetLayer);
 	
-	this.layerPanel.deleteRow(this.getRowIndexForLayer(targetLayer));
+	this.layerPanel.removeRow(this.getRowIndexForLayer(targetLayer));
 	delete this.rowLayerMap[targetRow.rowId];
+};
+
+LayerPanelController.prototype.moveRow = function(targetLayer, beforeLayer) {
+	this.layerPanel.moveRow(
+		this.getRowIndexForLayer(targetLayer), beforeLayer ? this.getRowIndexForLayer(beforeLayer) : undefined
+	);
 };
 
 LayerPanelController.prototype.selectRow = function(targetLayer) {

@@ -4,11 +4,17 @@
  * GUI for manipulating layers. Be sure to call setController before 
  * performing operations on the LayerPanel object.
  * 
+ * REQUIRES
+ * 
+ * LayerPanelRow.js
+ * 
  * * */
 
-LayerPanel.defaultPosition          = "-10px";     // Layer panel's default position
-LayerPanel.collapsePosition         = "-180px";     // Layer panel's collapsed position
-LayerPanel.collapseTransitionLength = 0.25;        // Collapse animation length in seconds
+LayerPanel.defaultPosition          = "0px";        // Layer panel's default position
+LayerPanel.collapsePosition         = "-160px";     // Layer panel's collapsed (hidden) position
+LayerPanel.collapseTransitionLength = 0.25;         // Collapse animation length in seconds
+LayerPanel.rowInsertAnimationLength = 0.1;          // Length of row insertion/removal for drag/drop purposes
+LayerPanel.rowSnapAnimationLength   = 0.125;        // Length of ghost row "bungee" animation for drag/drop purposes
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	LayerPanel.baseConstructor.call(this);
@@ -23,8 +29,14 @@ function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
 	// Add control strip buttons to control strip div
 	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
 	
-	this.isCollapsed = false;
+	this.isCollapsed = false;                      // Layer panel can be collapsed (i.e. hidden) by user
 	this.collapseAnimation = null;
+	
+	// Parameters for layer row drag/drop
+	this.ghostRow = null;                         // A fixed-position row div that follows the mouse during drag
+	this.ghostOriginalPosition = null;            // Position of ghost row at creation
+	this.ghostPosition = new Coord2D(0, 0);       // Current position of ghost row
+	this.dropTargetIndex = -1;                    // Index of dragged row's current drop target (another layer row)
 }
 Util.extend(LayerPanel, EventHandler);
 
@@ -33,21 +45,19 @@ LayerPanel.prototype.setController = function(controller) {
 	this.controller = controller;
 };
 
-// Create a single layer row with the given layer name. You may optionally 
-// specify a row index to insert before (i.e. directly below) that row, 
-// otherwise the row is placed above all other rows. The controller object 
-// must handle the following methods:
-//
-//    switchToLayer(rowId)
-//    setLayerVisibility(rowId, makeVisible)
-//    newLayer()
-//    deleteCurrentLayer()
-//    setLayerName(rowId, newLayerName)
-//    
-// Returns the new row's ID string.
-LayerPanel.prototype.insertNewRow = function(layerName, color, isHidden, beforeRowIndex) {
-	var row = new LayerPanelRow("row"+this.rowIdCounter++, this.rowBtnFamily, layerName, color, isHidden, this);
-	
+// Create and insert single layer panel row with the given layer name. You may 
+// optionally specify a row index to insert before (i.e. directly below) that 
+// row, otherwise the row is placed above all other rows.
+LayerPanel.prototype.newRow = function(layerName, color, isHidden, beforeRowIndex) {
+	return this.insertRow(
+		new LayerPanelRow("row"+this.rowIdCounter++, layerName, color, isHidden, this),
+		beforeRowIndex
+	).rowId;
+};
+
+// Insert given LayerPanelRow, optionally before the given row index (defaults
+// to inserting above topmost row). Returns same row.
+LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	// Be careful of the order in which rows are inserted into the document--
 	// newer rows should float up, when the default is for appended elements 
 	// to float down. In other words, new row divs should be inserted into the
@@ -55,32 +65,33 @@ LayerPanel.prototype.insertNewRow = function(layerName, color, isHidden, beforeR
 	// top of older rows.
 	
 	if (beforeRowIndex !== undefined) {
-		Util.assert(
-			beforeRowIndex >= 0 && beforeRowIndex < this.rows.length,
-			"Invalid 'beforeRow' argument passed to LayerPanel::createRowDiv"
+		Util.assert(beforeRowIndex >= 0 && beforeRowIndex < this.rows.length,
+			"Invalid 'beforeRowIndex' argument passed to LayerPanel::insertRow"
 		);
 		
-		this.dynamicDivNode.insertBefore(row.rowDiv, this.rows[beforeRowIndex].rowDiv.nextSibling);
-		this.rows.splice(beforeRowIndex, 0, row);
+		this.dynamicDivNode.insertBefore(newRow.rowDiv, this.rows[beforeRowIndex].rowDiv.nextSibling);
+		this.rows.splice(beforeRowIndex, 0, newRow);
 	} else {
 		// Insert at the top of the panel by default (before all other rows in the DOM tree)
 		if (this.rows.length > 0) {
-			this.dynamicDivNode.insertBefore(row.rowDiv, this.rows.peek().rowDiv);
+			this.dynamicDivNode.insertBefore(newRow.rowDiv, this.rows.peek().rowDiv);
 		} else {
-			this.dynamicDivNode.appendChild(row.rowDiv);
+			this.dynamicDivNode.appendChild(newRow.rowDiv);
 		}
 		
-		this.rows.push(row);
+		this.rows.push(newRow);
 	}
 	
-	return row.rowId;
+	// Add new row to layer panel's row button family
+	this.rowBtnFamily.addButton(newRow.rowButton);
+	
+	return newRow;
 };
 
-// Delete the row with given row index
-LayerPanel.prototype.deleteRow = function(rowIndex) {
-	Util.assert(
-		rowIndex >= 0 && rowIndex < this.rows.length,
-		"Invalid 'rowIndex' argument passed to LayerPanel::deleteRow"
+// Remove the row with given row index from the layer panel. Returns removed row.
+LayerPanel.prototype.removeRow = function(rowIndex) {
+	Util.assert(rowIndex >= 0 && rowIndex < this.rows.length,
+		"Invalid 'rowIndex' argument passed to LayerPanel::removeRow"
 	);
 	
 	var row = this.rows[rowIndex];
@@ -88,12 +99,34 @@ LayerPanel.prototype.deleteRow = function(rowIndex) {
 	this.dynamicDivNode.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
 	this.rows.splice(rowIndex, 1);
+	
+	return row;
+};
+
+
+// Move row with index 'rowIndex' before index 'beforeRowIndex'. If second arg
+// is not specified, or it is higher than the highest index, moves row to 
+// topmost position.
+LayerPanel.prototype.moveRow = function(rowIndex, beforeRowIndex) {
+	var targetRow = this.rows[rowIndex];
+	var beforeRow = beforeRowIndex !== undefined ? this.rows[beforeRowIndex] : null;
+	
+	this.dynamicDivNode.removeChild(targetRow.rowDiv);
+	this.rows.splice(rowIndex, 1);
+	
+	if (beforeRow) {
+		this.dynamicDivNode.insertBefore(targetRow.rowDiv, beforeRow.rowDiv.nextSibling);
+		this.rows.splice(beforeRowIndex, 0, targetRow);
+	} else {
+		this.dynamicDivNode.insertBefore(targetRow.rowDiv, this.rows.peek().rowDiv);
+		this.rows.push(targetRow);
+	}
 };
 
 // Clear existing layer panel rows
 LayerPanel.prototype.clearAllRows = function() {
 	for (var i = this.rows.length - 1; i >= 0; i--) {
-		this.deleteRow(i);
+		this.removeRow(i);
 	}
 };
 
@@ -127,53 +160,6 @@ LayerPanel.prototype.toggleCollapse = function() {
 	this.collapseAnimation.begin();
 };
 
-LayerPanel.prototype.handleRowButton = function(button, evt) {
-	// Only change rows if the row itself, or the row's layer name was clicked
-	if (evt.target == button.htmlNode || evt.target == this.getRowWithId(button.id).layerNameDiv) {
-		// Only select row if it isn't already selected
-		if (!button.isToggled()) {
-			this.controller.switchToLayer(button.id);
-		}
-	}
-};
-
-LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
-	this.controller.setLayerVisibility(button.id, button.isToggled());
-};
-
-LayerPanel.prototype.handleColorWell = function(button, evt) {
-	var row = this.getRowWithId(button.id);
-	row.jscolorPicker.setColor(row.getColor());
-	row.jscolorPicker.activate();
-};
-
-LayerPanel.prototype.handleJsColorPicker = function(jscolorPicker, color, rewindUndos) {
-	this.controller.setLayerColor(jscolorPicker.id, color);
-};
-
-LayerPanel.prototype.handleNewLayerButton = function(button, evt) {
-	this.controller.newLayer(button.id);
-};
-
-LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
-	this.controller.deleteCurrentLayer(button.id);
-};
-
-LayerPanel.prototype.handleCollapseButton = function(button, evt) {
-	this.toggleCollapse();
-	button.toggle();
-};
-
-LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
-	var row = this.getRowWithId(button.id);
-	row.layerNameGuiField.activate(row.getName());
-};
-
-LayerPanel.prototype.handleLayerNameField = function(field, newLayerName) {
-	// TODO: Do not allow empty layer name.
-	this.controller.setLayerName(field.id, newLayerName);
-};
-
 LayerPanel.prototype.getRowWithId = function(rowId) {
 	return this.rows[this.getRowIndexForId(rowId)];
 };
@@ -189,6 +175,152 @@ LayerPanel.prototype.getRowIndexForId = function(rowId) {
 	
 	return -1;
 }
+
+// Create a ghost row on-demand for drag/drop purposes. Its contents will
+// be copied from the given row.
+LayerPanel.prototype.createGhostRow = function(row) {
+	if (!this.ghostRow) {
+		var rowButton = row.rowButton;
+		var rowPos = rowButton.getClientPosition();
+	
+		this.ghostOriginalPosition = rowPos.clone();
+		this.ghostRow = row.rowDiv.cloneNode(true);
+	
+		// Make the ghost row transparent to mouse events
+		this.ghostRow.style.pointerEvents = "none";
+		
+		Util.addHtmlClass(this.ghostRow, LayerPanelRow.styleGhost);
+		this.ghostRow.style.position = "fixed";
+		this.setGhostRowPosition(rowPos.x, rowPos.y);
+	
+		document.body.appendChild(this.ghostRow);
+	}
+};
+
+LayerPanel.prototype.deleteGhostRow = function() {
+	if (this.ghostRow) {
+		this.ghostRow.parentNode.removeChild(this.ghostRow);
+		this.ghostRow = null;
+	}
+};
+
+// Set the ghost row position
+LayerPanel.prototype.setGhostRowPosition = function(x, y) {
+	if (this.ghostRow) {
+		this.ghostPosition.x = x;
+		this.ghostPosition.y = y;
+		this.ghostRow.style.left = x+"px";
+		this.ghostRow.style.top = y+"px";
+	}
+};
+
+LayerPanel.prototype.translateGhostRow = function(dx, dy) {
+	this.setGhostRowPosition(this.ghostPosition.x + dx, this.ghostPosition.y + dy);
+};
+
+/* * * * * * * * * * * Control handler methods below * * * * * * * * * * * */
+
+LayerPanel.prototype.handleRowButton = function(button, evt) {
+	// Only change rows if the row itself, or the row's layer name was clicked
+	if (evt.target == button.htmlNode || evt.target == this.getRowWithId(button.getId()).layerNameDiv) {
+		// Only select row if it isn't already selected
+		if (!button.isToggled()) {
+			this.controller.switchToLayer(button.getId());
+		}
+	}
+};
+
+LayerPanel.prototype.handleVisibilityToggle = function(button, evt) {
+	this.controller.setLayerVisibility(button.getId(), button.isToggled());
+};
+
+LayerPanel.prototype.handleColorWell = function(button, evt) {
+	var row = this.getRowWithId(button.getId());
+	row.jscolorPicker.setColor(row.getColor());
+	row.jscolorPicker.activate();
+};
+
+LayerPanel.prototype.handleJsColorPicker = function(jscolorPicker, color, rewindUndos) {
+	this.controller.setLayerColor(jscolorPicker.getId(), color);
+};
+
+LayerPanel.prototype.handleNewLayerButton = function(button, evt) {
+	this.controller.newLayer(button.getId());
+};
+
+LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
+	this.controller.deleteCurrentLayer(button.getId());
+};
+
+LayerPanel.prototype.handleCollapseButton = function(button, evt) {
+	this.toggleCollapse();
+	button.toggle();
+};
+
+LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
+	var row = this.getRowWithId(button.getId());
+	row.layerNameGuiField.activate(row.getName());
+};
+
+LayerPanel.prototype.handleLayerNameField = function(field, newLayerName, evt) {
+	if (newLayerName != "" && !newLayerName.match(/^\s+$/)) {
+		this.controller.setLayerName(field.getId(), newLayerName);
+	}
+};
+
+LayerPanel.prototype.handleBeginDragRow = function(control, evt) {
+	// Now that dragging has begun, create a ghost row and reset drop target index
+	this.createGhostRow(this.getRowWithId(control.getId()));
+	this.dropTargetIndex = -1;
+};
+
+LayerPanel.prototype.handleDragRow = function(control, dx, dy, evt) {
+	// Update ghost row position to mouse position
+	this.translateGhostRow(dx, dy);
+};
+
+LayerPanel.prototype.handleDropRow = function(control, dropTargetControl, evt) {
+	var draggedRowIndex = this.getRowIndexForId(control.getId());
+	
+	var updateRows = function() {
+		this.deleteGhostRow();
+		
+		if (
+			this.dropTargetIndex >= 0 
+			&& draggedRowIndex != this.dropTargetIndex 
+			&& this.dropTargetIndex != draggedRowIndex + 1
+		) {
+			this.controller.moveLayer(control.getId(),
+				this.dropTargetIndex >= this.rows.length ? undefined : this.rows[this.dropTargetIndex].rowId
+			);
+		}
+	}.bindTo(this);
+	
+	if (this.dropTargetIndex == -1) {
+		// User dropped row outside of a valid drop target, so perform bungee animation on ghost row
+		var animation = new Animation(LayerPanel.rowSnapAnimationLength, updateRows);
+		animation.add(this.ghostRow.style, "left", this.ghostPosition.x+"px", this.ghostOriginalPosition.x+"px", -1.0);
+		animation.add(this.ghostRow.style, "top", this.ghostPosition.y+"px", this.ghostOriginalPosition.y+"px", -1.0);
+		animation.begin();
+	} else {
+		updateRows();
+	}
+};
+
+LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
+	// Nothing to be done
+};
+
+LayerPanel.prototype.handleRowExitDropTarget = function(control, evt) {
+	this.dropTargetIndex = -1;
+};
+
+LayerPanel.prototype.handleRowMoveWithinDropTarget = function(control, dx, dy, evt) {
+	// If mouse is hovering within the top half of drop target row, dragged 
+	// row will be inserted above drop target row, below otherwise.
+	var dropBelow = dy > LayerPanelRow.halfRowHeight;
+	this.dropTargetIndex = dropBelow ? this.getRowIndexForId(control.getId()) : this.getRowIndexForId(control.getId()) + 1;
+};
 
 /*
  * LayerPanelControlStrip
@@ -213,77 +345,4 @@ function LayerPanelControlStrip(cstripDiv, controller) {
 	cstripDiv.appendChild(this.deleteLayerDiv);
 	cstripDiv.appendChild(this.newLayerDiv);
 	cstripDiv.appendChild(this.lpCollapseDiv);
-};
-
-/*
- * LayerPanelRow
- * 
- * Helper class for LayerPanel. Generates a row complete with controls.
- * 
- * * */
-
-function LayerPanelRow(rowId, rowBtnFamily, layerName, color, isHidden, controller) {
-	this.rowId = rowId;
-	
-	// Generate div representing the layer row
-	this.rowDiv = document.createElement("div");
-	this.rowDiv.className = "layer_panel_row";
-	this.rowButton = new GuiButton(rowId, this.rowDiv, controller, "handleRowButton", false, "", "mousedown", true);
-	rowBtnFamily.addButton(this.rowButton);
-	
-	if (!isHidden) {
-		this.rowButton.enable();
-	}
-	
-	// Create button that toggles layer visibility
-	this.visibilityToggleDiv = document.createElement("div");
-	this.visibilityToggleDiv.className = "visibility_toggle";
-	this.visibilityToggleButton = new GuiButton(
-		rowId, this.visibilityToggleDiv, controller, "handleVisibilityToggle", true, "Hide Layer, Show Layer"
-	).enable().toggle(!isHidden);
-	
-	// Create layer name text field/label
-	this.layerNameDiv = document.createElement("div");
-	this.layerNameDiv.className = "layer_name";
-	this.layerNameDiv.innerHTML = layerName;
-	this.layerNameButton = new GuiButton(rowId, this.layerNameDiv, controller, "handleLayerNameButton", false, "", "dblclick").enable();
-	
-	// Create color well that allows user to change layer color
-	this.colorWellDiv = document.createElement("div");
-	this.colorWellDiv.className = "color_well";
-	this.colorWellDiv.style.backgroundColor = color;
-	this.colorWellButton = new GuiButton(rowId, this.colorWellDiv, controller, "handleColorWell", false, "Pick Color").enable();
-	
-	// Create hidden JSColor color input and JsColorPicker
-	this.jscolorInput = document.createElement("input");
-	this.jscolorInput.className = "color";
-	this.jscolorPicker = new JsColorPicker(rowId, this.colorWellDiv, controller, "handleJsColorPicker", this.jscolorInput);
-	
-	// Create the layer name text field
-	this.layerNameInput = document.createElement("input");
-	this.layerNameInput.className = "layer_name_input";
-	this.layerNameGuiField = new GuiTextField(rowId, this.layerNameInput, controller, "handleLayerNameField", true);
-	
-	this.rowDiv.appendChild(this.layerNameInput);
-	this.rowDiv.appendChild(this.jscolorInput);
-	this.rowDiv.appendChild(this.colorWellDiv);
-	this.rowDiv.appendChild(this.visibilityToggleDiv);
-	this.rowDiv.appendChild(this.layerNameDiv);
-}
-
-LayerPanelRow.prototype.getName = function() {
-	return this.layerNameDiv.innerHTML;
-};
-
-LayerPanelRow.prototype.setName = function(name) {
-	this.layerNameDiv.innerHTML = name;
-};
-
-LayerPanelRow.prototype.getColor = function() {
-	return Util.rgbToHex(this.colorWellDiv.style.backgroundColor);
-};
-
-LayerPanelRow.prototype.setColor = function(color) {
-	this.colorWellDiv.style.backgroundColor = color;
-	this.jscolorPicker.setColor(color);
 };

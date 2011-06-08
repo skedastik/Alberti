@@ -14,9 +14,6 @@ function LayerManager(layerGroup, undoManager) {
 	// Hidden layer count
 	this.numHiddenLayers = 0;
 	
-	// Used to generate layer names
-	this.layerNameCounter = 1;
-	
 	// shapeIndex contains shape records of all user-created shapes, mapped to 
 	// Alberti sid attributes. Each shape record is an object with two 
 	// properties: "shape" being a reference to the Shape object, and "layer" 
@@ -35,7 +32,7 @@ function LayerManager(layerGroup, undoManager) {
 // Generate and insert a new layer, optionally providing its name. Returns the new layer.
 LayerManager.prototype.newLayer = function(name) {
 	var newLayer = new Layer().generate();
-	newLayer.setName(name ? name : "Layer "+this.layerNameCounter);
+	newLayer.setName(name ? name : "Layer "+Layer.counter);
 	this.insertLayer(newLayer);
 	
 	return newLayer;
@@ -48,8 +45,6 @@ LayerManager.prototype.newLayer = function(name) {
 // sets current layer to inserted layer. Layer insertions are automatically 
 // registered with the undo manager.
 LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
-	this.layerNameCounter++;
-	
 	// Increment the hidden layer counter if new layer is hidden
 	if (newLayer.isHidden()) {
 		this.numHiddenLayers++;
@@ -135,6 +130,29 @@ LayerManager.prototype.deleteCurrentLayer = function() {
 	this.deleteLayer(this.currentLayer);
 };
 
+// Move target layer below 'beforeLayer', or on top of all other layers if
+// 'beforeLayer' not specified. Undo-able.
+LayerManager.prototype.moveLayer = function(targetLayer, beforeLayer) {
+	var targetIndex = this.layers.indexOf(targetLayer);
+	
+	// Make it undo-able
+	this.undoManager.push("Move Layer", this,
+		this.moveLayer, [targetLayer, beforeLayer],
+		this.moveLayer, [targetLayer, targetIndex < this.layers.length - 1 ? this.layers[targetIndex + 1] : undefined]
+	);
+	
+	this.layers.splice(targetIndex, 1);
+	targetLayer.detach();
+	
+	if (beforeLayer) {
+		this.layers.splice(this.layers.indexOf(beforeLayer), 0, targetLayer);
+		this.layerGroup.attachChildBefore(targetLayer, beforeLayer);
+	} else {
+		this.layers.push(targetLayer);
+		this.layerGroup.attachChild(targetLayer);
+	}
+};
+
 // Switch to the specified Layer object. Automatically registers an undo 
 // action. An exception is raised if attempting to switch to hidden layer.
 LayerManager.prototype.switchToLayer = function(targetLayer) {
@@ -156,14 +174,18 @@ LayerManager.prototype.switchToHighestVisibleLayer = function() {
 
 // Switch to next visible layer above current layer, wrapping around if necessary
 LayerManager.prototype.switchToVisibleLayerAboveCurrentLayer = function() {
-	var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
-	this.switchToLayer(nextLayer ? nextLayer : this.getNextHighestVisibleLayer());
+	if (this.layers.length > 1) {
+		var nextLayer = this.getNextHighestVisibleLayer(this.currentLayer);
+		this.switchToLayer(nextLayer ? nextLayer : this.getNextHighestVisibleLayer());
+	}
 };
 
 // Switch to next visible layer below current layer, wrapping around if necessary
 LayerManager.prototype.switchToVisibleLayerBelowCurrentLayer = function() {
-	var prevLayer = this.getNextLowestVisibleLayer(this.currentLayer);
-	this.switchToLayer(prevLayer ? prevLayer : this.getNextLowestVisibleLayer());
+	if (this.layers.length > 1) {
+		var prevLayer = this.getNextLowestVisibleLayer(this.currentLayer);
+		this.switchToLayer(prevLayer ? prevLayer : this.getNextLowestVisibleLayer());
+	}
 };
 
 // Set name of given Layer object. Undoable.

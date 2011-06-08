@@ -274,10 +274,6 @@ UserInterface.prototype.mouseup = function(evt) {
 	}
 };
 
-UserInterface.prototype.select = function(evt) {
-	Dbug.log("select event");
-};
-
 UserInterface.prototype.contextmenu = function(evt) {
 	evt.preventDefault();
 };

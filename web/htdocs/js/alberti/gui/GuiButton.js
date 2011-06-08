@@ -36,12 +36,13 @@
  * 
  * * */
 
-// class names for various button states, for styling purposes
+// Class names for various button states, for styling purposes
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
 function GuiButton(id, elt, delegate, action, autoToggle, tooltip, eventType, respondsToBubbledEvents) {
-	GuiButton.baseConstructor.call(this, id, elt, delegate, action);
+	GuiButton.baseConstructor.call(this, id, elt, delegate);
+	this.action = action;
 	this.autoToggle = autoToggle;
 	this.eventType = eventType ? eventType : "click";
 	this.respondsToBubbledEvents = respondsToBubbledEvents;
@@ -107,11 +108,17 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 		if ((this.toggleOn = toggleFlag)) {
 			// Update button's appearance to its 'on' state
 			Util.addHtmlClass(this.htmlNode, GuiButton.styleToggled);
-			this.htmlNode.title = this.tooltipOn;
+			
+			if (this.tooltipOn) {
+				this.htmlNode.title = this.tooltipOn;
+			}
 		} else {
 			// Update button's appearance to its 'off' state
 			Util.removeHtmlClass(this.htmlNode, GuiButton.styleToggled);
-			this.htmlNode.title = this.tooltipOff;
+			
+			if (this.tooltipOff) {
+				this.htmlNode.title = this.tooltipOff;
+			}
 		}
 	}
 	
@@ -121,12 +128,13 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 // Respond to the given mouse event
 GuiButton.prototype.respond = function(evt) {
 	// Only invoke delegate's action if the button div itself was clicked, or
-	// if the button responds to bubbling events.
-	if (evt.target === this.htmlNode || this.respondsToBubbledEvents) {
+	// if the button responds to bubbling events. Do not respond to any events
+	// with prevented defaults.
+	if (!evt.defaultPrevented && (evt.target === this.htmlNode || this.respondsToBubbledEvents)) {
 		if (this.autoToggle) {
 			this.toggle();
 		}
 	
-		this.invokeAction(this, evt);
+		this.invokeAction(this.action, this, evt);
 	}
 };

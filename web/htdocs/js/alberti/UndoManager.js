@@ -9,6 +9,7 @@ function UndoManager(maxActions) {
 	this.undoStack = [];
 	this.redoStack = [];
 	
+	this.bufferLevel = 0;           // how many recordStart calls deep?
 	this.actionBuffer = null;
 	
 	this.enabled = false;
@@ -85,25 +86,31 @@ UndoManager.prototype.clearStack = function() {
 // immediately push an action onto the undo stack. Rather, subsequent pushes
 // will be buffered until UndoManager::recordStop is called, at which point
 // the entire buffer will be pushed onto the undo stack as a unit. This allows 
-// for undos consisting of multiple actions.
+// for undos consisting of multiple actions. It is permitted to call 
+// recordStart multiple times. Recording will stop once an equal number of
+// calls are made to recordStop. This makes it possible to nest buffered
+// actions within other buffered actions.
 UndoManager.prototype.recordStart = function() {
-	Util.assert(this.actionBuffer === null, "UndoManager::recordStart was invoked while already recording actions.");
-
-	this.actionBuffer = [];
+	if (this.bufferLevel++ == 0) {
+		this.actionBuffer = [];
+	}
 };
 
 // Stop buffering actions and transfer the buffer to the undo stack as a unit.
 UndoManager.prototype.recordStop = function() {
-	if (this.actionBuffer !== null && this.actionBuffer.length > 0) {
+	Util.assert(this.bufferLevel > 0, "UndoManager::recordStop called when no recording of actions is taking place.");
+	
+	// Decrement the buffer level and stop recording if it reaches 0
+	if (--this.bufferLevel == 0 && this.actionBuffer.length > 0) {
 		this.undoStack.push(this.actionBuffer);
 		
 		// Discard bottommost action if maxActions has been exceeded
 		if (this.undoStack.length > this.maxActions) {
 			this.undoStack.shift();
 		}
+		
+		this.actionBuffer = null;
 	}
-	
-	this.actionBuffer = null;
 };
 
 // Invoke the topmost undo action, and transfer it to the redo stack.

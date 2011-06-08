@@ -11,6 +11,7 @@ function LayerManagerDelegate(layerManager, lpController) {
 	
 	this.mapMethod("insertLayer", "insertLayerPreDelegate", "insertLayerPostDelegate");
 	this.mapMethod("deleteLayer", null, "deleteLayerDelegate");
+	this.mapMethod("moveLayer", "moveLayerDelegate");
 	this.mapMethod("switchToLayer", "switchToLayerDelegate");
 	this.mapMethod("setLayerVisibility", null, "setLayerVisibilityDelegate");
 	this.mapMethod("setLayerName", "setLayerNameDelegate");
@@ -42,6 +43,10 @@ LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, refL
 LayerManagerDelegate.prototype.deleteLayerDelegate = function(targetLayer, invertSwitch) {
 	this.lpController.deleteRow(targetLayer);
 	this.lpController.updateButtons();
+};
+
+LayerManagerDelegate.prototype.moveLayerDelegate = function(targetLayer, beforeLayer) {
+	this.lpController.moveRow(targetLayer, beforeLayer);
 };
 
 LayerManagerDelegate.prototype.switchToLayerDelegate = function(targetLayer) {

@@ -46,7 +46,7 @@
  * class, _after_ invoking pushDelegate.
  * 
  * Delegate::mapMethod has an optional third argument discussed below at the
- * bottom of the LIMITATIONS section.
+ * bottom of the RECURSION section.
  * 
  * You can disable delegation by calling Delegate::disableDelegation.
  * Subsequent calls to object methods will invoke the object method directly,
@@ -78,7 +78,9 @@
  * Also, an exception will be thrown if the names of an object's properties 
  * collide with its delegate's.
  * 
- * Finally, it was mentioned above that delegate methods are invoked _before_
+ * RECURSION
+ * 
+ * It was mentioned above that delegate methods are invoked _before_
  * corresponding object methods. The reason for this is to support recursive
  * object methods. The following example illustrates:
  * 
@@ -150,9 +152,10 @@ function Delegate(object, methodMap) {
 	var props = [];        // Collects non-function properties
 	var funcs = [];        // Collects function properties
 	
+	// Assert against property name collisions, but allow 'toString' method override
 	for (var prop in this.delegatedObject) {
 		Util.assert(
-			this[prop] === undefined,
+			this[prop] === undefined || prop == "toString",
 			"Delegated object has property '"+prop+"' with same name as internal property."
 		);
 		

@@ -1,15 +1,11 @@
 #layer_panel {
-	position: absolute;
+	position: fixed;
 	bottom: 26px;
-	right: -10px;
-	
-	font-family: "Lucida Grande", Arial, sans-serif;
-	font-size: 14px;
+	right: 0px;
 }
 
 #layer_panel_dynamic {
 	border-top-left-radius: 13px;
-	color: #ddd;
 	text-shadow: 1px 1px 0px #222;
 	background-color: #000;
 }
@@ -22,25 +18,20 @@
 }
 
 #layer_panel_dynamic, #layer_panel_control_strip {
-/*	
-	Sadly, as nice as external box shadows look, they degrade performance
-	significantly in Safari. For now, we must live with solid borders. One
-	day, the borders will fall.
-	
-	-o-box-shadow: -1px 1px 2px #888;
-	-moz-box-shadow: -1px 1px 2px #888;
-	-webkit-box-shadow: -1px 1px 2px #888;
-*/
 	border-left: 1px solid #333;
 }
 
 .layer_panel_row {
-	width: 210px;
+	width: 200px;
 	height: 17px;
-	padding: 4px 14px 5px 4px;
+	padding: 4px 4px 5px 4px;
 	border-bottom: 1px solid #444;
 	
 	overflow: hidden;
+	
+	color: #ddd;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	font-size: 14px;
 }
 
 .layer_panel_row.guiBtnToggled {
@@ -51,6 +42,16 @@
 .layer_panel_row.guiBtnDisabled {
 	color: #686868;
 	text-shadow: none;
+}
+
+.layer_panel_row.ghost {
+	opacity: 0.5;
+	border-top-left-radius: 13px;
+	border-bottom-left-radius: 13px;
+	border-bottom: 0;
+	
+	background-image: url('../images/layer_row_ghost.png');
+	background-repeat: repeat-y;
 }
 
 #layer_panel_control_strip .layer_panel_row {
@@ -135,13 +136,14 @@
 }
 
 .layer_name_input {
+/*	float: right;*/
 	position: relative;
-	left: 4px;
+	right: -4px;
 	top: -3px;
 	
 	margin: 0;
 	
-	width: 164px;
+	width: 153px;
 	
 	font-family: "Lucida Grande", Arial, sans-serif;
 	font-size: 14px;
