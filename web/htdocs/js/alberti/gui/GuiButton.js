@@ -108,11 +108,17 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 		if ((this.toggleOn = toggleFlag)) {
 			// Update button's appearance to its 'on' state
 			Util.addHtmlClass(this.htmlNode, GuiButton.styleToggled);
-			this.htmlNode.title = this.tooltipOn;
+			
+			if (this.tooltipOn) {
+				this.htmlNode.title = this.tooltipOn;
+			}
 		} else {
 			// Update button's appearance to its 'off' state
 			Util.removeHtmlClass(this.htmlNode, GuiButton.styleToggled);
-			this.htmlNode.title = this.tooltipOff;
+			
+			if (this.tooltipOff) {
+				this.htmlNode.title = this.tooltipOff;
+			}
 		}
 	}
 	
