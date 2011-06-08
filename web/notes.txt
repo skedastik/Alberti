@@ -5,8 +5,6 @@ TODO
 - Rapid vanishing point panning via spacebar
 - Parallel and perpendicular line tool
 
-- Various 'throw' errors should be replaced with custom assertions.
-
 CHROME RELATED BUGS
 
 - As of 6.2.2011, Chrome has an issue w/ cross-origin CSS requests, preventing
