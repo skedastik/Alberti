@@ -122,11 +122,8 @@ function UserInterface(bertiDoc) {
 	// Enable our own zooming and panning mechanism
 	this.zap = new Zap(this.masterGroup, this.autoScale, this.bertiDoc, this.toolTip);
 	
-	// Create the layer panel
-	var mainDiv = document.getElementById("layer_panel");
-	var dynamicDiv = document.getElementById("layer_panel_dynamic");
-	var cstripDiv = document.getElementById("layer_panel_control_strip");
-	this.layerPanel = new LayerPanel(mainDiv, dynamicDiv, cstripDiv);
+	// The layer panel provides an interface for the manipulation of layers
+	this.layerPanel = this.createLayerPanel();
 	
 	// Create controller for layer panel connect it to layer panel
 	this.lpController = new LayerPanelController(this.layerPanel);
@@ -161,6 +158,9 @@ function UserInterface(bertiDoc) {
 	
 	// Suppress the right-click context menu
 	window.addEventListener("contextmenu", this, true);
+	
+	// Reveal the document body now that setup is complete
+	document.body.style.display = "";
 }
 Util.extend(UserInterface, EventHandler);
 
@@ -190,6 +190,19 @@ UserInterface.prototype.showHud = function() {
 
 UserInterface.prototype.hideHud = function() {
 	this.hudGroup.set("display", "none");
+};
+
+// Create and return layer panel
+UserInterface.prototype.createLayerPanel = function() {
+	var mainDiv = document.getElementById("layer_panel");
+	var dynamicDiv = document.getElementById("layer_panel_dynamic");
+	var cstripDiv = document.getElementById("layer_panel_control_strip");
+	
+	var insertMarkDiv = document.createElement("div");
+	insertMarkDiv.id = "insertmark";
+	document.body.appendChild(insertMarkDiv);
+	
+	return new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
 };
 
 UserInterface.prototype.keydown = function(evt) {
