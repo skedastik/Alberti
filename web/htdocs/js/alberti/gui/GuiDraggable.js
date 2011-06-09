@@ -10,10 +10,10 @@
  * The constructor expects a reference to an existing GuiControl. The next 
  * three args should be handler method names belonging to the GuiControl's
  * delegate object. 'dragThreshold' is the minimum pixel distance before the
- * begin-drag action is triggered. 'dropTargetClass' is optional. It is a
- * string denoting the class of drop targets the GuiDraggable should activate
- * (see GuiDropTarget.js for details). GuiDraggable instances are disabled by 
- * default; call enable() to enable.
+ * begin-drag action is triggered. 'dropTargetFamily' is optional. It is a
+ * reference to a DropTargetFamily denoting the set of drop targets the 
+ * GuiDraggable should activate (see GuiDropTarget.js for details). 
+ * GuiDraggable instances are disabled by default; call enable() to enable.
  * 
  * Handler Methods
  * 
@@ -38,7 +38,7 @@
 
 GuiDraggable.motiveDraggable = null;        // GuiDraggable currently being dragged
  
-function GuiDraggable(guiControl, beginDragAction, dragAction, dropAction, dragThreshold, dropTargetClass) {
+function GuiDraggable(guiControl, beginDragAction, dragAction, dropAction, dragThreshold, dropTargetFamily) {
 	GuiDraggable.baseConstructor.call(this, dragThreshold);
 	this.control = guiControl;
 	this.beginDragAction = beginDragAction;
@@ -46,8 +46,8 @@ function GuiDraggable(guiControl, beginDragAction, dragAction, dropAction, dragT
 	this.dropAction = dropAction;
 	this.dragThreshold = dragThreshold;
 	
-	// Control can be dropped onto drop targets of this class
-	this.dropTargetClass = dropTargetClass ? dropTargetClass : null;
+	// Control can be dropped onto drop targets belonging to given DropTargetFamily
+	this.dropTargetFamily = dropTargetFamily ? dropTargetFamily : null;
 	this.currentDropTarget = null;
 	
 	this.absorbClicks = false;        // Absorb clicks on child elements and self?
@@ -87,6 +87,11 @@ GuiDraggable.prototype.onDragBegin = function(evt) {
 	
 	// Absorb click events during dragging so child elements (and self) aren't activated
 	this.absorbClicks = true;
+	
+	// Activate drop target family if it exists
+	if (this.dropTargetFamily) {
+		this.dropTargetFamily.activate();
+	}
 };
 
 GuiDraggable.prototype.onDrag = function(dx, dy, evt) {
@@ -105,6 +110,11 @@ GuiDraggable.prototype.onDrop = function(evt) {
 	window.setTimeout(function() {
 		this.absorbClicks = false;
 	}.bindTo(this), 1);
+	
+	// Deactivate drop target family if it exists
+	if (this.dropTargetFamily) {
+		this.dropTargetFamily.deactivate();
+	}
 };
 
 // Automatically invoked by GuiDropTarget
