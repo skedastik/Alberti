@@ -16,18 +16,22 @@ LayerPanel.collapseTransitionLength = 0.25;         // Collapse animation length
 LayerPanel.rowInsertAnimationLength = 0.1;          // Length of row insertion/removal for drag/drop purposes
 LayerPanel.rowSnapAnimationLength   = 0.125;        // Length of ghost row "bungee" animation for drag/drop purposes
  
-function LayerPanel(mainDiv, dynamicDiv, cstripDiv) {
+function LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv) {
 	LayerPanel.baseConstructor.call(this);
-	this.mainDivNode = mainDiv;                    // The div containing the entire layer panel
-	this.dynamicDivNode = dynamicDiv;              // The div containing layer "row" divs
-	this.cstripDivNode = cstripDiv;                // The div containing the layer panel's control strip layer panel row
+	this.mainDiv = mainDiv;                    // The div containing the entire layer panel
+	this.dynamicDiv = dynamicDiv;              // The div containing layer "row" divs
+	this.cstripDiv = cstripDiv;                // The div containing the layer panel's control strip layer panel row
+	this.insertMarkDiv = insertMarkDiv;        // Visual insertion indicator during layer drag/drop
 	
-	this.rows = [];                                // Array of LayerPanelRows
-	this.rowBtnFamily = new GuiButtonFamily();     // Each row div is used for a GuiButton in this family
-	this.rowIdCounter = 1;                         // Used to generate unique row ID strings
+	this.insertMarkDiv.style.display = "none";     // Insertion indicator only shown during layer drag/drop
+	
+	this.rows = [];                                       // Array of LayerPanelRows
+	this.rowBtnFamily = new GuiButtonFamily();            // Each row div is used for a GuiButton in this family
+	this.dropTargetFamily = new GuiDropTargetFamily();    // Each row is part of the same drop target family
+	this.rowIdCounter = 1;                                // Used to generate unique row ID strings
 	
 	// Add control strip buttons to control strip div
-	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDivNode), this);
+	this.cstrip = new LayerPanelControlStrip(Util.firstNonTextChild(this.cstripDiv), this);
 	
 	this.isCollapsed = false;                      // Layer panel can be collapsed (i.e. hidden) by user
 	this.collapseAnimation = null;
@@ -50,7 +54,7 @@ LayerPanel.prototype.setController = function(controller) {
 // row, otherwise the row is placed above all other rows.
 LayerPanel.prototype.newRow = function(layerName, color, isHidden, beforeRowIndex) {
 	return this.insertRow(
-		new LayerPanelRow("row"+this.rowIdCounter++, layerName, color, isHidden, this),
+		new LayerPanelRow("row"+this.rowIdCounter++, layerName, color, isHidden, this, this.dropTargetFamily),
 		beforeRowIndex
 	).rowId;
 };
@@ -69,14 +73,14 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 			"Invalid 'beforeRowIndex' argument passed to LayerPanel::insertRow"
 		);
 		
-		this.dynamicDivNode.insertBefore(newRow.rowDiv, this.rows[beforeRowIndex].rowDiv.nextSibling);
+		this.dynamicDiv.insertBefore(newRow.rowDiv, this.rows[beforeRowIndex].rowDiv.nextSibling);
 		this.rows.splice(beforeRowIndex, 0, newRow);
 	} else {
 		// Insert at the top of the panel by default (before all other rows in the DOM tree)
 		if (this.rows.length > 0) {
-			this.dynamicDivNode.insertBefore(newRow.rowDiv, this.rows.peek().rowDiv);
+			this.dynamicDiv.insertBefore(newRow.rowDiv, this.rows.peek().rowDiv);
 		} else {
-			this.dynamicDivNode.appendChild(newRow.rowDiv);
+			this.dynamicDiv.appendChild(newRow.rowDiv);
 		}
 		
 		this.rows.push(newRow);
@@ -84,6 +88,7 @@ LayerPanel.prototype.insertRow = function(newRow, beforeRowIndex) {
 	
 	// Add new row to layer panel's row button family
 	this.rowBtnFamily.addButton(newRow.rowButton);
+	this.dropTargetFamily.addDropTarget(newRow.rowDropTarget);
 	
 	return newRow;
 };
@@ -96,8 +101,9 @@ LayerPanel.prototype.removeRow = function(rowIndex) {
 	
 	var row = this.rows[rowIndex];
 	
-	this.dynamicDivNode.removeChild(row.rowDiv);
+	this.dynamicDiv.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
+	this.dropTargetFamily.removeDropTarget(row.rowDropTarget);
 	this.rows.splice(rowIndex, 1);
 	
 	return row;
@@ -111,14 +117,14 @@ LayerPanel.prototype.moveRow = function(rowIndex, beforeRowIndex) {
 	var targetRow = this.rows[rowIndex];
 	var beforeRow = beforeRowIndex !== undefined ? this.rows[beforeRowIndex] : null;
 	
-	this.dynamicDivNode.removeChild(targetRow.rowDiv);
+	this.dynamicDiv.removeChild(targetRow.rowDiv);
 	this.rows.splice(rowIndex, 1);
 	
 	if (beforeRow) {
-		this.dynamicDivNode.insertBefore(targetRow.rowDiv, beforeRow.rowDiv.nextSibling);
+		this.dynamicDiv.insertBefore(targetRow.rowDiv, beforeRow.rowDiv.nextSibling);
 		this.rows.splice(beforeRowIndex, 0, targetRow);
 	} else {
-		this.dynamicDivNode.insertBefore(targetRow.rowDiv, this.rows.peek().rowDiv);
+		this.dynamicDiv.insertBefore(targetRow.rowDiv, this.rows.peek().rowDiv);
 		this.rows.push(targetRow);
 	}
 };
@@ -150,9 +156,9 @@ LayerPanel.prototype.toggleCollapse = function() {
 	);
 	
 	this.collapseAnimation.add(
-		this.mainDivNode.style,
+		this.mainDiv.style,
 		"right",
-		this.mainDivNode.style.right ? this.mainDivNode.style.right : LayerPanel.defaultPosition,
+		this.mainDiv.style.right ? this.mainDiv.style.right : LayerPanel.defaultPosition,
 		this.isCollapsed ? LayerPanel.collapsePosition : LayerPanel.defaultPosition,
 		-1.0
 	);
@@ -305,6 +311,9 @@ LayerPanel.prototype.handleDropRow = function(control, dropTargetControl, evt) {
 	} else {
 		updateRows();
 	}
+	
+	// Hide the insertion indicator
+	this.insertMarkDiv.style.display = "none";
 };
 
 LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
@@ -312,14 +321,21 @@ LayerPanel.prototype.handleRowEnterDropTarget = function(control, evt) {
 };
 
 LayerPanel.prototype.handleRowExitDropTarget = function(control, evt) {
+	this.insertMarkDiv.style.display = "none";
 	this.dropTargetIndex = -1;
 };
 
 LayerPanel.prototype.handleRowMoveWithinDropTarget = function(control, dx, dy, evt) {
+	var dropBelow = dy > LayerPanelRow.halfRowHeight;
+	var ypos = control.getClientPosition().y;
+	
 	// If mouse is hovering within the top half of drop target row, dragged 
 	// row will be inserted above drop target row, below otherwise.
-	var dropBelow = dy > LayerPanelRow.halfRowHeight;
 	this.dropTargetIndex = dropBelow ? this.getRowIndexForId(control.getId()) : this.getRowIndexForId(control.getId()) + 1;
+	
+	// Display insertion indicator and position it based on above criteria
+	this.insertMarkDiv.style.display = "";
+	this.insertMarkDiv.style.top = ((dropBelow ? ypos + LayerPanelRow.rowHeight + 1 : ypos) - LayerPanelRow.halfRowHeight)+"px";
 };
 
 /*
