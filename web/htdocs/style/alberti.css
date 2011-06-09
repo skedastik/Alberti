@@ -47,6 +47,9 @@
 text {
 	font-family: "Lucida Grande", Arial, sans-serif;
 	font-size: 11px;
+}
+
+text, img {
 	pointer-events: none;
 }
 
@@ -54,7 +57,7 @@ body {
 	background-color: #f4f4f4;
 }
 
-body, div {
+body, div, img {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
