@@ -91,25 +91,27 @@ UndoManager.prototype.clearStack = function() {
 // calls are made to recordStop. This makes it possible to nest buffered
 // actions within other buffered actions.
 UndoManager.prototype.recordStart = function() {
-	if (this.bufferLevel++ == 0) {
+	if (this.enabled && this.bufferLevel++ == 0) {
 		this.actionBuffer = [];
 	}
 };
 
 // Stop buffering actions and transfer the buffer to the undo stack as a unit.
 UndoManager.prototype.recordStop = function() {
-	Util.assert(this.bufferLevel > 0, "UndoManager::recordStop called when no recording of actions is taking place.");
-	
-	// Decrement the buffer level and stop recording if it reaches 0
-	if (--this.bufferLevel == 0 && this.actionBuffer.length > 0) {
-		this.undoStack.push(this.actionBuffer);
+	if (this.enabled) {
+		Util.assert(this.bufferLevel > 0, "UndoManager::recordStop called when no recording of actions is taking place.");
 		
-		// Discard bottommost action if maxActions has been exceeded
-		if (this.undoStack.length > this.maxActions) {
-			this.undoStack.shift();
+		// Decrement the buffer level and stop recording if it reaches 0
+		if (--this.bufferLevel == 0 && this.actionBuffer.length > 0) {
+			this.undoStack.push(this.actionBuffer);
+		
+			// Discard bottommost action if maxActions has been exceeded
+			if (this.undoStack.length > this.maxActions) {
+				this.undoStack.shift();
+			}
+		
+			this.actionBuffer = null;
 		}
-		
-		this.actionBuffer = null;
 	}
 };
 
