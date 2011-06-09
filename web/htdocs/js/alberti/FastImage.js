@@ -23,9 +23,11 @@ function FastImage(imgNode) {
 }
 
 FastImage.prototype.update = function() {
-	this.imgNode.style.cssText = "-webkit-transform: translate3d("
-		+Math.round(this.x + this.adjustx)+"px, "+Math.round(this.y + this.adjusty)+"px, 0) scale3d("
-		+this.scale+", "+this.scale+", 1)"
+	var pos = Math.round(this.x + this.adjustx)+"px, "+Math.round(this.y + this.adjusty)+"px";
+	
+	this.imgNode.style.cssText = "-webkit-transform: translate3d("+pos+", 0) scale3d("+this.scale+", "+this.scale+", 1); "
+	    +"-moz-transform: translate("+pos+") scale("+this.scale+"); "
+		+"-o-transform: translate("+pos+") scale("+this.scale+")"
 		+(this.opacity != 1.0 ? "; opacity: "+this.opacity+";" : "");
 };
 
