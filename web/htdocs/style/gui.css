@@ -162,3 +162,12 @@ input.color {
 	float: left;
 	visibility: hidden;
 }
+
+#insertmark {
+	position: fixed;
+	right: 0px;
+	width: 180px;
+	height: 26px;
+	background-image: url('../images/linsert.png');;
+	pointer-events: none;
+}
