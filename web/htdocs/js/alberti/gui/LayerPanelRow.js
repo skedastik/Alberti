@@ -13,7 +13,7 @@ LayerPanelRow.rowHeight = 26;
 LayerPanelRow.halfRowHeight = 13;
 LayerPanelRow.rowInnerHeight = 17;
 
-function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
+function LayerPanelRow(rowId, layerName, color, isHidden, controller, dropTargetFamily) {
 	this.rowId = rowId;
 	
 	// Create GuiButton representing the layer row
@@ -23,12 +23,12 @@ function LayerPanelRow(rowId, layerName, color, isHidden, controller) {
 	
 	// Make the row draggable
 	this.rowDragger = new GuiDraggable(
-		this.rowButton, "handleBeginDragRow", "handleDragRow", "handleDropRow", 3, "layer_row"
+		this.rowButton, "handleBeginDragRow", "handleDragRow", "handleDropRow", 3, dropTargetFamily
 	).enable();
 	
 	// Make the row a drop target for other layer rows
 	this.rowDropTarget = new GuiDropTarget(
-		this.rowButton, "handleRowEnterDropTarget", "handleRowExitDropTarget", "handleRowMoveWithinDropTarget", "layer_row"
+		this.rowButton, "handleRowEnterDropTarget", "handleRowExitDropTarget", "handleRowMoveWithinDropTarget"
 	).enable();
 	
 	// Enable the row button after enabling the GuiDraggable and GuiDropTarget
