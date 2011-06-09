@@ -143,7 +143,7 @@
  * 
  * * */
  
-function Delegate(object, methodMap) {
+function Delegate(object) {
 	this.delegatedObject = object;
 	this.delegationEnabled = true;
 	
