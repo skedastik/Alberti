@@ -12,10 +12,6 @@
 	stroke-dasharray: 4, 4;
 }
 
-#selectionBox {
-	stroke: black;
-}
-
 /* * * * * * * * * * * Order below is NOT important. * * * * * * * * * * * */
 
 #background {
@@ -42,6 +38,10 @@
 
 #underlayimg {
 	position: absolute;
+}
+
+#selectionBox {
+	stroke: black;
 }
 
 text {
