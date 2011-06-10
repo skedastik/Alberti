@@ -14,7 +14,7 @@
 	border-bottom: 1px solid #333;
 	border-bottom-left-radius: 13px;
 	color: #888;
-	background-color: #fff;
+	background-image: url('../images/cstripbg.png');
 }
 
 #layer_panel_dynamic, #layer_panel_control_strip {
@@ -22,7 +22,7 @@
 }
 
 .layer_panel_row {
-	width: 200px;
+	width: 206px;
 	height: 17px;
 	padding: 4px 4px 5px 4px;
 	border-bottom: 1px solid #444;
@@ -63,6 +63,7 @@
 	float: left;
 	cursor: default;
 	
+	margin-top: 1px;
 	margin-left: 4px;
 	max-width: 150px;
 	
@@ -79,43 +80,58 @@
 	width: 18px;
 	height: 18px;
 	margin-left: 4px;
-
-	background-color: white;
+	
+	background-repeat: no-repeat;
+	background-position: center;
 	
 	float: left;
 	
 	cursor: pointer;
 }
 
+.visibility_toggle {
+	width: 24px;
+	background-image: url('../images/vistog_on.png');
+}
+
 .visibility_toggle.guiBtnToggled {
-	background-color: gray;
+	background-image: url('../images/vistog.png');
 }
 
 .visibility_toggle.guiBtnDisabled {
-	background-color: black;
-}
-
-.delete_layer_button.guiBtnDisabled {
-	background-color: white;
+	background-image: url('../images/vistog_disabled.png');
 }
 
 .new_layer_button {
 	float: right;
-	background-color: blue;
+	background-image: url('../images/addlayer.png');
+}
+
+.new_layer_button:active {
+	float: right;
+	background-image: url('../images/addlayer_active.png');
 }
 
 .delete_layer_button {
 	float: right;
-	background-color: red;
+	background-image: url('../images/remlayer.png');
+}
+
+.delete_layer_button:active {
+	background-image: url('../images/remlayer_active.png');
+}
+
+.delete_layer_button.guiBtnDisabled {
+	background-image: url('../images/remlayer_disabled.png');
 }
 
 .lp_collapse_button {
 	margin-left: 0px;
-	background-color: black;
+	background-image: url('../images/lpcollapse.png');
 }
 
 .lp_collapse_button.guiBtnToggled {
-	background-color: gray;
+	background-image: url('../images/lpcollapse_on.png');
 }
 
 .color_well {
@@ -136,7 +152,6 @@
 }
 
 .layer_name_input {
-/*	float: right;*/
 	position: relative;
 	right: -4px;
 	top: -3px;
