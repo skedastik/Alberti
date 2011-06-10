@@ -26,7 +26,7 @@
 Point.elementTag = "use";
 Point.shapeName = "point";
 
-Point.templateId = "pointTemplate";
+Point.templateId = "point_template";
 
 function Point(svgNode) {
 	Point.baseConstructor.call(this, svgNode ? svgNode : Point.elementTag, Point.shapeName);
