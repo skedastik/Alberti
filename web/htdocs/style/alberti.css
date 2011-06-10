@@ -10,6 +10,10 @@
 
 #selectionBox, #workspace .selected {
 	stroke-dasharray: 4, 4;
+	
+	/* Order-insensitive rules below */
+	marker-end: url('#marker_selected');
+	marker-start: url('#marker_selected');
 }
 
 /* * * * * * * * * * * Order below is NOT important. * * * * * * * * * * * */
