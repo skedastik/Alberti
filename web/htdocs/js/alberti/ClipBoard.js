@@ -26,3 +26,8 @@ ClipBoard.prototype.paste = function(layerManager) {
 		layerManager.insertShape(this.shapes[i].clone().generate());
 	}
 };
+
+// Clear the clip board
+ClipBoard.prototype.clear = function() {
+	this.shapes = [];
+};
