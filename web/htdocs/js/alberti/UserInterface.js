@@ -43,7 +43,6 @@ UserInterface.lpCollapseKeyCode = 220;       // '\' - Collapse/reveal layer pane
 UserInterface.snapKeyCode       = 83;        // 's' - Activate snap-to-intersection
 UserInterface.undoKeyCode       = 85;        // 'u'
 UserInterface.redoKeyCode       = 82;        // 'r'
-UserInterface.copyKeyCode       = 67;        // 'c'
 UserInterface.cutKeyCode        = 88;        // 'x'
 UserInterface.pasteKeyCode      = 86;        // 'v'
 
@@ -239,10 +238,6 @@ UserInterface.prototype.keydown = function(evt) {
 			this.bertiDoc.undoManager.redo();
 			break;
 		
-		case UserInterface.copyKeyCode:
-			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
-			break;
-		
 		case UserInterface.cutKeyCode:
 			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
 			this.lmDelegate.deleteSelectedShapes();
@@ -252,6 +247,10 @@ UserInterface.prototype.keydown = function(evt) {
 			this.bertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
 			this.clipBoard.paste(this.lmDelegate);
 			this.bertiDoc.undoManager.recordStop();
+			
+			// Pasting the same content multiple times makes no sense in 
+			// Alberti, so clear the clip board after a paste.
+			this.clipBoard.clear();
 			break;
 		
 		// Tool selection keys 0-9
