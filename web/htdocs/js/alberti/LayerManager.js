@@ -91,7 +91,7 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	
 	// Delete the layer's shapes in bulk.
 	while (targetLayer.shapes.length > 0) {
-		this.deleteShape(targetLayer.shapes.peek(), true);
+		this.removeShape(targetLayer.shapes.peek(), true);
 	}
 	
 	// Flush the bulk deletion
@@ -347,7 +347,7 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	// Make it undo-able
 	this.undoManager.push("Insert Shape", this,
 		this.insertShape, [newShape, targetLayer],
-		this.deleteShape, [newShape]
+		this.removeShape, [newShape]
 	);
 	
 	return sid;
@@ -356,11 +356,11 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 // Delete the given Shape. Pass true for bulk if you are deleting shapes in 
 // bulk (keeping in mind that you must later call the "flush" method of 
 // LayerManager's "intersections" ivar). Returns the Shape object.  Undo-able.
-LayerManager.prototype.deleteShape = function(shape, bulk) {
+LayerManager.prototype.removeShape = function(shape, bulk) {
 	var sid = shape.getSid();
 	var layer = this.shapeIndex[sid].layer;
 	
-	Util.assert(this.shapeIndex[sid], "Shape with unrecognized sid passed to LayerManager::deleteShape.");
+	Util.assert(this.shapeIndex[sid], "Shape with unrecognized sid passed to LayerManager::removeShape.");
 	
 	// Remove the shape from the index before checking for intersections, 
 	// so that it does not get tested against itself.
@@ -376,11 +376,16 @@ LayerManager.prototype.deleteShape = function(shape, bulk) {
 	
 	// Make it undo-able
 	this.undoManager.push("Delete Shape", this,
-		this.deleteShape, [shape, bulk],
+		this.removeShape, [shape, bulk],
 		this.insertShape, [shape, layer]
 	);
 	
 	return shape;
+};
+
+// Returns array of selected shapes, or empty array if none selected
+LayerManager.prototype.getSelectedShapes = function() {
+	return this.selectedShapes.clone();
 };
 
 // Delete currently selected Shapes
@@ -392,7 +397,7 @@ LayerManager.prototype.deleteSelectedShapes = function() {
 		
 		// Deselect each deleted shape prior to deletion
 		this.deselectShape(shape);
-		this.deleteShape(shape, true);
+		this.removeShape(shape, true);
 	}
 	
 	// Flush the Intersection object after bulk deletions
