@@ -62,8 +62,8 @@ GuiDraggable.prototype.enable = function() {
 	if (!this.enabled) {
 		this.enabled = true;
 		this.control.htmlNode.addEventListener("mousedown", this, false);
-		this.control.htmlNode.addEventListener("click", this, false);        // For absorbing clicks
-		this.control.htmlNode.addEventListener("dblclick", this, false);     // For absorbing dblclicks
+		this.control.htmlNode.addEventListener("click", this, true);        // For absorbing clicks
+		this.control.htmlNode.addEventListener("dblclick", this, true);     // For absorbing dblclicks
 	}
 	
 	return this;
@@ -74,8 +74,8 @@ GuiDraggable.prototype.disable = function() {
 	if (this.enabled) {
 		this.enabled = false;
 		this.control.htmlNode.removeEventListener("mousedown", this, false);
-		this.control.htmlNode.removeEventListener("click", this, false);
-		this.control.htmlNode.removeEventListener("dblclick", this, false);
+		this.control.htmlNode.removeEventListener("click", this, true);
+		this.control.htmlNode.removeEventListener("dblclick", this, true);
 	}
 	
 	return this;
