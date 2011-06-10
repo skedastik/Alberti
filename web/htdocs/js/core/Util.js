@@ -19,6 +19,11 @@ Array.prototype.peek = function() {
 	return this[this.length - 1];
 }
 
+// Returns a one-level deep copy of array
+Array.prototype.clone = function() {
+	return this.slice(0);
+}
+
 // Miscellaneous utility functions
 var Util = {
 
