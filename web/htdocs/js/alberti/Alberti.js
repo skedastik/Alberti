@@ -46,6 +46,7 @@ Alberti.nonScalingLinesHack = true;
 function Alberti(evt) {
 	Alberti.svgRoot = document.getElementById("svgroot");
 	
+	this.clipBoard = new ClipBoard();
 	this.doc = new AlbertiDocument();
-	this.ui = new UserInterface(this.doc);
+	this.ui = new UserInterface(this.doc, this.clipBoard);
 }

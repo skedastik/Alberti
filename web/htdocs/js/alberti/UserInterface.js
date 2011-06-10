@@ -40,9 +40,12 @@ UserInterface.number8KeyCode = 56;
 UserInterface.number9KeyCode = 57;
 
 UserInterface.lpCollapseKeyCode = 220;       // '\' - Collapse/reveal layer panel
-UserInterface.snapKeyCode       = 83;        // 's' - Activate mouse snapping
+UserInterface.snapKeyCode       = 83;        // 's' - Activate snap-to-intersection
 UserInterface.undoKeyCode       = 85;        // 'u'
 UserInterface.redoKeyCode       = 82;        // 'r'
+UserInterface.copyKeyCode       = 67;        // 'c'
+UserInterface.cutKeyCode        = 88;        // 'x'
+UserInterface.pasteKeyCode      = 86;        // 'v'
 
 UserInterface.selectionTool = 0;
 UserInterface.lineTool      = 1;
@@ -53,9 +56,10 @@ UserInterface.cursorDefault    = "cursorDefault";
 UserInterface.cursorZoomAndPan = "cursorZoomAndPan";
 UserInterface.cursorCrosshair  = "cursorCrosshair";
 
-function UserInterface(bertiDoc) {
+function UserInterface(bertiDoc, clipBoard) {
 	UserInterface.baseConstructor.call(this);
 	this.bertiDoc = bertiDoc;
+	this.clipBoard = clipBoard;
 	
 	// staticUnderlayGroup contains non-interactive HUD elements, rendered 
 	// below all other groups, unaffected by dynamic coordinate system 
@@ -233,6 +237,21 @@ UserInterface.prototype.keydown = function(evt) {
 		
 		case UserInterface.redoKeyCode:
 			this.bertiDoc.undoManager.redo();
+			break;
+		
+		case UserInterface.copyKeyCode:
+			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
+			break;
+		
+		case UserInterface.cutKeyCode:
+			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
+			this.lmDelegate.deleteSelectedShapes();
+			break;
+		
+		case UserInterface.pasteKeyCode:
+			this.bertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
+			this.clipBoard.paste(this.lmDelegate);
+			this.bertiDoc.undoManager.recordStop();
 			break;
 		
 		// Tool selection keys 0-9
