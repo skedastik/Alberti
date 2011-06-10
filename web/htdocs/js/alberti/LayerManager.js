@@ -434,7 +434,8 @@ LayerManager.prototype.pickShapes = function(coord, radius, single) {
 	var shapes = this.getShapesInRect(pickRect);
 	
 	if (single) {
-		shapes = shapes.length > 0 ? shapes[0] : null;
+		// If picking a single shape, pick the one with the highest z-index
+		shapes = shapes.length > 0 ? shapes.peek() : null;
 	}
 	
 	return shapes;
