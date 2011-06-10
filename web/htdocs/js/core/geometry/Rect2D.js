@@ -14,6 +14,16 @@ function Rect2D(left, top, right, bottom) {
 	}
 }
 
+Rect2D.prototype.clone = function() {
+	var r = new Rect2D();
+	r.left = this.left;
+	r.top = this.top;
+	r.right = this.right;
+	r.bottom = this.bottom;
+	
+	return r;
+};
+
 // Define a rectangle from two points describing opposite corners of the 
 // rectangle.
 Rect2D.fromPoints = function(p1, p2) {

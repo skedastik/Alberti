@@ -50,3 +50,13 @@ CircleArc.prototype.pull = function() {
 	this.center.startAngle = this.get("start-angle");
 	this.center.deltaAngle = this.get("delta-angle");
 };
+
+CircleArc.prototype.clone = function() {
+	var ca = new CircleArc();
+	ca.center = this.center.clone();
+	ca.radius = this.radius;
+	ca.startAngle = this.startAngle;
+	ca.deltaAngle = this.deltaAngle;
+	
+	return ca;
+};

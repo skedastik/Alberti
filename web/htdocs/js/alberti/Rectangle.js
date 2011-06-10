@@ -34,3 +34,10 @@ Rectangle.fromRect2D = function(rect2d) {
 	
 	return newRect;
 }
+
+Rectangle.prototype.clone = function() {
+	var r = new Rectangle();
+	r.rect = this.rect.clone();
+	
+	return r;
+};

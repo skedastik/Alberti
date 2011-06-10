@@ -33,3 +33,8 @@ Shape.prototype.displaySelected = function() {
 Shape.prototype.displayDeselected = function() {
 	this.set("class", "");
 };
+
+// Overridden method should return new Shape w/ same properties w/o calling generate
+Shape.prototype.clone = function(arguments) {
+	throw "Un-overriden 'clone' method invoked on Shape "+this.shapeName;
+};

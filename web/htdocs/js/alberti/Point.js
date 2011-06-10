@@ -63,3 +63,12 @@ Point.prototype.push = function() {
 	this.set("fill", this.innerColor);
 	this.set("stroke", this.outerColor);
 };
+
+Point.prototype.clone = function() {
+	var p = new Point();
+	p.coord = this.coord.clone();
+	p.innerColor = this.innerColor;
+	p.outerColor = this.outerColor;
+	
+	return p;
+};
