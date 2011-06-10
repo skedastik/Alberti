@@ -164,6 +164,9 @@ LayerPanel.prototype.toggleCollapse = function() {
 	);
 	
 	this.collapseAnimation.begin();
+	
+	// Toggle collapse button to reflect new collapsed state
+	this.cstrip.lpCollapseButton.toggle();
 };
 
 LayerPanel.prototype.getRowWithId = function(rowId) {
@@ -260,7 +263,6 @@ LayerPanel.prototype.handleDeleteLayerButton = function(button, evt) {
 
 LayerPanel.prototype.handleCollapseButton = function(button, evt) {
 	this.toggleCollapse();
-	button.toggle();
 };
 
 LayerPanel.prototype.handleLayerNameButton = function(button, evt) {
