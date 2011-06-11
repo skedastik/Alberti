@@ -124,8 +124,15 @@ Zap.prototype.handleWheel = function(direction, evt) {
 // Stops zoom level transition animation if it is currently taking place
 Zap.prototype.stopZoomTransition = function() {
 	if (this.zoomAnimation !== null) {
-		this.zoomAnimation.stop(false);
-		this.zoomAnimation = null;
+		// To eliminate stutter, force a redraw before stopping the animation
+		this.zoomAnimation.forceUpdate();
+		
+		// Zoom animation may have concluded after above call to forceUpdate,
+		// so check before calling stop unnecessarily.
+		if (this.zoomAnimation) {
+			this.zoomAnimation.stop(false);
+			this.zoomAnimation = null;
+		}
 	}
 };
 
