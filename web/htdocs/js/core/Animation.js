@@ -128,6 +128,11 @@ Animation.prototype.prepare = function() {
 	}
 };
 
+// Manually force an update of animated properties
+Animation.prototype.forceUpdate = function() {
+	this.run();
+};
+
 // Automatically invoked by javascript "setInterval" timer mechanism
 Animation.prototype.run = function() {
 	var elapsed = (Date.now() - this.startTime) / 1000;
