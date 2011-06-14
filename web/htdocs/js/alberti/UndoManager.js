@@ -102,14 +102,16 @@ UndoManager.prototype.recordStop = function() {
 		Util.assert(this.bufferLevel > 0, "UndoManager::recordStop called when no recording of actions is taking place.");
 		
 		// Decrement the buffer level and stop recording if it reaches 0
-		if (--this.bufferLevel == 0 && this.actionBuffer.length > 0) {
-			this.undoStack.push(this.actionBuffer);
-		
-			// Discard bottommost action if maxActions has been exceeded
-			if (this.undoStack.length > this.maxActions) {
-				this.undoStack.shift();
+		if (--this.bufferLevel == 0) {
+			if (this.actionBuffer.length > 0) {              // Only push action buffer onto undo stack if it is non-empty
+				this.undoStack.push(this.actionBuffer);
+
+				// Discard bottommost action if maxActions has been exceeded
+				if (this.undoStack.length > this.maxActions) {
+					this.undoStack.shift();
+				}
 			}
-		
+			
 			this.actionBuffer = null;
 		}
 	}
