@@ -94,6 +94,9 @@ AlbertiDocument.prototype.load = function() {
 					break;
 			}
 			
+			// Strip unrecognized data from each imported shape
+			shape.sanitize();
+			
 			// Insert each shape into the current layer
 			this.layerManager.insertShape(shape);
 			
