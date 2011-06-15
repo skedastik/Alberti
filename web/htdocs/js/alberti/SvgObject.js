@@ -174,3 +174,18 @@ SvgObject.prototype.push = function() {};
 
 // Abstract: Update the SvgObject's properties to match its SVG node.
 SvgObject.prototype.pull = function() {};
+
+// Remove all unrecognized attributes from an SvgObject whose properties were 
+// pulled from an existing node. This is achieved by actually discarding the
+// existing node and regenerating a sanitized version.
+SvgObject.prototype.sanitize = function() {
+	if (this.svgNode && this.svgNode.parentNode) {
+		var parent = this.svgNode.parentNode;
+		var sibling = this.svgNode.nextSibling;
+		
+		this.detach();
+		this.svgNode = null;
+		this.generate();
+		this.attachBefore(parent, sibling);
+	}
+};
