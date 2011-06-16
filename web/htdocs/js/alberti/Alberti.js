@@ -50,3 +50,23 @@ function Alberti(evt) {
 	this.doc = new AlbertiDocument();
 	this.ui = new UserInterface(this.doc, this.clipBoard);
 }
+
+Alberti.prototype.saveDocument = function(type) {
+	switch (type) {
+		case "alb":
+		default:
+			// Convert document XML to a base64-encoded data url
+			var dataUrl = "data:image/svg+xml;base64,"+Util.utf8_to_b64(this.doc.asXML());
+			
+			if (Alberti.usePhpSaveScript) {
+				// TODO: PHP save script to modify HTTP headers
+			} else {
+				window.open(dataUrl);
+			}
+			break;
+	}
+};
+
+Alberti.prototype.openDocument = function() {
+	
+};
