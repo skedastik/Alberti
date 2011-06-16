@@ -3,17 +3,28 @@
  * 
  * A single Alberti document.
  * 
- * TODO
+ * USAGE
  * 
- * The current mechanism of loading layers and shapes from XML data is a bit
- * dirty. Instead of differentiating shapes by SVG node names and attributes,
- * it would be cleaner to differentiate them by using specialized attributes 
- * in the Alberti namepsace, or, even better, creating a specialized XML format 
- * for Alberti.
+ * You may optionally pass a file path to the constructor to load an existing 
+ * document. If no arguments are passed to the constructor, a new, empty 
+ * document is generated.
  * 
  * * */
+
+AlbertiDocument.svgRoot;                   // root SVG element--the <svg> node
+
+// Various exportable formats
+AlbertiDocument.exportTypeAlberti = "alb";
+AlbertiDocument.exportTypeSvg     = "svg";
+AlbertiDocument.exportTypePng     = "png";
  
-function AlbertiDocument() {
+function AlbertiDocument(importPath) {
+	if (importPath) {
+		this.importFromFile(importPath);
+	}
+	
+	AlbertiDocument.svgRoot = document.getElementById("svgroot");
+	
 	// The SVG group node with id "workspace" contains all user-created 
 	// layers, including the base layer.
 	var workspaceSvgNode = document.getElementById("workspace");
@@ -22,19 +33,16 @@ function AlbertiDocument() {
 	this.undoManager = new UndoManager(Alberti.maxUndos);
 	this.layerManager = new LayerManager(this.workspaceGroup, this.undoManager);
 	
-	// underlayImg will be null if there is no underlay image
-	var imgNode = document.getElementById("underlayimg");
-	this.underlayImage = imgNode ? new FastImage(imgNode) : null;
+	// Load underlay image if available
+	this.loadUnderlayImage();
 	
 	// Disable the undo manager during document load
 	this.undoManager.disable();
 	
 	if (Util.firstNonTextChild(workspaceSvgNode)) {
-		// Layers and shapes already exist, simply load them
-		this.load();
+		this.loadLayers();                                 // Layers and shapes already exist, simply load them
 	} else {
-		// Layers do not exist, so create the base layer
-		this.layerManager.newLayer();
+		this.layerManager.newLayer();                      // Layers do not exist, so create the base layer
 		
 		// TODO: Remove the test lines below.
 		// var t = Date.now();
@@ -56,24 +64,23 @@ function AlbertiDocument() {
 	this.undoManager.enable();
 }
 
-// Returns clean SVG data in the workspace group
-AlbertiDocument.prototype.exportSVG = function() {
+AlbertiDocument.prototype.loadUnderlayImage = function() {
+	// underlayImg will be null if there is no underlay image
+	var imgNode = document.getElementById("underlayimg");
+	this.underlayImage = imgNode ? new FastImage(imgNode) : null;
 };
 
-// Returns the entire document as raw XML
-AlbertiDocument.prototype.getXML = function() {
-	return new XMLSerializer().serializeToString(Alberti.svgRoot);
-};
-
-// Generate objects from existing XML data in the workspace group.
-//
-// TODO: Disable undo manager while loading data!
-AlbertiDocument.prototype.load = function() {
+// Load layers and shape data from workspace group
+AlbertiDocument.prototype.loadLayers = function() {
 	var curGroupNode = Util.firstNonTextChild(this.workspaceGroup.svgNode);
-
+	
 	// Iterate through first level of children of the workspace group. All of
 	// these will be <g> nodes corresponding to Layer objects.
 	while (curGroupNode != null) {
+		Util.assert(curGroupNode.nodeName == "g",
+			"AlbertiDocument::loadLayers encountered node of type '"+curGroupNode.nodeName+"' when 'g' node expected."
+		);
+		
 		// Create a new layer for each <g> node encountered
 		var newLayer = new Layer(curGroupNode);
 		this.layerManager.insertLayer(newLayer);
@@ -92,6 +99,10 @@ AlbertiDocument.prototype.load = function() {
 				case "path":
 					shape = new CircleArc(curShapeNode);
 					break;
+				
+				default:
+					throw "AlbertiDocument::loadLayers encountered unrecognized shape node of type '"+curShapeNode.nodeName+"'.";
+					break;
 			}
 			
 			// Strip unrecognized data from each imported shape
@@ -107,4 +118,20 @@ AlbertiDocument.prototype.load = function() {
 	}
 	
 	this.layerManager.switchToHighestVisibleLayer();
+};
+
+// Returns the Alberti document as XML
+AlbertiDocument.prototype.asXML = function() {
+	var shapeData = new XMLSerializer().serializeToString(this.workspaceGroup.svgNode);
+	var xml = '';
+	
+	xml += '<svg\n';
+	xml += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
+	xml += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
+	xml += '	xmlns:berti="http://www.albertidraw.com/alberti">\n';
+	xml += '<title>Alberti Document</title>\n';                            // TODO: Set title dynamically
+	xml += shapeData+'\n';
+	xml += '</svg>\n';
+	
+	return xml;
 };
