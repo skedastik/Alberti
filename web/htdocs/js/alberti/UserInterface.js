@@ -79,6 +79,15 @@ function UserInterface(albertiDoc, clipBoard, appController, saveHandler, loadHa
 	// Suppress the right-click context menu
 	window.addEventListener("contextmenu", this, true);
 	
+	// Warn user about unsaved data before leaving page
+	window.onbeforeunload = function(evt) {
+		if (!this.albertiDoc.undoManager.stateIsClean()) {
+			var msg = "There are unsaved changes to this document.";
+			evt.returnValue = msg;
+			return msg;
+		}
+	}.bindTo(this);
+	
 	// Reveal the document body now that setup is complete
 	document.body.style.display = "";
 }
@@ -175,7 +184,7 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 			"cursor" : UserInterface.cursorCrosshair },
 		{"tool" : new ToolCircleArc(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair }
-	];
+	]
 };
 
 UserInterface.prototype.setTool = function(toolNumber) {
@@ -222,6 +231,7 @@ UserInterface.prototype.createLayerPanel = function() {
 UserInterface.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
 		
+		// Activate panning
 		case UserInterface.altKeyCode:
 			if (!evt.ctrlKey && !evt.metaKey && !this.leftMouseDown) {
 				// Enable panning while the alt-key and no other keys are pressed
@@ -233,6 +243,7 @@ UserInterface.prototype.keydown = function(evt) {
 			}
 			break;
 		
+		// Delete shape(s)
 		case UserInterface.deleteKeyCode:
 		case UserInterface.backspaceKeyCode:
 			this.lmDelegate.deleteSelectedShapes();
@@ -241,19 +252,23 @@ UserInterface.prototype.keydown = function(evt) {
 			evt.preventDefault();
 			break;
 			
+		// Undo
 		case UserInterface.undoKeyCode:
 			this.albertiDoc.undoManager.undo();
 			break;
 		
+		// Redo
 		case UserInterface.redoKeyCode:
 			this.albertiDoc.undoManager.redo();
 			break;
 		
+		// Cut shape(s)
 		case UserInterface.cutKeyCode:
 			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
 			this.lmDelegate.deleteSelectedShapes();
 			break;
 		
+		// Paste shape(s)
 		case UserInterface.pasteKeyCode:
 			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
 			this.clipBoard.paste(this.lmDelegate);
@@ -264,8 +279,10 @@ UserInterface.prototype.keydown = function(evt) {
 			this.clipBoard.clear();
 			break;
 		
+		// Save document
 		case UserInterface.saveKeyCode:
-			this.appController[this.saveHandler]();      // Invoke app controller's save document handler
+			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
+			this.albertiDoc.undoManager.setCleanState();     // Mark document as clean
 			break;
 		
 		// Tool selection keys 0-9
@@ -281,14 +298,17 @@ UserInterface.prototype.keydown = function(evt) {
 			this.setTool(evt.keyCode - 49);
 			break;
 		
+		// Collapse/reveal layer panel
 		case UserInterface.lpCollapseKeyCode:
 			this.layerPanel.toggleCollapse();
 			break;
 		
+		// Select next highest visible layer
 		case UserInterface.arrowUpKeyCode:
 			this.lmDelegate.switchToVisibleLayerAboveCurrentLayer();
 			break;
 		
+		// Select next lowest visible layer
 		case UserInterface.arrowDownKeyCode:
 			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
 			break;
