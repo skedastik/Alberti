@@ -178,6 +178,7 @@ Zap.prototype.disablePanning = function() {
 		this.panningEnabled = false;
 		Alberti.svgRoot.removeEventListener("mousedown", this, true);
 		this.disableZoomPanOptimization();
+		this.cancelDrag();
 	}
 };
 
