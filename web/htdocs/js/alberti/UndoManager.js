@@ -9,8 +9,10 @@ function UndoManager(maxActions) {
 	this.undoStack = [];
 	this.redoStack = [];
 	
-	this.bufferLevel = 0;           // how many recordStart calls deep?
+	this.bufferLevel = 0;           // How many recordStart calls deep?
 	this.actionBuffer = null;
+	
+	this.cleanState = undefined;    // The undo action last marked 'clean' (see setCleanState method below)
 	
 	this.enabled = false;
 	this.maxActions = maxActions;
@@ -74,12 +76,6 @@ UndoManager.prototype.disable = function() {
 // Returns the number of actions on the undo stack.
 UndoManager.prototype.getStackSize = function() {
 	return this.undoStack.length;
-};
-
-// Empty the undo stack completely
-UndoManager.prototype.clearStack = function() {
-	this.undoStack = [];
-	this.redoStack = [];
 };
 
 // After calling recordStart, future calls to UndoManager::push will not 
@@ -198,4 +194,15 @@ UndoManager.prototype.redo = function() {
 	
 	// Redo action complete, re-enable self
 	this.enable();
+};
+
+// Mark the current topmost undo action as the clean state. Use in tandem w/
+// 'stateIsClean' method to determine whether the document has unsaved changes.
+UndoManager.prototype.setCleanState = function() {
+	this.cleanState = this.undoStack.peek();
+};
+
+// Returns true if topmost undo action is the clean state, false otherwise.
+UndoManager.prototype.stateIsClean = function() {
+	return this.undoStack.peek() === this.cleanState;
 };
