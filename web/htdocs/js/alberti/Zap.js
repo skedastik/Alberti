@@ -26,11 +26,11 @@ Zap.zoomTransitionAccel = -1.0;           // transition animation acceleration
 Zap.maxWheelEvtPerSec = 30;
 Zap.wheelEvtRefreshMs = Math.round(1000 / Zap.maxWheelEvtPerSec);
 
-function Zap(masterGroup, autoScale, bertiDoc, toolTip) {
+function Zap(masterGroup, autoScale, albertiDoc, toolTip) {
 	Zap.baseConstructor.call(this);
 	this.masterGroup = masterGroup;
 	this.autoScale = autoScale;
-	this.bertiDoc = bertiDoc;
+	this.albertiDoc = albertiDoc;
 	this.toolTip = toolTip;
 	
 	this.panningEnabled = false;
@@ -39,23 +39,23 @@ function Zap(masterGroup, autoScale, bertiDoc, toolTip) {
 	
 	// Update AutoScale and layer manager's Intersection object with the default zoom level
 	this.autoScale.update(Zap.zoomFactors[this.zoomLevel]);
-	this.bertiDoc.layerManager.intersections.setSearchRadiusScale(Zap.zoomFactors[this.zoomLevel]);
+	this.albertiDoc.layerManager.intersections.setSearchRadiusScale(Zap.zoomFactors[this.zoomLevel]);
 	
 	this.masterGroup.scale = Zap.zoomFactors[this.zoomLevel];
 	this.masterGroup.push();
 	
 	// The underlay image is scaled and translated separately with hardware-acceleration.
-	if (this.bertiDoc.underlayImage) {
-		this.bertiDoc.underlayImage.scale = Zap.zoomFactors[this.zoomLevel];
-		this.bertiDoc.underlayImage.x = this.masterGroup.position.x;
-		this.bertiDoc.underlayImage.y = this.masterGroup.position.y;
-		this.bertiDoc.underlayImage.update();
+	if (this.albertiDoc.underlayImage) {
+		this.albertiDoc.underlayImage.scale = Zap.zoomFactors[this.zoomLevel];
+		this.albertiDoc.underlayImage.x = this.masterGroup.position.x;
+		this.albertiDoc.underlayImage.y = this.masterGroup.position.y;
+		this.albertiDoc.underlayImage.update();
 	}
 	
 	this.lastWheelEvent = 0;
 	
-	Alberti.svgRoot.addEventListener("mousewheel", this, false);          // opera, safari, ie9
-	Alberti.svgRoot.addEventListener("DOMMouseScroll", this, false);      // mozilla
+	AlbertiDocument.svgRoot.addEventListener("mousewheel", this, false);          // opera, safari, ie9
+	AlbertiDocument.svgRoot.addEventListener("DOMMouseScroll", this, false);      // mozilla
 }
 Util.extend(Zap, DragHandler);
 
@@ -93,17 +93,17 @@ Zap.prototype.handleWheel = function(direction, evt) {
 					this.disableZoomPanOptimization();
 				}
 			}.bindTo(this),
-			this.bertiDoc.underlayImage ?
+			this.albertiDoc.underlayImage ?
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
-					this.bertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
+					this.albertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
 					this.masterGroup.push();
-					this.bertiDoc.underlayImage.update();
+					this.albertiDoc.underlayImage.update();
 				}.bindTo(this)
 				:
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
-					this.bertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
+					this.albertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
 					this.masterGroup.push();
 				}.bindTo(this));
 		
@@ -111,10 +111,10 @@ Zap.prototype.handleWheel = function(direction, evt) {
 		this.zoomAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
 		this.zoomAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
 		
-		if (this.bertiDoc.underlayImage) {
-			this.zoomAnimation.add(this.bertiDoc.underlayImage, "scale", this.bertiDoc.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
-			this.zoomAnimation.add(this.bertiDoc.underlayImage, "x", this.bertiDoc.underlayImage.x, panX, Zap.zoomTransitionAccel);
-			this.zoomAnimation.add(this.bertiDoc.underlayImage, "y", this.bertiDoc.underlayImage.y, panY, Zap.zoomTransitionAccel);
+		if (this.albertiDoc.underlayImage) {
+			this.zoomAnimation.add(this.albertiDoc.underlayImage, "scale", this.albertiDoc.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
+			this.zoomAnimation.add(this.albertiDoc.underlayImage, "x", this.albertiDoc.underlayImage.x, panX, Zap.zoomTransitionAccel);
+			this.zoomAnimation.add(this.albertiDoc.underlayImage, "y", this.albertiDoc.underlayImage.y, panY, Zap.zoomTransitionAccel);
 		}
 			
 		this.zoomAnimation.begin();
@@ -166,7 +166,7 @@ Zap.prototype.DOMMouseScroll = function(evt) {
 Zap.prototype.enablePanning = function() {
 	if (!this.panningEnabled) {
 		this.panningEnabled = true;
-		Alberti.svgRoot.addEventListener("mousedown", this, true);
+		AlbertiDocument.svgRoot.addEventListener("mousedown", this, true);
 		this.enableZoomPanOptimization();
 	}
 };
@@ -176,7 +176,7 @@ Zap.prototype.enablePanning = function() {
 Zap.prototype.disablePanning = function() {
 	if (this.panningEnabled) {
 		this.panningEnabled = false;
-		Alberti.svgRoot.removeEventListener("mousedown", this, true);
+		AlbertiDocument.svgRoot.removeEventListener("mousedown", this, true);
 		this.disableZoomPanOptimization();
 		this.cancelDrag();
 	}
@@ -215,8 +215,8 @@ Zap.prototype.onDrag = function(dx, dy, evt) {
 	this.masterGroup.translateRelative(dx, dy);
 	this.masterGroup.push();
 	
-	if (this.bertiDoc.underlayImage) {
-		this.bertiDoc.underlayImage.translateRelative(dx, dy);
-		this.bertiDoc.underlayImage.update();
+	if (this.albertiDoc.underlayImage) {
+		this.albertiDoc.underlayImage.translateRelative(dx, dy);
+		this.albertiDoc.underlayImage.update();
 	}
 };

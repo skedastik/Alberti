@@ -138,13 +138,13 @@ Tool.prototype.activate = function() {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
-		Alberti.svgRoot.addEventListener("mousedown", this, false);
+		AlbertiDocument.svgRoot.addEventListener("mousedown", this, false);
 		window.addEventListener("mousemove", this, false);
 		window.addEventListener("keydown", this, false);
 		window.addEventListener("keyup", this, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.addEventListener("mouseup", this, false);
+			AlbertiDocument.svgRoot.addEventListener("mouseup", this, false);
 		}
 	}
 };
@@ -153,13 +153,13 @@ Tool.prototype.deactivate = function() {
 	if (this.active) {
 		this.active = false;
 		this.enabled = false;
-		Alberti.svgRoot.removeEventListener("mousedown", this, false);
+		AlbertiDocument.svgRoot.removeEventListener("mousedown", this, false);
 		window.removeEventListener("mousemove", this, false);
 		window.removeEventListener("keydown", this, false);
 		window.removeEventListener("keyup", this, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.removeEventListener("mouseup", this, false);
+			AlbertiDocument.svgRoot.removeEventListener("mouseup", this, false);
 		}
 		
 		this.toolTip.clearText();
@@ -172,12 +172,12 @@ Tool.prototype.deactivate = function() {
 Tool.prototype.enable = function() {
 	if (this.active && !this.enabled) {
 		this.enabled = true;
-		Alberti.svgRoot.addEventListener("mousedown", this, false);
+		AlbertiDocument.svgRoot.addEventListener("mousedown", this, false);
 		window.addEventListener("keydown", this, false);
 		window.addEventListener("keyup", this, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.addEventListener("mouseup", this, false);
+			AlbertiDocument.svgRoot.addEventListener("mouseup", this, false);
 		}
 	}
 };
@@ -186,12 +186,12 @@ Tool.prototype.enable = function() {
 Tool.prototype.disable = function() {
 	if (this.active && this.enabled) {
 		this.enabled = false;
-		Alberti.svgRoot.removeEventListener("mousedown", this, false);
+		AlbertiDocument.svgRoot.removeEventListener("mousedown", this, false);
 		window.removeEventListener("keydown", this, false);
 		window.removeEventListener("keyup", this, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.removeEventListener("mouseup", this, false);
+			AlbertiDocument.svgRoot.removeEventListener("mouseup", this, false);
 		}
 		
 		this.toolTip.clearText();
