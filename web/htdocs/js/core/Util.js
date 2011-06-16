@@ -106,6 +106,16 @@ var Util = {
 	   element.className = element.className.replace(pattern, '');
 	},
 	
+	// Base64 encode the given string
+	utf8_to_b64: function(str) {
+	    return window.btoa(unescape(encodeURIComponent(str)));
+	},
+	
+	// Decode the given Base64 string
+	b64_to_utf8: function(str) {
+	    return decodeURIComponent(escape(window.atob(str)));
+	},
+	
 	// Convert rgb string of form "rgb(r, g, b)" to hex string of form 
 	// "#rrggbb". Returns original string if conversion failed.
 	rgbToHex: function(rgbString) {
