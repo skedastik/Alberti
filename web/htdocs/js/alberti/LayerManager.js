@@ -15,12 +15,11 @@ function LayerManager(layerGroup, undoManager) {
 	this.numHiddenLayers = 0;
 	
 	// shapeIndex contains shape records of all user-created shapes, mapped to 
-	// Alberti sid attributes. Each shape record is an object with two 
+	// Shape sid properties. Each shape record is an object with two 
 	// properties: "shape" being a reference to the Shape object, and "layer" 
 	// being a reference to the Layer object that contains the shape.
 	this.shapeIndex = {};
 	this.shapeCount = 0;
-	this.sidCounter = 1;                        // used to generate unique Alberti sid's
 	
 	// An array of currently selected shapes
 	this.selectedShapes = [];
@@ -318,18 +317,9 @@ LayerManager.prototype.getNumberOfVisibleLayers = function() {
 };
 
 // Append the given Shape, optionally providing a target layer object 
-// (defaults to the current layer). An Alberti sid is automatically assigned 
-// to the shape if it doesn't already have one. Returns the shape's Alberti 
-// sid. Undo-able.
+// (defaults to the current layer). Returns the shape's sid. Undo-able.
 LayerManager.prototype.insertShape = function(newShape, targetLayer) {	
-	var sid = newShape.getSid();
-	
-	// Assign an Alberti sid if the shape does not already have one
-	if (!sid) {
-		sid = "s"+this.sidCounter;
-		newShape.setSid(sid);
-	}
-	
+	var sid = newShape.sid;
 	Util.assert(!this.shapeIndex[sid], "Duplicate shape passed to LayerManager::insertShape (sid '"+sid+"').");
 	
 	targetLayer = targetLayer ? targetLayer : this.currentLayer;
@@ -342,7 +332,6 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	// Create a new shape record
 	this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
 	this.shapeCount++;
-	this.sidCounter++;
 	
 	// Make it undo-able
 	this.undoManager.push("Insert Shape", this,
@@ -357,7 +346,7 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 // bulk (keeping in mind that you must later call the "flush" method of 
 // LayerManager's "intersections" ivar). Returns the Shape object.  Undo-able.
 LayerManager.prototype.removeShape = function(shape, bulk) {
-	var sid = shape.getSid();
+	var sid = shape.sid;
 	var layer = this.shapeIndex[sid].layer;
 	
 	Util.assert(this.shapeIndex[sid], "Shape with unrecognized sid passed to LayerManager::removeShape.");

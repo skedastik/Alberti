@@ -2,13 +2,16 @@
  * Shape.js
  * extends SvgObject
  * 
- * Abstract shape class.
+ * Abstract shape class. Each shape has a unique 'sid' identifier string.
  * 
  * * */
+
+Shape.sidCounter = 1;                       // Used to generate unique Shape sid's
  
 function Shape(svgTagOrNode, shapeName) {
 	Shape.baseConstructor.call(this, svgTagOrNode);
 	this.shapeName = shapeName;
+	this.sid = "s"+(Shape.sidCounter++);              // Assign a unique sid to the shape
 }
 Util.extend(Shape, SvgObject);
 
