@@ -41,7 +41,7 @@
 }
 
 #underlayimg {
-	position: absolute;
+	position: fixed;
 }
 
 #selectionBox {
