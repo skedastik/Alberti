@@ -1,8 +1,7 @@
 /*
  * UserInterface.js
  * 
- * Prepares the window for mouse and keyboard input. One UserInterface object 
- * is created per window space.
+ * Prepares the window for mouse and keyboard input.
  * 
  * NOTES
  * 
@@ -40,11 +39,12 @@ UserInterface.number8KeyCode = 56;
 UserInterface.number9KeyCode = 57;
 
 UserInterface.lpCollapseKeyCode = 220;       // '\' - Collapse/reveal layer panel
-UserInterface.snapKeyCode       = 83;        // 's' - Activate snap-to-intersection
+UserInterface.snapKeyCode       = 70;        // 'f' - Activate snap-to-intersection
 UserInterface.undoKeyCode       = 85;        // 'u'
 UserInterface.redoKeyCode       = 82;        // 'r'
 UserInterface.cutKeyCode        = 88;        // 'x'
 UserInterface.pasteKeyCode      = 86;        // 'v'
+UserInterface.saveKeyCode       = 83;        // 's' - Save the document
 
 UserInterface.selectionTool = 0;
 UserInterface.lineTool      = 1;
@@ -55,10 +55,38 @@ UserInterface.cursorDefault    = "cursorDefault";
 UserInterface.cursorZoomAndPan = "cursorZoomAndPan";
 UserInterface.cursorCrosshair  = "cursorCrosshair";
 
-function UserInterface(bertiDoc, clipBoard) {
+function UserInterface(albertiDoc, clipBoard, appController, saveHandler, loadHandler) {
 	UserInterface.baseConstructor.call(this);
-	this.bertiDoc = bertiDoc;
 	this.clipBoard = clipBoard;
+	this.appController = appController;
+	this.saveHandler = saveHandler;
+	this.loadHandler = loadHandler;
+	
+	this.prepareForDocument(albertiDoc);
+	
+	// Set default tool
+	this.currentTool = null;
+	this.setTool(UserInterface.defaultTool);
+	
+	this.leftMouseDown = false;
+	
+	// Set up listeners at the window level
+	window.addEventListener("keydown", this, false);
+	window.addEventListener("keyup", this, false);
+	window.addEventListener("mousedown", this, false);
+	window.addEventListener("mouseup", this, false);
+	
+	// Suppress the right-click context menu
+	window.addEventListener("contextmenu", this, true);
+	
+	// Reveal the document body now that setup is complete
+	document.body.style.display = "";
+}
+Util.extend(UserInterface, EventHandler);
+
+// Prepares the interface for the given Alberti document
+UserInterface.prototype.prepareForDocument = function(albertiDoc) {
+	this.albertiDoc = albertiDoc;
 	
 	// staticUnderlayGroup contains non-interactive HUD elements, rendered 
 	// below all other groups, unaffected by dynamic coordinate system 
@@ -99,7 +127,7 @@ function UserInterface(bertiDoc, clipBoard) {
 	this.hudGroup = new Group(document.getElementById("hud"));
 	
 	// Hide the center HUD if an underlay image exists.
-	if (this.bertiDoc.underlayImage) {
+	if (this.albertiDoc.underlayImage) {
 		this.hideHud();
 	}
 	
@@ -123,7 +151,7 @@ function UserInterface(bertiDoc, clipBoard) {
 	this.toolTip = new ToolTip(this.staticOverlayGroup);
 	
 	// Enable our own zooming and panning mechanism
-	this.zap = new Zap(this.masterGroup, this.autoScale, this.bertiDoc, this.toolTip);
+	this.zap = new Zap(this.masterGroup, this.autoScale, this.albertiDoc, this.toolTip);
 	
 	// The layer panel provides an interface for the manipulation of layers
 	this.layerPanel = this.createLayerPanel();
@@ -133,7 +161,7 @@ function UserInterface(bertiDoc, clipBoard) {
 	this.layerPanel.setController(this.lpController);
 	
 	// Create layer manager delegate and connect it to layer panel controller
-	this.lmDelegate = new LayerManagerDelegate(this.bertiDoc.layerManager, this.lpController);
+	this.lmDelegate = new LayerManagerDelegate(this.albertiDoc.layerManager, this.lpController);
 	this.lpController.setLayerManagerDelegate(this.lmDelegate);
 	
 	// Tell layer panel controller to populate layer panel with data
@@ -141,31 +169,14 @@ function UserInterface(bertiDoc, clipBoard) {
 	
 	// Initialize the toolset, and select the default tool
 	this.tools = [
-		{"tool" : new ToolSelection(this.masterGroup, this.lmDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolSelection(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorDefault },
-		{"tool" : new ToolLine(this.masterGroup, this.lmDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolLine(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair },
-		{"tool" : new ToolCircleArc(this.masterGroup, this.lmDelegate, this.bertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
+		{"tool" : new ToolCircleArc(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
 			"cursor" : UserInterface.cursorCrosshair }
 	];
-	this.currentTool = null;
-	this.setTool(UserInterface.defaultTool);
-	
-	this.leftMouseDown = false;
-	
-	// Set up listeners at the window level
-	window.addEventListener("keydown", this, false);
-	window.addEventListener("keyup", this, false);
-	window.addEventListener("mousedown", this, false);
-	window.addEventListener("mouseup", this, false);
-	
-	// Suppress the right-click context menu
-	window.addEventListener("contextmenu", this, true);
-	
-	// Reveal the document body now that setup is complete
-	document.body.style.display = "";
-}
-Util.extend(UserInterface, EventHandler);
+};
 
 UserInterface.prototype.setTool = function(toolNumber) {
 	if (this.tools[toolNumber] && toolNumber != this.currentTool) {
@@ -231,11 +242,11 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 			
 		case UserInterface.undoKeyCode:
-			this.bertiDoc.undoManager.undo();
+			this.albertiDoc.undoManager.undo();
 			break;
 		
 		case UserInterface.redoKeyCode:
-			this.bertiDoc.undoManager.redo();
+			this.albertiDoc.undoManager.redo();
 			break;
 		
 		case UserInterface.cutKeyCode:
@@ -244,13 +255,17 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 		
 		case UserInterface.pasteKeyCode:
-			this.bertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
+			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
 			this.clipBoard.paste(this.lmDelegate);
-			this.bertiDoc.undoManager.recordStop();
+			this.albertiDoc.undoManager.recordStop();
 			
 			// Pasting the same content multiple times makes no sense in 
 			// Alberti, so clear the clip board after a paste.
 			this.clipBoard.clear();
+			break;
+		
+		case UserInterface.saveKeyCode:
+			this.appController[this.saveHandler]();      // Invoke app controller's save document handler
 			break;
 		
 		// Tool selection keys 0-9
