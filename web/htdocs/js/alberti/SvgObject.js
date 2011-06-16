@@ -156,16 +156,6 @@ SvgObject.prototype.generate = function() {
 	return this;
 };
 
-// Set the SVG node's "sid" attribute in the Alberti namespace
-SvgObject.prototype.setSid = function(id) {
-	this.set("berti:sid", id, Alberti.customns);
-};
-
-// Get the SVG node's "sid" attribute in the Alberti namespace
-SvgObject.prototype.getSid = function() {
-	return this.get("sid", Alberti.customns);
-};
-
 // Abstract: Set default values for object's properties
 SvgObject.prototype.initialize = function() {};
 
