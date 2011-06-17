@@ -18,8 +18,6 @@ function FastImage(imgNode) {
 	
 	this.adjustx = Alberti.halfOriginalWindowWidth - this.imgNode.width / 2;
 	this.adjusty = Alberti.halfOriginalWindowHeight - this.imgNode.height / 2;
-	
-	this.update();
 }
 
 FastImage.prototype.update = function() {
