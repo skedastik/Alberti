@@ -22,7 +22,13 @@ applied to HTML elements. This means no drag and drop.
 - Rendering of lines with crispEdges on is a bit funky when it comes to stroke 
 widths with decimal components.
 
-WEBKIT+GECKO SVG RELATED BUGS
+WEBKIT RELATED BUGS
+
+- As of 6/16/2011, the nightly WebKit build (r89055) does not support 
+addEventListener for FileReader (as described here: 
+http://web.archiveorange.com/archive/v/fwvde2KNIH2OWykfy7Xz).
+
+SVG RELATED BUGS
 
 Line rendering issue:
 
