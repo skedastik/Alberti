@@ -1,3 +1,10 @@
+/*
+ * Conf.js
+ * 
+ * Configuration params
+ * 
+ * * */
+
 Alberti.fpsMax    = Animation.fpsMax;
 Alberti.refreshms = Math.round(1000 / Alberti.fpsMax);      // limit redraw rate
 
