@@ -5,22 +5,21 @@
  * 
  * USAGE
  * 
- * You may optionally pass a file path to the constructor to load an existing 
+ * You may optionally pass XML data to the constructor to load an existing 
  * document. If no arguments are passed to the constructor, a new, empty 
  * document is generated.
  * 
  * * */
 
-AlbertiDocument.svgRoot;                   // root SVG element--the <svg> node
+AlbertiDocument.svgRoot;                   // Root SVG element--the <svg> node
 
 // Various exportable formats
-AlbertiDocument.exportTypeAlberti = "alb";
 AlbertiDocument.exportTypeSvg     = "svg";
 AlbertiDocument.exportTypePng     = "png";
  
-function AlbertiDocument(importPath) {
-	if (importPath) {
-		this.importFromFile(importPath);
+function AlbertiDocument(xml) {
+	if (xml) {
+		this.importFromXML(xml);
 	}
 	
 	AlbertiDocument.svgRoot = document.getElementById("svgroot");
@@ -120,7 +119,11 @@ AlbertiDocument.prototype.loadLayers = function() {
 	this.layerManager.switchToHighestVisibleLayer();
 };
 
-// Returns the Alberti document as XML
+AlbertiDocument.prototype.importFromXML = function(xml) {
+	Dbug.log(xml);
+};
+
+// Returns the Alberti document as SVG+XML
 AlbertiDocument.prototype.asXML = function() {
 	var shapeData = new XMLSerializer().serializeToString(this.workspaceGroup.svgNode);
 	var xml = '';
@@ -129,8 +132,17 @@ AlbertiDocument.prototype.asXML = function() {
 	xml += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
 	xml += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
 	xml += '	xmlns:berti="http://www.albertidraw.com/alberti">\n';
-	xml += '<title>Alberti Document</title>\n';                            // TODO: Set title dynamically
+	
+	// Set the document title. This will be the default filename in the save dialog.
+	// TODO: Set title dynamically
+	xml += '<title>'+("Alberti Document")+'</title>\n';
+	
+	// Serialize underlay image path
+	xml += '<image xlink:href="'+this.underlayImage.imgNode.src+'" display="none" />';
+	
+	// Serialize shape data
 	xml += shapeData+'\n';
+	
 	xml += '</svg>\n';
 	
 	return xml;

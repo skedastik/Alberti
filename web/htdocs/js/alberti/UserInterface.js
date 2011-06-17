@@ -13,6 +13,20 @@
  * 
  * (2) The alt-key was not down. The current tool is activated.
  * 
+ * USAGE
+ * 
+ * The constructor expects a reference to an AlbertiDocument object and
+ * ClipBoard object. 'appController' must be a reference to an object that
+ * serves as the application controller and implements save-document and
+ * load-document handler methods (whose names must be provided in the last two 
+ * args). The save handler must take a single string argument denoting the
+ * export format (supported formats listen in AlbertiDocument.js). The load
+ * handler must take a single string argument containing the XML data of the
+ * document to load.
+ * 
+ * When loading another document, UserInterface::prepareForDocument should be
+ * called in order to update the interface with the contents of the new doc.
+ * 
  * * */
 
 UserInterface.shiftKeyCode  = 16;
@@ -45,6 +59,7 @@ UserInterface.redoKeyCode       = 82;        // 'r'
 UserInterface.cutKeyCode        = 88;        // 'x'
 UserInterface.pasteKeyCode      = 86;        // 'v'
 UserInterface.saveKeyCode       = 83;        // 's' - Save the document
+UserInterface.loadKeyCode       = 79;        // 'o' - Open a document
 
 UserInterface.selectionTool = 0;
 UserInterface.lineTool      = 1;
@@ -62,6 +77,7 @@ function UserInterface(albertiDoc, clipBoard, appController, saveHandler, loadHa
 	this.saveHandler = saveHandler;
 	this.loadHandler = loadHandler;
 	
+	// Update the interface with the contents of the document passed in
 	this.prepareForDocument(albertiDoc);
 	
 	// Set default tool
@@ -79,6 +95,9 @@ function UserInterface(albertiDoc, clipBoard, appController, saveHandler, loadHa
 	// Suppress the right-click context menu
 	window.addEventListener("contextmenu", this, true);
 	
+	// Create a file importer for loading Alberti documents, passing self as controller
+	this.importer = new FileImporter(document.getElementById("fi"), "image/svg+xml", true, this, "handleImportFile");
+	
 	// Warn user about unsaved data before leaving page
 	window.onbeforeunload = function(evt) {
 		if (!this.albertiDoc.undoManager.stateIsClean()) {
@@ -87,9 +106,6 @@ function UserInterface(albertiDoc, clipBoard, appController, saveHandler, loadHa
 			return msg;
 		}
 	}.bindTo(this);
-	
-	// Reveal the document body now that setup is complete
-	document.body.style.display = "";
 }
 Util.extend(UserInterface, EventHandler);
 
@@ -228,12 +244,16 @@ UserInterface.prototype.createLayerPanel = function() {
 	return new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
 };
 
+UserInterface.prototype.handleImportFile = function(data) {
+	this.appController[this.loadHandler](data);                  // Invoke app controller's load document handler
+};
+
 UserInterface.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
 		
 		// Activate panning
 		case UserInterface.altKeyCode:
-			if (!evt.ctrlKey && !evt.metaKey && !this.leftMouseDown) {
+			if (!this.leftMouseDown) {
 				// Enable panning while the alt-key and no other keys are pressed
 				this.zap.enablePanning();
 				this.setCursor(UserInterface.cursorZoomAndPan);
@@ -282,7 +302,11 @@ UserInterface.prototype.keydown = function(evt) {
 		// Save document
 		case UserInterface.saveKeyCode:
 			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
-			this.albertiDoc.undoManager.setCleanState();     // Mark document as clean
+			break;
+		
+		// Open document
+		case UserInterface.loadKeyCode:
+			this.importer.prompt();                         // Prompt the user to open a file
 			break;
 		
 		// Tool selection keys 0-9
