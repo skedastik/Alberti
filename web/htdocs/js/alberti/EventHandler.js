@@ -26,6 +26,12 @@ EventHandler.prototype.handleEvent = function(evt) {
 				return;      // Discard mouseouts from children to other children or self
 			}
 			break;
+		
+		case "keydown":
+			if (evt.ctrlKey || evt.metaKey) {
+				return;      // Do not respond to control and metakey combinations
+			}
+			break;
 	}
 	
 	this[evt.type](evt);
