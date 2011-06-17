@@ -11,8 +11,6 @@
  * 
  * * */
 
-AlbertiDocument.svgRoot;                   // Root SVG element--the <svg> node
-
 // Various exportable formats
 AlbertiDocument.exportTypeSvg     = "svg";
 AlbertiDocument.exportTypePng     = "png";
@@ -21,8 +19,6 @@ function AlbertiDocument(xml) {
 	if (xml) {
 		this.importFromXML(xml);
 	}
-	
-	AlbertiDocument.svgRoot = document.getElementById("svgroot");
 	
 	// The SVG group node with id "workspace" contains all user-created 
 	// layers, including the base layer.
@@ -120,7 +116,21 @@ AlbertiDocument.prototype.loadLayers = function() {
 };
 
 AlbertiDocument.prototype.importFromXML = function(xml) {
-	Dbug.log(xml);
+	var parser = new DOMParser();
+	var doc = parser.parseFromString(xml, "text/xml");
+	var ulimg = doc.getElementById("underlayimg");
+	
+	if (ulimg) {
+		Util.assert(ulimg.hasAttributeNS(Alberti.xlinkns, "href") && ulimg.hasAttributeNS(null, "opacity"),
+			"AlbertiDocument::importFromXML encountered malformed underlay image element."
+		);
+		
+		// Extract underlay image data
+		var ulimgPath = ulimg.getAttributeNS(Alberti.xlinkns, "href");
+		var ulimgOpacity = ulimg.getAttributeNS(null, "opacity");
+	}
+	
+	var shapeData = doc.getElementById("workspace");
 };
 
 // Returns the Alberti document as SVG+XML
@@ -138,11 +148,11 @@ AlbertiDocument.prototype.asXML = function() {
 	xml += '<title>'+("Alberti Document")+'</title>\n';
 	
 	// Serialize underlay image path
-	xml += '<image xlink:href="'+this.underlayImage.imgNode.src+'" display="none" />';
+	xml += '<image id="underlayimg" xlink:href="'+this.underlayImage.imgNode.src+'" '
+		+ 'opacity="'+this.underlayImage.opacity+'" '
+		+ 'display="none" />\n';
 	
-	// Serialize shape data
-	xml += shapeData+'\n';
-	
+	xml += shapeData+'\n';            // Serialize shape data
 	xml += '</svg>\n';
 	
 	return xml;
