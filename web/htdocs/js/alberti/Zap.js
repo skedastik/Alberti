@@ -54,8 +54,8 @@ function Zap(masterGroup, autoScale, albertiDoc, toolTip) {
 	
 	this.lastWheelEvent = 0;
 	
-	AlbertiDocument.svgRoot.addEventListener("mousewheel", this, false);          // opera, safari, ie9
-	AlbertiDocument.svgRoot.addEventListener("DOMMouseScroll", this, false);      // mozilla
+	Alberti.svgRoot.addEventListener("mousewheel", this, false);          // opera, safari, ie9
+	Alberti.svgRoot.addEventListener("DOMMouseScroll", this, false);      // mozilla
 }
 Util.extend(Zap, DragHandler);
 
@@ -166,7 +166,7 @@ Zap.prototype.DOMMouseScroll = function(evt) {
 Zap.prototype.enablePanning = function() {
 	if (!this.panningEnabled) {
 		this.panningEnabled = true;
-		AlbertiDocument.svgRoot.addEventListener("mousedown", this, true);
+		Alberti.svgRoot.addEventListener("mousedown", this, true);
 		this.enableZoomPanOptimization();
 	}
 };
@@ -176,7 +176,7 @@ Zap.prototype.enablePanning = function() {
 Zap.prototype.disablePanning = function() {
 	if (this.panningEnabled) {
 		this.panningEnabled = false;
-		AlbertiDocument.svgRoot.removeEventListener("mousedown", this, true);
+		Alberti.svgRoot.removeEventListener("mousedown", this, true);
 		this.disableZoomPanOptimization();
 		this.cancelDrag();
 	}
