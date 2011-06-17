@@ -9,8 +9,12 @@ Alberti.svgns    = "http://www.w3.org/2000/svg";          // SVG XML namespace
 Alberti.xlinkns  = "http://www.w3.org/1999/xlink";           
 Alberti.customns = "http://www.albertidraw.com/alberti";      // Custom XML namespace for extending SVG document
 
+Alberti.svgRoot;                                           // Root SVG element--the <svg> node
+
 function Alberti() {
 	this.clipBoard = new ClipBoard();
+	
+	Alberti.svgRoot = document.getElementById("svgroot");
 	
 	// Open with an empty document by default
 	this.doc = new AlbertiDocument();
