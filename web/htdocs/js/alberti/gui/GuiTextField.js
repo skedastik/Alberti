@@ -69,11 +69,11 @@ GuiTextField.prototype.hideInput = function(hideFlag) {
 
 GuiTextField.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
-		case UserInterface.enterKeyCode:
+		case KeyCode.enter:
 			this.htmlNode.blur();
 			break;
 		
-		case UserInterface.escKeyCode:
+		case KeyCode.esc:
 			this.deactivate();
 			break;
 	}

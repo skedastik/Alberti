@@ -29,38 +29,6 @@
  * 
  * * */
 
-UserInterface.shiftKeyCode  = 16;
-UserInterface.ctrlKeyCode   = 17;
-UserInterface.altKeyCode    = 18;
-UserInterface.escKeyCode    = 27;
-
-UserInterface.enterKeyCode  = 13;
-
-UserInterface.deleteKeyCode    = 46;
-UserInterface.backspaceKeyCode = 8;
-
-UserInterface.arrowUpKeyCode   = 38;
-UserInterface.arrowDownKeyCode = 40;
-
-UserInterface.number1KeyCode = 49;
-UserInterface.number2KeyCode = 50;
-UserInterface.number3KeyCode = 51;
-UserInterface.number4KeyCode = 52;
-UserInterface.number5KeyCode = 53;
-UserInterface.number6KeyCode = 54;
-UserInterface.number7KeyCode = 55;
-UserInterface.number8KeyCode = 56;
-UserInterface.number9KeyCode = 57;
-
-UserInterface.lpCollapseKeyCode = 220;       // '\' - Collapse/reveal layer panel
-UserInterface.snapKeyCode       = 70;        // 'f' - Activate snap-to-intersection
-UserInterface.undoKeyCode       = 85;        // 'u'
-UserInterface.redoKeyCode       = 82;        // 'r'
-UserInterface.cutKeyCode        = 88;        // 'x'
-UserInterface.pasteKeyCode      = 86;        // 'v'
-UserInterface.saveKeyCode       = 83;        // 's' - Save the document
-UserInterface.loadKeyCode       = 79;        // 'o' - Open a document
-
 UserInterface.selectionTool = 0;
 UserInterface.lineTool      = 1;
 UserInterface.circleArcTool = 2;
@@ -252,7 +220,7 @@ UserInterface.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
 		
 		// Activate panning
-		case UserInterface.altKeyCode:
+		case KeyCode.alt:
 			if (!this.leftMouseDown) {
 				// Enable panning while the alt-key and no other keys are pressed
 				this.zap.enablePanning();
@@ -264,8 +232,8 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 		
 		// Delete shape(s)
-		case UserInterface.deleteKeyCode:
-		case UserInterface.backspaceKeyCode:
+		case KeyCode.del:
+		case KeyCode.backspace:
 			this.lmDelegate.deleteSelectedShapes();
 			
 			// Attempt to suppress backspace-key navigation.
@@ -273,23 +241,23 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 			
 		// Undo
-		case UserInterface.undoKeyCode:
+		case KeyCode.undo:
 			this.albertiDoc.undoManager.undo();
 			break;
 		
 		// Redo
-		case UserInterface.redoKeyCode:
+		case KeyCode.redo:
 			this.albertiDoc.undoManager.redo();
 			break;
 		
 		// Cut shape(s)
-		case UserInterface.cutKeyCode:
+		case KeyCode.cut:
 			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
 			this.lmDelegate.deleteSelectedShapes();
 			break;
 		
 		// Paste shape(s)
-		case UserInterface.pasteKeyCode:
+		case KeyCode.paste:
 			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
 			this.clipBoard.paste(this.lmDelegate);
 			this.albertiDoc.undoManager.recordStop();
@@ -300,40 +268,40 @@ UserInterface.prototype.keydown = function(evt) {
 			break;
 		
 		// Save document
-		case UserInterface.saveKeyCode:
+		case KeyCode.save:
 			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
 			break;
 		
 		// Open document
-		case UserInterface.loadKeyCode:
+		case KeyCode.load:
 			this.importer.prompt();                         // Prompt the user to open a file
 			break;
 		
 		// Tool selection keys 0-9
-		case UserInterface.number1KeyCode:
-		case UserInterface.number2KeyCode:
-		case UserInterface.number3KeyCode:
-		case UserInterface.number4KeyCode:
-		case UserInterface.number5KeyCode:
-		case UserInterface.number6KeyCode:
-		case UserInterface.number7KeyCode:
-		case UserInterface.number8KeyCode:
-		case UserInterface.number9KeyCode:
+		case KeyCode.number1:
+		case KeyCode.number2:
+		case KeyCode.number3:
+		case KeyCode.number4:
+		case KeyCode.number5:
+		case KeyCode.number6:
+		case KeyCode.number7:
+		case KeyCode.number8:
+		case KeyCode.number9:
 			this.setTool(evt.keyCode - 49);
 			break;
 		
 		// Collapse/reveal layer panel
-		case UserInterface.lpCollapseKeyCode:
+		case KeyCode.lpCollapse:
 			this.layerPanel.toggleCollapse();
 			break;
 		
 		// Select next highest visible layer
-		case UserInterface.arrowUpKeyCode:
+		case KeyCode.arrowUp:
 			this.lmDelegate.switchToVisibleLayerAboveCurrentLayer();
 			break;
 		
 		// Select next lowest visible layer
-		case UserInterface.arrowDownKeyCode:
+		case KeyCode.arrowDown:
 			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
 			break;
 	}
@@ -341,7 +309,7 @@ UserInterface.prototype.keydown = function(evt) {
 
 UserInterface.prototype.keyup = function(evt) {
 	switch(evt.keyCode) {
-		case UserInterface.altKeyCode:
+		case KeyCode.alt:
 			// stop panning when alt-key is released
 			this.zap.disablePanning();
 			this.setCursorToCurrentTool();

@@ -78,11 +78,11 @@ JsColorPicker.prototype.updateDelegate = function(color) {
 
 JsColorPicker.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
-		case UserInterface.escKeyCode:
+		case KeyCode.esc:
 			// If user hit 'escape' key, reset color
 			this.updateDelegate(this.originalColor);
 			
-		case UserInterface.enterKeyCode:
+		case KeyCode.enter:
 			this.deactivate();
 			evt.stopPropagation();
 			break;

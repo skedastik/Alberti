@@ -360,15 +360,15 @@ Tool.prototype.onMouseMove = function(gx, gy, evt) {
 
 Tool.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
-		case UserInterface.escKeyCode:
+		case KeyCode.esc:
 			this.decrementStep();
 			break;
-		case UserInterface.enterKeyCode:
+		case KeyCode.enter:
 			if (this.currentStep >= this.minSteps - 1) {
 				this.completeTool();
 			}
 			break;
-		case UserInterface.shiftKeyCode:
+		case KeyCode.shift:
 			if (!evt.altKey && !evt.ctrlKey && !evt.metaKey) {
 				this.constrainEnabled = true;
 			
@@ -377,7 +377,7 @@ Tool.prototype.keydown = function(evt) {
 				this.invokeMouseMove(p.x, p.y);
 			}
 			break;
-		case UserInterface.snapKeyCode:
+		case KeyCode.snap:
 			this.enableSnapping();
 			break;
 	}
@@ -385,14 +385,14 @@ Tool.prototype.keydown = function(evt) {
 
 Tool.prototype.keyup = function(evt) {
 	switch (evt.keyCode) {
-		case UserInterface.shiftKeyCode:
+		case KeyCode.shift:
 			this.constrainEnabled = false;
 		
 			// Spoof a mousemove so shapes will update to constrained position
 			p = this.getLastMousePosition();
 			this.invokeMouseMove(p.x, p.y);
 			break;
-		case UserInterface.snapKeyCode:
+		case KeyCode.snap:
 			this.disableSnapping();
 			break;
 	}
