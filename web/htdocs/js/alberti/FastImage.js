@@ -65,7 +65,6 @@ FastImage.prototype.translateRelative = function(dx, dy) {
 };
 
 FastImage.prototype.load = function(evt) {
-	Dbug.log("image loaded");
 	// Make sure the new image is centered in the window
 	this.updateOffset();
 	this.update();
