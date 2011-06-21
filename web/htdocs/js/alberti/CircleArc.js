@@ -45,10 +45,10 @@ CircleArc.prototype.push = function() {
 };
 
 CircleArc.prototype.pull = function() {
-	this.center = new Coord2D(this.get("cx"), this.get("cy"));
-	this.radius = this.get("radius");
-	this.center.startAngle = this.get("start-angle");
-	this.center.deltaAngle = this.get("delta-angle");
+	this.center = new Coord2D(this.get("cx", Alberti.customns), this.get("cy", Alberti.customns));
+	this.radius = this.get("radius", Alberti.customns);
+	this.startAngle = this.get("start-angle", Alberti.customns);
+	this.deltaAngle = this.get("delta-angle", Alberti.customns);
 };
 
 CircleArc.prototype.clone = function() {
