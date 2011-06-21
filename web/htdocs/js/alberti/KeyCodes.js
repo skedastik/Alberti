@@ -32,6 +32,8 @@ var KeyCode = {
 	redo:       82,        // 'r'
 	cut:        88,        // 'x'
 	paste:      86,        // 'v'
+	newDoc:     78,        // 'n' - Create a new document
 	save:       83,        // 's' - Save the document
-	load:       79         // 'o' - Open a document
+	load:       79,        // 'o' - Open a document
+	loadUlImg:  73         // 'i' - Import an underlay image
 };
