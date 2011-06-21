@@ -13,9 +13,10 @@
  * an object that implements an import handler method. 'importHandler' is the 
  * name of this method.
  * 
- * The import handler should take a single argument representing the imported
- * data. If 'importAsText' was set to true, the imported data will be a text
- * representation of the data as opposed to a base64 encoded data URL.
+ * The import handler should take a string argument representing the imported
+ * data and a string argument containing the filename. If 'importAsText' was 
+ * set to true, the imported data will be a text representation of the data as 
+ * opposed to a base64 encoded data URL.
  * 
  * * */
  
@@ -28,12 +29,15 @@ function FileImporter(inputElement, mimeType, importAsText, controller, importHa
 	
 	// Create FileReader and listen for 'loadend' events.
 	this.fileReader = new FileReader();
-	this.fileReader.addEventListener("loadend", this, false);
+	this.registerListener("loadend", this.fileReader, false);
 	
 	// Set input element's 'accept' attribute to match MIME type passed in,
 	// and listen for file imports.
 	this.inputElement.accept = mimeType;
-	this.inputElement.addEventListener("change", this, false);
+	this.registerListener("change", this.inputElement, false);
+	
+	// Hide the input element
+	this.inputElement.style.display = "none";
 }
 Util.extend(FileImporter, EventHandler);
 
@@ -58,5 +62,5 @@ FileImporter.prototype.change = function(evt) {
 };
 
 FileImporter.prototype.loadend = function(evt) {
-	this.controller[this.importHandler](this.fileReader.result);
+	this.controller[this.importHandler](this.fileReader.result, this.getFilename());
 };
