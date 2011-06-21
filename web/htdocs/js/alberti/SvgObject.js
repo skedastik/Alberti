@@ -94,6 +94,7 @@ function SvgObject(svgTagOrObject) {
 
 // Set SVG node's attribute to given value. Pass empty string value to delete 
 // attribute. A namespace for that attribute may optionally be supplied.
+// Returns self.
 SvgObject.prototype.set = function(attr, value, namespace) {
 	if ((value === "" || value === null)) {
 		this.svgNode.removeAttributeNS(arguments.length > 2 ? namespace : null, attr);
@@ -101,6 +102,8 @@ SvgObject.prototype.set = function(attr, value, namespace) {
 		this.svgNode.setAttributeNS(arguments.length > 2 ? namespace : null, attr,
 			typeof value == "number" ? Util.roundToDecimal(value, Alberti.decimalPrecision) : value);
 	}
+	
+	return this;
 };
 
 // Get SVG node attribute, optionally supplying a namespace.
