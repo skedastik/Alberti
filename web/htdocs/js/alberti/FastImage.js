@@ -1,5 +1,6 @@
 /*
  * FastImage.js
+ * extends EventHandler
  * 
  * Hardware-accelerated HTML image transformations via -webkit-transform's 
  * "translate3d" and "scale3d" CSS primitives. The image is anchored at its 
@@ -9,16 +10,40 @@
  * * */
  
 function FastImage(imgNode) {
+	FastImage.baseConstructor.call(this);
 	this.imgNode = imgNode;
 	
 	this.x = 0;
 	this.y = 0;
 	this.scale = 1.0;
-	this.opacity = 1.0;
+	this.opacity = imgNode.style.opacity !== "" ? parseFloat(imgNode.style.opacity) : 1;
+	this.hidden = imgNode.style.display == "none" ? true : false;
 	
-	this.adjustx = Alberti.halfOriginalWindowWidth - this.imgNode.width / 2;
-	this.adjusty = Alberti.halfOriginalWindowHeight - this.imgNode.height / 2;
+	// Center the image in the window
+	this.updateOffset();
+	
+	this.registerListener("load", this.imgNode, false);
 }
+Util.extend(FastImage, EventHandler);
+
+// Set the src of the FastImage's img node to the given URL
+FastImage.prototype.setSource = function(url) {
+	this.imgNode.src = url;
+};
+
+FastImage.prototype.isHidden = function() {
+	return this.hidden;
+};
+
+FastImage.prototype.hide = function() {
+	this.hidden = true;
+	this.imgNode.style.display = "none";
+};
+
+FastImage.prototype.show = function() {
+	this.hidden = false;
+	this.imgNode.style.display = "";
+};
 
 FastImage.prototype.update = function() {
 	var pos = Math.round(this.x + this.adjustx)+"px, "+Math.round(this.y + this.adjusty)+"px";
@@ -29,7 +54,19 @@ FastImage.prototype.update = function() {
 		+(this.opacity != 1.0 ? "; opacity: "+this.opacity+";" : "");
 };
 
+FastImage.prototype.updateOffset = function() {
+	this.adjustx = Alberti.halfOriginalWindowWidth - this.imgNode.width / 2;
+	this.adjusty = Alberti.halfOriginalWindowHeight - this.imgNode.height / 2;
+};
+
 FastImage.prototype.translateRelative = function(dx, dy) {
 	this.x += dx;
 	this.y += dy;
+};
+
+FastImage.prototype.load = function(evt) {
+	Dbug.log("image loaded");
+	// Make sure the new image is centered in the window
+	this.updateOffset();
+	this.update();
 };
