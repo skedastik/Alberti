@@ -7,7 +7,45 @@
 
 function EventHandler() {
 	this.lastMouseMove = Date.now();
+	this.listeners = [];
 }
+
+EventHandler.prototype.registerListener = function(type, target, useCapture) {
+	if (this.getListenerIndex(type, target, useCapture) == -1) {
+		this.listeners.push({"type":type, "target":target, "useCapture":useCapture});
+		target.addEventListener(type, this, useCapture);
+	}
+};
+
+EventHandler.prototype.unregisterListener = function(type, target, useCapture) {
+	var index = this.getListenerIndex(type, target, useCapture);
+	
+	if (index > -1) {
+		this.listeners.splice(index, 1);
+		target.removeEventListener(type, this, useCapture);
+	}
+};
+
+EventHandler.prototype.killAllListeners = function() {
+	for (var i = 0, len = this.listeners.length; i < len; i++) {
+		var rec = this.listeners[i];
+		rec.target.removeEventListener(rec.type, this, rec.useCapture);
+	}
+	
+	this.listeners = [];
+};
+
+// Returns index of given listener record, or -1 if not found
+EventHandler.prototype.getListenerIndex = function(type, target, useCapture) {
+	for (var i = 0, len = this.listeners.length; i < len; i++) {
+		var rec = this.listeners[i];
+		if (type == rec.type && target == rec.target && useCapture == rec.useCapture) {
+			return i;
+		}
+	}
+	
+	return -1;
+};
 
 EventHandler.prototype.handleEvent = function(evt) {
 	switch (evt.type) {
