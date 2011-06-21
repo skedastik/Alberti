@@ -44,8 +44,8 @@ DragHandler.prototype.cancelDrag = function(evt) {
 		this.onDrop(evt);
 	}
 	
-	window.removeEventListener("mousemove", this, true);
-	window.removeEventListener("mouseup", this, true);
+	this.unregisterListener("mousemove", window, true);
+	this.unregisterListener("mouseup", window, true);
 };
 
 DragHandler.prototype.mousedown = function(evt) {
@@ -53,8 +53,8 @@ DragHandler.prototype.mousedown = function(evt) {
 	this.lastY = this.startY = evt.clientY;
 
 	// Now that the mouse is down, start capturing mousemove and mouseup events
-	window.addEventListener("mousemove", this, true);
-	window.addEventListener("mouseup", this, true);
+	this.registerListener("mousemove", window, true);
+	this.registerListener("mouseup", window, true);
 };
 
 DragHandler.prototype.mousemove = function(evt) {

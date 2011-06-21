@@ -24,7 +24,7 @@ function ToolTip(staticOverlayGroup) {
 	this.updateTextPosition();
 	this.staticOverlayGroup.attachChild(this.tipText);
 	
-	window.addEventListener("resize", this, false);
+	this.registerListener("resize", window, false);
 }
 Util.extend(ToolTip, EventHandler);
 

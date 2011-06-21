@@ -32,19 +32,19 @@ JsColorPicker.prototype.activate = function() {
 	this.originalColor = this.getColor();
 	this.jscolor.showPicker();
 	
-	window.addEventListener("mousedown", this, true);
-	window.addEventListener("click", this, true);
-	window.addEventListener("keydown", this, true);
-	this.inputElement.addEventListener("change", this, false);
+	this.registerListener("mousedown", window, true);
+	this.registerListener("click", window, true);
+	this.registerListener("keydown", window, true);
+	this.registerListener("change", this.inputElement, false);
 };
 
 JsColorPicker.prototype.deactivate = function() {
 	this.jscolor.hidePicker();
 	
-	window.removeEventListener("mousedown", this, true);
-	window.removeEventListener("click", this, true);
-	window.removeEventListener("keydown", this, true);
-	this.inputElement.removeEventListener("change", this, false);
+	this.unregisterListener("mousedown", window, true);
+	this.unregisterListener("click", window, true);
+	this.unregisterListener("keydown", window, true);
+	this.unregisterListener("change", this.inputElement, false);
 };
 
 JsColorPicker.prototype.setColor = function(color) {

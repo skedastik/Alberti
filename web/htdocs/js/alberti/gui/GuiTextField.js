@@ -49,8 +49,8 @@ GuiTextField.prototype.activate = function(defaultText) {
 		this.hideInput(false);
 		this.htmlNode.focus();
 		this.htmlNode.select();
-		this.htmlNode.addEventListener("keydown", this, true);
-		this.htmlNode.addEventListener("blur", this, false);
+		this.registerListener("keydown", this.htmlNode, true);
+		this.registerListener("blur", this.htmlNode, false);
 	}
 };
 
@@ -58,8 +58,8 @@ GuiTextField.prototype.deactivate = function() {
 	if (this.active) {
 		this.active = false;
 		this.hideInput(true);
-		this.htmlNode.removeEventListener("keydown", this, true);
-		this.htmlNode.removeEventListener("blur", this, false);
+		this.unregisterListener("keydown", this.htmlNode, true);
+		this.unregisterListener("blur", this.htmlNode, false);
 	}
 };
 

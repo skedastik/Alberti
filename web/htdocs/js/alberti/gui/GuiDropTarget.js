@@ -43,9 +43,9 @@ GuiDropTarget.prototype.disable = function() {
 GuiDropTarget.prototype.activate = function() {
 	if (this.enabled && !this.active) {
 		this.active = true;
-		this.control.htmlNode.addEventListener("mouseover", this, false);
-		this.control.htmlNode.addEventListener("mouseout", this, false);
-		this.control.htmlNode.addEventListener("mousemove", this, false);
+		this.registerListener("mouseover", this.control.htmlNode, false);
+		this.registerListener("mouseout", this.control.htmlNode, false);
+		this.registerListener("mousemove", this.control.htmlNode, false);
 	}
 };
 
@@ -53,9 +53,9 @@ GuiDropTarget.prototype.activate = function() {
 GuiDropTarget.prototype.deactivate = function() {
 	if (this.active) {
 		this.active = false;
-		this.control.htmlNode.removeEventListener("mouseover", this, false);
-		this.control.htmlNode.removeEventListener("mouseout", this, false);
-		this.control.htmlNode.removeEventListener("mousemove", this, false);
+		this.unregisterListener("mouseover", this.control.htmlNode, false);
+		this.unregisterListener("mouseout", this.control.htmlNode, false);
+		this.unregisterListener("mousemove", this.control.htmlNode, false);
 	}
 };
 

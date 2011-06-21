@@ -80,7 +80,7 @@ GuiButton.prototype.enable = function() {
 	if (!this.enabled) {
 		this.enabled = true;
 		Util.removeHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.addEventListener(this.eventType, this, false);
+		this.registerListener(this.eventType, this.htmlNode, false);
 	}
 	
 	return this;
@@ -91,7 +91,7 @@ GuiButton.prototype.disable = function() {
 	if (this.enabled) {
 		this.enabled = false;
 		Util.addHtmlClass(this.htmlNode, GuiButton.styleDisabled);
-		this.htmlNode.removeEventListener(this.eventType, this, false);
+		this.unregisterListener(this.eventType, this.htmlNode, false);
 	}
 	
 	return this;
