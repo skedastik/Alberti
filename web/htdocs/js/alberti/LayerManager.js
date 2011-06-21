@@ -6,10 +6,12 @@
  * * */
  
 function LayerManager(layerGroup, undoManager) {
-	this.layerGroup = layerGroup;      // contains all user-created layers
+	this.layerGroup = layerGroup;      // Contains all user-created layers
 	this.undoManager = undoManager;
 	this.layers = [];
 	this.currentLayer = null;
+	
+	Layer.resetCounter();              // Reset the layer name counter
 	
 	// Hidden layer count
 	this.numHiddenLayers = 0;
