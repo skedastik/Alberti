@@ -134,17 +134,22 @@ function Tool(masterGroup, layerManager, undoManager, overlayGroup, underlayGrou
 }
 Util.extend(Tool, TransformHandler);
 
+Tool.prototype.setManagers = function(layerManager, undoManager) {
+	this.layerManager = layerManager;
+	this.undoManager = undoManager;
+};
+
 Tool.prototype.activate = function() {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
-		Alberti.svgRoot.addEventListener("mousedown", this, false);
-		window.addEventListener("mousemove", this, false);
-		window.addEventListener("keydown", this, false);
-		window.addEventListener("keyup", this, false);
+		this.registerListener("mousedown", Alberti.svgRoot, false);
+		this.registerListener("mousemove", window, false);
+		this.registerListener("keydown", window, false);
+		this.registerListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.addEventListener("mouseup", this, false);
+			this.registerListener("mouseup", Alberti.svgRoot, false);
 		}
 	}
 };
@@ -153,13 +158,13 @@ Tool.prototype.deactivate = function() {
 	if (this.active) {
 		this.active = false;
 		this.enabled = false;
-		Alberti.svgRoot.removeEventListener("mousedown", this, false);
-		window.removeEventListener("mousemove", this, false);
-		window.removeEventListener("keydown", this, false);
-		window.removeEventListener("keyup", this, false);
+		this.unregisterListener("mousedown", Alberti.svgRoot, false);
+		this.unregisterListener("mousemove", window, false);
+		this.unregisterListener("keydown", window, false);
+		this.unregisterListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.removeEventListener("mouseup", this, false);
+			this.unregisterListener("mouseup", Alberti.svgRoot, false);
 		}
 		
 		this.toolTip.clearText();
@@ -172,12 +177,12 @@ Tool.prototype.deactivate = function() {
 Tool.prototype.enable = function() {
 	if (this.active && !this.enabled) {
 		this.enabled = true;
-		Alberti.svgRoot.addEventListener("mousedown", this, false);
-		window.addEventListener("keydown", this, false);
-		window.addEventListener("keyup", this, false);
+		this.registerListener("mousedown", Alberti.svgRoot, false);
+		this.registerListener("keydown", window, false);
+		this.registerListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.addEventListener("mouseup", this, false);
+			this.registerListener("mouseup", Alberti.svgRoot, false);
 		}
 	}
 };
@@ -186,12 +191,12 @@ Tool.prototype.enable = function() {
 Tool.prototype.disable = function() {
 	if (this.active && this.enabled) {
 		this.enabled = false;
-		Alberti.svgRoot.removeEventListener("mousedown", this, false);
-		window.removeEventListener("keydown", this, false);
-		window.removeEventListener("keyup", this, false);
+		this.unregisterListener("mousedown", Alberti.svgRoot, false);
+		this.unregisterListener("keydown", window, false);
+		this.unregisterListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			Alberti.svgRoot.removeEventListener("mouseup", this, false);
+			this.unregisterListener("mouseup", Alberti.svgRoot, false);
 		}
 		
 		this.toolTip.clearText();
