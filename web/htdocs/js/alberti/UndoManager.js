@@ -14,7 +14,7 @@ function UndoManager(maxActions) {
 	
 	this.cleanState = undefined;    // The undo action last marked 'clean' (see setCleanState method below)
 	
-	this.enabled = false;
+	this.enabled = false;           // UndoManager is disabled at instantiation
 	this.maxActions = maxActions;
 }
 
