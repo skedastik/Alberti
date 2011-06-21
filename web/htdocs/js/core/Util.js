@@ -92,6 +92,13 @@ var Util = {
 		return next;
 	},
 	
+	// Replace a document element with a new element
+	replaceElement: function(oldElement, newElement) {
+		var parent = oldElement.parentNode;
+		parent.insertBefore(newElement, oldElement);
+		parent.removeChild(oldElement);
+	},
+	
 	// Add a CSS class to the given element
 	addHtmlClass: function(element, className) {
 		var pattern = new RegExp('(^|\\s)'+className+'($|\\s)', 'i');
