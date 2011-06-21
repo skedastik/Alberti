@@ -37,6 +37,8 @@ function Zap(masterGroup, autoScale, albertiDoc, toolTip) {
 	this.zoomLevel = Zap.defaultZoomLevel;
 	this.zoomAnimation = null;
 	
+	this.center();
+	
 	// Update AutoScale and layer manager's Intersection object with the default zoom level
 	this.autoScale.update(Zap.zoomFactors[this.zoomLevel]);
 	this.albertiDoc.layerManager.intersections.setSearchRadiusScale(Zap.zoomFactors[this.zoomLevel]);
@@ -45,17 +47,12 @@ function Zap(masterGroup, autoScale, albertiDoc, toolTip) {
 	this.masterGroup.push();
 	
 	// The underlay image is scaled and translated separately with hardware-acceleration.
-	if (this.albertiDoc.underlayImage) {
-		this.albertiDoc.underlayImage.scale = Zap.zoomFactors[this.zoomLevel];
-		this.albertiDoc.underlayImage.x = this.masterGroup.position.x;
-		this.albertiDoc.underlayImage.y = this.masterGroup.position.y;
-		this.albertiDoc.underlayImage.update();
-	}
+	this.updateUnderlayImage();
 	
 	this.lastWheelEvent = 0;
 	
-	Alberti.svgRoot.addEventListener("mousewheel", this, false);          // opera, safari, ie9
-	Alberti.svgRoot.addEventListener("DOMMouseScroll", this, false);      // mozilla
+	this.registerListener("mousewheel", Alberti.svgRoot, false);          // opera, safari, ie9
+	this.registerListener("DOMMouseScroll", Alberti.svgRoot, false);      // mozilla
 }
 Util.extend(Zap, DragHandler);
 
@@ -93,7 +90,7 @@ Zap.prototype.handleWheel = function(direction, evt) {
 					this.disableZoomPanOptimization();
 				}
 			}.bindTo(this),
-			this.albertiDoc.underlayImage ?
+			!this.albertiDoc.underlayImage.isHidden() ?
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
 					this.albertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
@@ -111,7 +108,7 @@ Zap.prototype.handleWheel = function(direction, evt) {
 		this.zoomAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
 		this.zoomAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
 		
-		if (this.albertiDoc.underlayImage) {
+		if (!this.albertiDoc.underlayImage.isHidden()) {
 			this.zoomAnimation.add(this.albertiDoc.underlayImage, "scale", this.albertiDoc.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
 			this.zoomAnimation.add(this.albertiDoc.underlayImage, "x", this.albertiDoc.underlayImage.x, panX, Zap.zoomTransitionAccel);
 			this.zoomAnimation.add(this.albertiDoc.underlayImage, "y", this.albertiDoc.underlayImage.y, panY, Zap.zoomTransitionAccel);
@@ -134,6 +131,13 @@ Zap.prototype.stopZoomTransition = function() {
 			this.zoomAnimation = null;
 		}
 	}
+};
+
+Zap.prototype.updateUnderlayImage = function() {
+	this.albertiDoc.underlayImage.scale = Zap.zoomFactors[this.zoomLevel];
+	this.albertiDoc.underlayImage.x = this.masterGroup.position.x;
+	this.albertiDoc.underlayImage.y = this.masterGroup.position.y;
+	this.albertiDoc.underlayImage.update();
 };
 
 Zap.prototype.updateMagnificationTooltip = function(scale) {
@@ -161,12 +165,18 @@ Zap.prototype.DOMMouseScroll = function(evt) {
 
 /* * * * * * * * * * * * * Pan methods below * * * * * * * * * * * * * * * */
 
+// Center the coordinate space in the window
+Zap.prototype.center = function() {
+	this.masterGroup.position.x = this.masterGroup.position.y = 0;
+	this.masterGroup.push();
+};
+
 // Start capturing mouse input. Has no effect if called while panning is 
 // already enabled.
 Zap.prototype.enablePanning = function() {
 	if (!this.panningEnabled) {
 		this.panningEnabled = true;
-		Alberti.svgRoot.addEventListener("mousedown", this, true);
+		this.registerListener("mousedown", Alberti.svgRoot, true);
 		this.enableZoomPanOptimization();
 	}
 };
@@ -176,7 +186,7 @@ Zap.prototype.enablePanning = function() {
 Zap.prototype.disablePanning = function() {
 	if (this.panningEnabled) {
 		this.panningEnabled = false;
-		Alberti.svgRoot.removeEventListener("mousedown", this, true);
+		this.unregisterListener("mousedown", Alberti.svgRoot, true);
 		this.disableZoomPanOptimization();
 		this.cancelDrag();
 	}
@@ -215,7 +225,7 @@ Zap.prototype.onDrag = function(dx, dy, evt) {
 	this.masterGroup.translateRelative(dx, dy);
 	this.masterGroup.push();
 	
-	if (this.albertiDoc.underlayImage) {
+	if (!this.albertiDoc.underlayImage.isHidden()) {
 		this.albertiDoc.underlayImage.translateRelative(dx, dy);
 		this.albertiDoc.underlayImage.update();
 	}
