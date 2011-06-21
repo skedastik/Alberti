@@ -1,7 +1,9 @@
 /*
  * AlbertiDocument.js
  * 
- * A single Alberti document.
+ * A single Alberti document. A document consists of layers, shape data, and 
+ * an optional underlay image. An undo manager and layer manager are created 
+ * for each document.
  * 
  * USAGE
  * 
@@ -16,56 +18,80 @@ AlbertiDocument.exportTypeSvg     = "svg";
 AlbertiDocument.exportTypePng     = "png";
  
 function AlbertiDocument(xml) {
+	this.underlayImage = new FastImage(document.getElementById("underlayimg"));
+	this.workspaceGroup = null;
+	this.undoManager = null;
+	this.layerManager = null;
+	
+	// A filename may be associated with an AlbertiDocument
+	this.filename = null;
+	
+	// Underlay image is a hidden dummy image by default
+	this.underlayImage.setSource("../../images/dummy.png");
+	this.underlayImage.hide();
+	
 	if (xml) {
+		// Import existing document if XML data available...
 		this.importFromXML(xml);
+	} else {
+		// ...otherwise create a new, empty document.
+		this.createEmptyDocument();
 	}
 	
-	// The SVG group node with id "workspace" contains all user-created 
-	// layers, including the base layer.
-	var workspaceSvgNode = document.getElementById("workspace");
-	this.workspaceGroup = new Group(workspaceSvgNode);
+	var img = document.getElementById("underlayimg");
+}
+
+AlbertiDocument.prototype.createEmptyDocument = function() {
+	this.workspaceGroup = new Group().generate().set("id", "workspace");
+	this.undoManager = new UndoManager(Alberti.maxUndos);
+	this.layerManager = new LayerManager(this.workspaceGroup, this.undoManager);
+
+	// Create base layer, then enable undo manager
+	this.layerManager.newLayer();
+	this.undoManager.enable();
+};
+
+AlbertiDocument.prototype.importFromXML = function(xml) {
+	var parser = new DOMParser();
+	var doc = parser.parseFromString(xml, "text/xml");
+	var ulimg = doc.getElementById("underlayimg");
 	
+	Util.assert(doc.documentElement.tagName != "parsererror",
+		"AlbertiDocument::importFromXML could not parse imported file."
+	);
+	
+	Util.assert(ulimg.hasAttributeNS(Alberti.xlinkns, "href") && ulimg.hasAttributeNS(null, "opacity"),
+		"AlbertiDocument::importFromXML encountered malformed underlay image element."
+	);
+		
+	// Extract and load underlay image data
+	var imgNode = document.createElement("img");
+	imgNode.src = ulimg.getAttributeNS(Alberti.xlinkns, "href");
+	imgNode.opacity = ulimg.getAttributeNS(null, "opacity");
+	imgNode.style.display = ulimg.getAttributeNS(null, "display") == "none" ? "none" : "";
+	this.underlayImage = new FastImage(imgNode);
+	
+	this.workspaceGroup = new Group(doc.getElementById("workspace"));
 	this.undoManager = new UndoManager(Alberti.maxUndos);
 	this.layerManager = new LayerManager(this.workspaceGroup, this.undoManager);
 	
-	// Load underlay image if available
-	this.loadUnderlayImage();
-	
-	// Disable the undo manager during document load
-	this.undoManager.disable();
-	
-	if (Util.firstNonTextChild(workspaceSvgNode)) {
-		this.loadLayers();                                 // Layers and shapes already exist, simply load them
-	} else {
-		this.layerManager.newLayer();                      // Layers do not exist, so create the base layer
-		
-		// TODO: Remove the test lines below.
-		// var t = Date.now();
-		// for (var i = 0; i < 500; i++) {
-		// 	var l = new Line().generate();
-		// 	l.p1.x = Math.random() * 2000 - 1000;
-		// 	l.p1.y = Math.random() * 2000 - 1000;
-		// 	l.p2.x = Math.random() * 2000 - 1000;
-		// 	l.p2.y = Math.random() * 2000 - 1000;
-		// 	this.layerManager.insertShape(l);
-		// }
-		// Dbug.log("Time to load: "+Util.roundToDecimal((Date.now() - t) / 1000, 2));
-		// Dbug.log("Total intersections: "+this.layerManager.intersections.points.nodeCount);
-		// Dbug.log("Number of buckets: "+this.layerManager.intersections.points.bucketCount);
-		// Dbug.log("Bucket width: "+this.layerManager.intersections.points.bucketWidth);
-	}
-	
-	// Enable the undo manager after the document has loaded
-	this.undoManager.enable();
-}
-
-AlbertiDocument.prototype.loadUnderlayImage = function() {
-	// underlayImg will be null if there is no underlay image
-	var imgNode = document.getElementById("underlayimg");
-	this.underlayImage = imgNode ? new FastImage(imgNode) : null;
+	this.loadLayers();                  // Load layers and shape data
+	this.undoManager.enable();          // Enable undo manager
 };
 
-// Load layers and shape data from workspace group
+AlbertiDocument.prototype.setFilename = function(filename) {
+	this.filename = filename;
+};
+
+// Set the underlay image source to the given data URL
+AlbertiDocument.prototype.setUnderlayImageSrc = function(dataUrl) {
+	// Assert that a valid data URL is passed in
+	Util.assert(dataUrl.match(/^data:/), "Invalid data URL passed to AlbertiDocument::setUnderlayImage");
+	
+	this.underlayImage.setSource(dataUrl);
+};
+
+// Load layers and shape data
 AlbertiDocument.prototype.loadLayers = function() {
 	var curGroupNode = Util.firstNonTextChild(this.workspaceGroup.svgNode);
 	
@@ -100,13 +126,15 @@ AlbertiDocument.prototype.loadLayers = function() {
 					break;
 			}
 			
+			// Iterate to next shape node before sanitizing, as the current
+			// shape node will be removed from the document after sanitization.
+			curShapeNode = Util.nextNonTextSibling(curShapeNode);
+			
 			// Strip unrecognized data from each imported shape
 			shape.sanitize();
 			
 			// Insert each shape into the current layer
 			this.layerManager.insertShape(shape);
-			
-			curShapeNode = Util.nextNonTextSibling(curShapeNode);
 		}
 		
 		curGroupNode = Util.nextNonTextSibling(curGroupNode);
@@ -115,45 +143,40 @@ AlbertiDocument.prototype.loadLayers = function() {
 	this.layerManager.switchToHighestVisibleLayer();
 };
 
-AlbertiDocument.prototype.importFromXML = function(xml) {
-	var parser = new DOMParser();
-	var doc = parser.parseFromString(xml, "text/xml");
-	var ulimg = doc.getElementById("underlayimg");
-	
-	if (ulimg) {
-		Util.assert(ulimg.hasAttributeNS(Alberti.xlinkns, "href") && ulimg.hasAttributeNS(null, "opacity"),
-			"AlbertiDocument::importFromXML encountered malformed underlay image element."
-		);
-		
-		// Extract underlay image data
-		var ulimgPath = ulimg.getAttributeNS(Alberti.xlinkns, "href");
-		var ulimgOpacity = ulimg.getAttributeNS(null, "opacity");
-	}
-	
-	var shapeData = doc.getElementById("workspace");
-};
-
 // Returns the Alberti document as SVG+XML
 AlbertiDocument.prototype.asXML = function() {
 	var shapeData = new XMLSerializer().serializeToString(this.workspaceGroup.svgNode);
-	var xml = '';
+	var chunks = [];
 	
-	xml += '<svg\n';
-	xml += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
-	xml += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
-	xml += '	xmlns:berti="http://www.albertidraw.com/alberti">\n';
+	chunks[0]  = '<svg\n';
+	chunks[0] += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
+	chunks[0] += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
+	chunks[0] += '	xmlns:berti="'+Alberti.customns+'">\n';
 	
 	// Set the document title. This will be the default filename in the save dialog.
-	// TODO: Set title dynamically
-	xml += '<title>'+("Alberti Document")+'</title>\n';
+	chunks[0] += '<title>'+(this.filename ? this.filename : "Alberti Document")+'</title>\n';
 	
-	// Serialize underlay image path
-	xml += '<image id="underlayimg" xlink:href="'+this.underlayImage.imgNode.src+'" '
-		+ 'opacity="'+this.underlayImage.opacity+'" '
-		+ 'display="none" />\n';
+	chunks[0] += '<image id="underlayimg" xlink:href="';      // Serialize underlay image...
 	
-	xml += shapeData+'\n';            // Serialize shape data
-	xml += '</svg>\n';
+	chunks[1] = this.underlayImage.imgNode.src;               // ...in its own chunk.
+	
+	chunks[2]  = '" ';
+	chunks[2] += 'opacity="'+this.underlayImage.opacity+'" ';
+	chunks[2] += this.underlayImage.isHidden() ? 'display="none"' : '';
+	chunks[2] += '/>\n';
+
+	chunks[3] = shapeData;                                    // Serialize layer and shape data in its own chunk
+	
+	chunks[4]  = '\n';
+	chunks[4] += '</svg>\n';
+	
+	Dbug.log(chunks[1].length);
+	
+	// var xml = chunks.join("");                 // Crashes Firefox
 	
 	return xml;
+};
+
+AlbertiDocument.prototype.cleanup = function() {
+	this.underlayImage.killAllListeners();
 };
