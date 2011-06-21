@@ -30,7 +30,11 @@ Layer.prototype.initialize = function() {
 
 // Inserts the given shape into the SVG tree
 Layer.prototype.addShape = function(shape) {
-	this.attachChild(shape);
+	// The shape node may already exist
+	if (shape.svgNode.parentNode == null) {
+		this.attachChild(shape);
+	}
+	
 	this.shapes.push(shape);
 };
 
@@ -85,3 +89,8 @@ Layer.prototype.pull = function() {
 	this.name = this.get("title");
 	this.color = this.get("stroke");
 };
+
+// Reset the layer counter global
+Layer.resetCounter = function() {
+	Layer.counter = 0;
+}
