@@ -17,12 +17,13 @@
  * 
  * The constructor expects a reference to an AlbertiDocument object and
  * ClipBoard object. 'appController' must be a reference to an object that
- * serves as the application controller and implements save-document and
- * load-document handler methods (whose names must be provided in the last two 
- * args). The save handler must take a single string argument denoting the
- * export format (supported formats listen in AlbertiDocument.js). The load
- * handler must take a single string argument containing the XML data of the
- * document to load.
+ * serves as the application controller and implements new-document, save-
+ * document, and load-document handler methods (whose names must be provided 
+ * in the last three args). The new-doc handler takes no arguments. The save 
+ * handler must take a single string argument denoting the export format 
+ * (supported formats listen in AlbertiDocument.js). The load handler must 
+ * take a string argument containing the XML data of the document to load, and 
+ * a string argument containing the filename of the document.
  * 
  * When loading another document, UserInterface::prepareForDocument should be
  * called in order to update the interface with the contents of the new doc.
@@ -38,48 +39,13 @@ UserInterface.cursorDefault    = "cursorDefault";
 UserInterface.cursorZoomAndPan = "cursorZoomAndPan";
 UserInterface.cursorCrosshair  = "cursorCrosshair";
 
-function UserInterface(albertiDoc, clipBoard, appController, saveHandler, loadHandler) {
+function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, saveHandler, loadHandler) {
 	UserInterface.baseConstructor.call(this);
 	this.clipBoard = clipBoard;
 	this.appController = appController;
+	this.newDocHandler = newDocHandler;
 	this.saveHandler = saveHandler;
 	this.loadHandler = loadHandler;
-	
-	// Update the interface with the contents of the document passed in
-	this.prepareForDocument(albertiDoc);
-	
-	// Set default tool
-	this.currentTool = null;
-	this.setTool(UserInterface.defaultTool);
-	
-	this.leftMouseDown = false;
-	
-	// Set up listeners at the window level
-	window.addEventListener("keydown", this, false);
-	window.addEventListener("keyup", this, false);
-	window.addEventListener("mousedown", this, false);
-	window.addEventListener("mouseup", this, false);
-	
-	// Suppress the right-click context menu
-	window.addEventListener("contextmenu", this, true);
-	
-	// Create a file importer for loading Alberti documents, passing self as controller
-	this.importer = new FileImporter(document.getElementById("fi"), "image/svg+xml", true, this, "handleImportFile");
-	
-	// Warn user about unsaved data before leaving page
-	window.onbeforeunload = function(evt) {
-		if (!this.albertiDoc.undoManager.stateIsClean()) {
-			var msg = "There are unsaved changes to this document.";
-			evt.returnValue = msg;
-			return msg;
-		}
-	}.bindTo(this);
-}
-Util.extend(UserInterface, EventHandler);
-
-// Prepares the interface for the given Alberti document
-UserInterface.prototype.prepareForDocument = function(albertiDoc) {
-	this.albertiDoc = albertiDoc;
 	
 	// staticUnderlayGroup contains non-interactive HUD elements, rendered 
 	// below all other groups, unaffected by dynamic coordinate system 
@@ -115,18 +81,13 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	// workspace group, and beneath the center HUD
 	this.underlayGroup = new Group(document.getElementById("underlay"));
 	
-	// The hud group contains the center HUD--an 'X' displayed at the center 
-	// of the workspace at all times.
-	this.hudGroup = new Group(document.getElementById("hud"));
-	
-	// Hide the center HUD if an underlay image exists.
-	if (this.albertiDoc.underlayImage) {
-		this.hideHud();
-	}
-	
 	// overlayGroup contains UI elements that should be rendered above the 
 	// workspace group
 	this.overlayGroup = new Group(document.getElementById("overlay"));
+	
+	// The hud group contains the center HUD--an 'X' displayed at the center 
+	// of the workspace at all times.
+	this.hudGroup = new Group(document.getElementById("hud"));
 	
 	// SVG has no shape element for individual points, so we use a special SVG
 	// group as a template.
@@ -140,16 +101,75 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	this.autoScale.registerObject(this.hudGroup, AutoScale.scale, 1.0);
 	this.autoScale.registerStyle(document.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
 	
+	// The layer panel provides an interface for the manipulation of layers
+	this.layerPanel = this.initLayerPanel();
+	
 	// Create textual tool tips object
 	this.toolTip = new ToolTip(this.staticOverlayGroup);
+	
+	// Initialize the toolset
+	this.tools = [
+		{"tool" : new ToolSelection(this.masterGroup, null, null, this.overlayGroup, this.underlayGroup, this.toolTip),
+			"cursor" : UserInterface.cursorDefault },
+		{"tool" : new ToolLine(this.masterGroup, null, null, this.overlayGroup, this.underlayGroup, this.toolTip),
+			"cursor" : UserInterface.cursorCrosshair },
+		{"tool" : new ToolCircleArc(this.masterGroup, null, null, this.overlayGroup, this.underlayGroup, this.toolTip),
+			"cursor" : UserInterface.cursorCrosshair }
+	];
+	
+	// Set default tool
+	this.currentTool = null;
+	this.setTool(UserInterface.defaultTool);
+	
+	this.leftMouseDown = false;
+	
+	// Set up listeners at the window level
+	this.registerListener("keydown", window, false);
+	this.registerListener("keyup", window, false);
+	this.registerListener("mousedown", window, false);
+	this.registerListener("mouseup", window, false);
+	
+	// Suppress the right-click context menu
+	this.registerListener("contextmenu", window, true);
+	
+	// Create file importer for loading Alberti documents, and one for loading underlay images, passing self as controller
+	this.docImporter = new FileImporter(
+		document.getElementById("fi"), "image/svg+xml", true, this.appController, "handleOpenDocument"
+	);
+	
+	this.ulImgImporter = new FileImporter(document.getElementById("uii"),
+		"image/gif,image/jpeg,image/png,image/tiff", false, this, "handleImportUlImage"
+	);
+	
+	// Warn user about unsaved data before leaving page
+	window.onbeforeunload = function(evt) {
+		if (!this.albertiDoc.undoManager.stateIsClean()) {
+			var msg = "There are unsaved changes to this document.";
+			evt.returnValue = msg;
+			return msg;
+		}
+	}.bindTo(this);
+}
+Util.extend(UserInterface, EventHandler);
+
+// Prepares the interface for the given Alberti document
+UserInterface.prototype.prepareForDocument = function(albertiDoc) {
+	this.albertiDoc = albertiDoc;
+	
+	// Hide the center HUD if an underlay image exists.
+	if (!this.albertiDoc.underlayImage.isHidden()) {
+		this.hideHud();
+	}
+	
+	// Clean up zoom & pan event listeners
+	if (this.zap) {
+		this.zap.killAllListeners();
+	}
 	
 	// Enable our own zooming and panning mechanism
 	this.zap = new Zap(this.masterGroup, this.autoScale, this.albertiDoc, this.toolTip);
 	
-	// The layer panel provides an interface for the manipulation of layers
-	this.layerPanel = this.createLayerPanel();
-	
-	// Create controller for layer panel connect it to layer panel
+	// Create controller for layer panel and connect it to layer panel
 	this.lpController = new LayerPanelController(this.layerPanel);
 	this.layerPanel.setController(this.lpController);
 	
@@ -160,15 +180,10 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	// Tell layer panel controller to populate layer panel with data
 	this.lpController.populateLayerPanel();
 	
-	// Initialize the toolset, and select the default tool
-	this.tools = [
-		{"tool" : new ToolSelection(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
-			"cursor" : UserInterface.cursorDefault },
-		{"tool" : new ToolLine(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
-			"cursor" : UserInterface.cursorCrosshair },
-		{"tool" : new ToolCircleArc(this.masterGroup, this.lmDelegate, this.albertiDoc.undoManager, this.overlayGroup, this.underlayGroup, this.toolTip),
-			"cursor" : UserInterface.cursorCrosshair }
-	]
+	// Update tools to manipulate new document
+	for (var i = 0, len = this.tools.length; i < len; i++) {
+		this.tools[i].tool.setManagers(this.lmDelegate, this.albertiDoc.undoManager);
+	}
 };
 
 UserInterface.prototype.setTool = function(toolNumber) {
@@ -200,7 +215,7 @@ UserInterface.prototype.hideHud = function() {
 };
 
 // Create and return layer panel
-UserInterface.prototype.createLayerPanel = function() {
+UserInterface.prototype.initLayerPanel = function() {
 	var mainDiv = document.getElementById("layer_panel");
 	var dynamicDiv = document.getElementById("layer_panel_dynamic");
 	var cstripDiv = document.getElementById("layer_panel_control_strip");
@@ -212,8 +227,11 @@ UserInterface.prototype.createLayerPanel = function() {
 	return new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
 };
 
-UserInterface.prototype.handleImportFile = function(data) {
-	this.appController[this.loadHandler](data);                  // Invoke app controller's load document handler
+UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
+	this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
+	this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
+	this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
+	this.albertiDoc.underlayImage.show();
 };
 
 UserInterface.prototype.keydown = function(evt) {
@@ -267,6 +285,20 @@ UserInterface.prototype.keydown = function(evt) {
 			this.clipBoard.clear();
 			break;
 		
+		// Create a new document
+		case KeyCode.newDoc:
+			var createNewDoc = true;
+			
+			// Warn the user of unsaved changes before creating a new document
+			if (!this.albertiDoc.undoManager.stateIsClean()) {
+				createNewDoc = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and create a new document?");
+			}
+			
+			if (createNewDoc) {
+				this.appController[this.newDocHandler]();        // Invoke app controller's new document handler
+			}
+			break;
+		
 		// Save document
 		case KeyCode.save:
 			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
@@ -274,7 +306,21 @@ UserInterface.prototype.keydown = function(evt) {
 		
 		// Open document
 		case KeyCode.load:
-			this.importer.prompt();                         // Prompt the user to open a file
+			var loadPrompt = true;
+			
+			// Warn the user of unsaved changes before opening another document
+			if (!this.albertiDoc.undoManager.stateIsClean()) {
+				loadPrompt = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and open another document?");
+			}
+			
+			if (loadPrompt) {
+				this.docImporter.prompt();                         // Prompt the user to open a file
+			}
+			break;
+		
+		// Import an underlay image
+		case KeyCode.loadUlImg:
+			this.ulImgImporter.prompt();                       // Prompt the user to open an image file
 			break;
 		
 		// Tool selection keys 0-9
