@@ -16,15 +16,22 @@ function Alberti() {
 	
 	Alberti.svgRoot = document.getElementById("svgroot");
 	
-	// Open with an empty document by default
-	this.doc = new AlbertiDocument();
-	
 	// Create the user interface, passing self as application controller
-	this.ui = new UserInterface(this.doc, this.clipBoard, this, "handleSaveDocument", "handleOpenDocument");
+	this.ui = new UserInterface(
+		this.doc, this.clipBoard, this, "handleNewDocument", "handleSaveDocument", "handleOpenDocument"
+	);
+	
+	// Open with an empty document by default
+	this.loadDocument(new AlbertiDocument());
 	
 	// Reveal the document body now that application setup is complete
 	document.body.style.display = "";
 }
+
+Alberti.prototype.handleNewDocument = function() {
+	var newDoc = new AlbertiDocument();	
+	this.loadDocument(newDoc);
+};
 
 Alberti.prototype.handleSaveDocument = function(type) {
 	switch (type) {
@@ -49,6 +56,26 @@ Alberti.prototype.handleSaveDocument = function(type) {
 	}
 };
 
-Alberti.prototype.handleOpenDocument = function(documentXml) {
+Alberti.prototype.handleOpenDocument = function(documentXml, filename) {
 	var newDoc = new AlbertiDocument(documentXml);
+	
+	newDoc.setFilename(filename);
+	this.loadDocument(newDoc);
+};
+
+Alberti.prototype.loadDocument = function(newDoc) {
+	var workspaceGroupNode = document.getElementById("workspace");
+	
+	// Replace the current workspace group node with the new document's workspace group node
+	Util.replaceElement(workspaceGroupNode, newDoc.workspaceGroup.svgNode);
+	
+	// Prepare the user interface for the new document
+	this.ui.prepareForDocument(newDoc);
+	
+	// Clean up event listeners tied to the previous document
+	if (this.doc) {
+		this.doc.cleanup();
+	}
+	
+	this.doc = newDoc;
 };
