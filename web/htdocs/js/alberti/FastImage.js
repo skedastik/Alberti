@@ -50,8 +50,9 @@ FastImage.prototype.update = function() {
 	
 	this.imgNode.style.cssText = "-webkit-transform: translate3d("+pos+", 0) scale3d("+this.scale+", "+this.scale+", 1); "
 	    +"-moz-transform: translate("+pos+") scale("+this.scale+"); "
-		+"-o-transform: translate("+pos+") scale("+this.scale+")"
-		+(this.opacity != 1.0 ? "; opacity: "+this.opacity+";" : "");
+		+"-o-transform: translate("+pos+") scale("+this.scale+"); "
+		+(this.opacity != 1.0 ? "opacity: "+this.opacity+"; " : "")
+		+(this.hidden ? "display: none" : "");
 };
 
 FastImage.prototype.updateOffset = function() {
