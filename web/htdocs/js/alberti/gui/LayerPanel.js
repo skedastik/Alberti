@@ -101,6 +101,9 @@ LayerPanel.prototype.removeRow = function(rowIndex) {
 	
 	var row = this.rows[rowIndex];
 	
+	// Cleanup event listeners before removing row
+	row.cleanup();
+	
 	this.dynamicDiv.removeChild(row.rowDiv);
 	this.rowBtnFamily.removeButton(row.rowButton);
 	this.dropTargetFamily.removeDropTarget(row.rowDropTarget);

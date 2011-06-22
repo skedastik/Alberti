@@ -92,3 +92,15 @@ LayerPanelRow.prototype.setColor = function(color) {
 	this.colorWellDiv.style.backgroundColor = color;
 	this.jscolorPicker.setColor(color);
 };
+
+// Kill all event listeners associated with layer panel row
+LayerPanelRow.prototype.cleanup = function() {
+	this.rowButton.killAllListeners();
+	this.rowDragger.killAllListeners();
+	this.rowDropTarget.killAllListeners();
+	this.visibilityToggleButton.killAllListeners();
+	this.layerNameButton.killAllListeners();
+	this.colorWellButton.killAllListeners();
+	this.jscolorPicker.killAllListeners();
+	this.layerNameGuiField.killAllListeners();
+};
