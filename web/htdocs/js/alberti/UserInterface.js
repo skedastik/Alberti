@@ -232,6 +232,8 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 	this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
 	this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
 	this.albertiDoc.underlayImage.show();
+	
+	this.hideHud();                                     // Hide the HUD
 };
 
 UserInterface.prototype.keydown = function(evt) {
