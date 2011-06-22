@@ -346,11 +346,13 @@ UserInterface.prototype.keydown = function(evt) {
 		// Select next highest visible layer
 		case KeyCode.arrowUp:
 			this.lmDelegate.switchToVisibleLayerAboveCurrentLayer();
+			this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
 			break;
 		
 		// Select next lowest visible layer
 		case KeyCode.arrowDown:
 			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
+			this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
 			break;
 	}
 };
