@@ -39,16 +39,16 @@ CircleArc.prototype.push = function() {
 	
 	this.set("berti:cx", this.center.x, Alberti.customns);
 	this.set("berti:cy", this.center.y, Alberti.customns);
-	this.set("berti:radius", this.radius, Alberti.customns);
-	this.set("berti:start-angle", this.startAngle, Alberti.customns);
-	this.set("berti:delta-angle", this.deltaAngle, Alberti.customns);
+	this.set("berti:r", this.radius, Alberti.customns);
+	this.set("berti:sa", this.startAngle, Alberti.customns);
+	this.set("berti:da", this.deltaAngle, Alberti.customns);
 };
 
 CircleArc.prototype.pull = function() {
 	this.center = new Coord2D(this.get("cx", Alberti.customns), this.get("cy", Alberti.customns));
-	this.radius = this.get("radius", Alberti.customns);
-	this.startAngle = this.get("start-angle", Alberti.customns);
-	this.deltaAngle = this.get("delta-angle", Alberti.customns);
+	this.radius = this.get("r", Alberti.customns);
+	this.startAngle = this.get("sa", Alberti.customns);
+	this.deltaAngle = this.get("da", Alberti.customns);
 };
 
 CircleArc.prototype.clone = function() {
