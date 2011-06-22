@@ -28,6 +28,13 @@ WEBKIT RELATED BUGS
 addEventListener for FileReader (as described here: 
 http://web.archiveorange.com/archive/v/fwvde2KNIH2OWykfy7Xz).
 
+GECKO RELATED BUGS
+
+- As of 6/21/2011, Firefox 5 crashes when attempting to display a popup via
+window.open() with a large data URL (i.e. containing a large base64-encoded 
+image). Because of this, underlay images are no longer saved with Alberti 
+documents by default.
+
 SVG RELATED BUGS
 
 Line rendering issue:
