@@ -5,6 +5,8 @@
  * 
  * * */
 
+EventHandler.numListeners = 0;
+
 function EventHandler() {
 	this.lastMouseMove = Date.now();
 	this.listeners = [];
@@ -12,6 +14,8 @@ function EventHandler() {
 
 EventHandler.prototype.registerListener = function(type, target, useCapture) {
 	if (this.getListenerIndex(type, target, useCapture) == -1) {
+		EventHandler.numListeners++;
+		
 		this.listeners.push({"type":type, "target":target, "useCapture":useCapture});
 		target.addEventListener(type, this, useCapture);
 	}
@@ -21,6 +25,8 @@ EventHandler.prototype.unregisterListener = function(type, target, useCapture) {
 	var index = this.getListenerIndex(type, target, useCapture);
 	
 	if (index > -1) {
+		EventHandler.numListeners--;
+		
 		this.listeners.splice(index, 1);
 		target.removeEventListener(type, this, useCapture);
 	}
@@ -28,6 +34,8 @@ EventHandler.prototype.unregisterListener = function(type, target, useCapture) {
 
 EventHandler.prototype.killAllListeners = function() {
 	for (var i = 0, len = this.listeners.length; i < len; i++) {
+		EventHandler.numListeners--;
+		
 		var rec = this.listeners[i];
 		rec.target.removeEventListener(rec.type, this, rec.useCapture);
 	}
