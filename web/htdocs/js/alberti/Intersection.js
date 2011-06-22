@@ -7,8 +7,9 @@
  * USAGE
  * 
  * Create a new Intersection object and call testShape, passing a query shape, 
- * an array of shapes to test against, and an action flag. The action flag
- * takes any of the following values:
+ * an array of shapes to test against, and an action flag. 'null' entries in
+ * the shape array are safe and will simply be ignored. The action flag takes 
+ * any of the following values:
  * 
  *    Intersection.insertFlag
  *    Intersection.deleteFlag
@@ -55,42 +56,45 @@ Intersection.prototype.testShape = function(newShape, shapeArray, action) {
 	
 	for (var i = 0, saLen = shapeArray.length; i < saLen; i++) {
 		var shape = shapeArray[i];
-		var intersections = [];
 		
-		if (shape.shapeName < newShape.shapeName) {
-			var funcName = shape.shapeName + newShape.shapeName;
-			if (Intersection[funcName]) {
-				intersections = Intersection[funcName](shape, newShape);
+		if (shape) {
+			var intersections = [];
+		
+			if (shape.shapeName < newShape.shapeName) {
+				var funcName = shape.shapeName + newShape.shapeName;
+				if (Intersection[funcName]) {
+					intersections = Intersection[funcName](shape, newShape);
+				}
+			} else {
+				var funcName = newShape.shapeName + shape.shapeName;
+				if (Intersection[funcName]) {
+					intersections = Intersection[funcName](newShape, shape);
+				}
 			}
-		} else {
-			var funcName = newShape.shapeName + shape.shapeName;
-			if (Intersection[funcName]) {
-				intersections = Intersection[funcName](newShape, shape);
+		
+			if (intersections.length > 0) {
+				intersectors.push(shape);
 			}
-		}
 		
-		if (intersections.length > 0) {
-			intersectors.push(shape);
-		}
-		
-		switch (action) {
-			case Intersection.insertFlag:
-				for (var j = 0, iLen = intersections.length; j < iLen; j++) {
-					this.points.insert(intersections[j]);
-				}
-				break;
+			switch (action) {
+				case Intersection.insertFlag:
+					for (var j = 0, iLen = intersections.length; j < iLen; j++) {
+						this.points.insert(intersections[j]);
+					}
+					break;
 			
-			case Intersection.deleteFlag:
-				for (var j = 0, iLen = intersections.length; j < iLen; j++) {
-					this.points.remove([intersections[j]]);
-				}
-				break;
+				case Intersection.deleteFlag:
+					for (var j = 0, iLen = intersections.length; j < iLen; j++) {
+						this.points.remove([intersections[j]]);
+					}
+					break;
 			
-			case Intersection.bulkDeleteFlag:
-				for (var j = 0, iLen = intersections.length; j < iLen; j++) {
-					this.deletedPoints.push(intersections[j]);
-				}
-				break;
+				case Intersection.bulkDeleteFlag:
+					for (var j = 0, iLen = intersections.length; j < iLen; j++) {
+						this.deletedPoints.push(intersections[j]);
+					}
+					break;
+			}
 		}
 	}
 	
