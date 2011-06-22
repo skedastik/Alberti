@@ -33,7 +33,7 @@ function AlbertiDocument(xml) {
 	this.filename = null;
 	
 	// Underlay image is a hidden dummy image by default
-	this.underlayImage.setSource("../../images/dummy.png");
+	this.underlayImage.setSource("images/dummy.png");
 	this.underlayImage.hide();
 	
 	if (xml) {
