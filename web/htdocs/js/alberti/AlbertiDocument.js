@@ -168,14 +168,16 @@ AlbertiDocument.prototype.asXML = function() {
 	// Set the document title. This will be the default filename in the save dialog.
 	chunks[0] += '<title>'+(this.filename ? this.filename : "Alberti Document")+'</title>\n';
 	
-	chunks[0] += '<image id="underlayimg" xlink:href="';
+	if (Alberti.serializeUnderlayImages) {
+		chunks[0] += '<image id="underlayimg" xlink:href="';
 	
-	chunks[1] = this.underlayImage.imgNode.src;               // Serialize underlay image in its own chunk.
+		chunks[1] = this.underlayImage.imgNode.src;               // Serialize underlay image in its own chunk.
 	
-	chunks[2]  = '" ';
-	chunks[2] += 'opacity="'+this.underlayImage.opacity+'" ';
-	chunks[2] += this.underlayImage.isHidden() ? 'display="none"' : '';
-	chunks[2] += '/>\n';
+		chunks[2]  = '" ';
+		chunks[2] += 'opacity="'+this.underlayImage.opacity+'" ';
+		chunks[2] += this.underlayImage.isHidden() ? 'display="none"' : '';
+		chunks[2] += '/>\n';
+	}
 
 	chunks[3] = shapeData;                                    // Serialize layer and shape data in its own chunk
 	

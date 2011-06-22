@@ -38,3 +38,9 @@ Alberti.nonScalingLinesHack = true;
 // Set to true to enable server-side save script. This automatically forces a
 // save dialog when saving Alberti documents.
 Alberti.usePhpSaveScript = false;
+
+// Set to true to save underlay image data with Alberti documents. This
+// feature is too unstable across browsers (it crashes Firefox 5 when saving
+// large underlay images) and leads to slow saves, so it is disabled by 
+// default.
+Alberti.serializeUnderlayImages = false;
