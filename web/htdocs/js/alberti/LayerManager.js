@@ -225,13 +225,19 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 		if (targetLayer.isHidden()) {
 			this.numHiddenLayers--;
 			
-			targetLayer.show();
+			var visibleShapes = this.getVisibleShapes();
 		
 			// Add intersection points of all shapes in the layer
 			for (var i = 0, sLen = targetLayer.shapes.length; i < sLen; i++) {
 				var shape = targetLayer.shapes[i];
-				this.intersections.testShape(shape, this.getVisibleShapes(), Intersection.insertFlag);
+				this.intersections.testShape(shape, visibleShapes, Intersection.insertFlag);
+				
+				// Each shape being tested is to be shown, so add it to the
+				// visible shapes array as it is tested.
+				visibleShapes.push(shape);
 			}
+			
+			targetLayer.show();
 		
 			// Make it undoable
 			this.undoManager.push("Show Layer", this,
@@ -247,10 +253,16 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 		
 		this.numHiddenLayers++;
 		
+		var visibleShapes = this.getVisibleShapes();
+		
 		// Delete intersection points of all shapes in the layer
 		for (var i = 0, sLen = targetLayer.shapes.length; i < sLen; i++) {
 			var shape = targetLayer.shapes[i];
-			this.intersections.testShape(shape, this.getVisibleShapes(), Intersection.bulkDeleteFlag);
+			this.intersections.testShape(shape, visibleShapes, Intersection.bulkDeleteFlag);
+			
+			// Each shape being tested is to be hidden, so remove it from the
+			// visible shapes array as it is tested.
+			visibleShapes[visibleShapes.indexOf(shape)] = null;
 		}
 		
 		// Flush bulk deletions
