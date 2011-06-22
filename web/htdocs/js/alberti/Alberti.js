@@ -47,7 +47,7 @@ Alberti.prototype.handleSaveDocument = function(type) {
 			if (Alberti.usePhpSaveScript) {
 				// TODO: Use PHP save script that modifies HTTP headers in order to force "Save as..." dialog
 			} else {
-				window.open(dataUrl);      // Crashes Firefox 5 if underlay image is large
+				window.open(dataUrl);
 			}
 			
 			// Mark document as clean to eliminate unsaved-data warning
