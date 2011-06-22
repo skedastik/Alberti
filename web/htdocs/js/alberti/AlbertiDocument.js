@@ -159,7 +159,6 @@ AlbertiDocument.prototype.loadLayers = function() {
 
 // Returns the Alberti document as SVG+XML
 AlbertiDocument.prototype.asXML = function() {
-	var shapeData = new XMLSerializer().serializeToString(this.workspaceGroup.svgNode);
 	var chunks = [];
 	
 	chunks[0]  = '<svg\n';
@@ -181,8 +180,9 @@ AlbertiDocument.prototype.asXML = function() {
 		chunks[2] += this.underlayImage.isHidden() ? 'display="none"' : '';
 		chunks[2] += '/>\n';
 	}
-
-	chunks[3] = shapeData;                                    // Serialize layer and shape data in its own chunk
+	
+	// Serialize layer and shape data in its own chunk
+	chunks[3] = new XMLSerializer().serializeToString(this.workspaceGroup.svgNode).replace(/xmlns:[^=]+="[^"]+"/g, "");
 	
 	chunks[4]  = '\n';
 	chunks[4] += '</svg>\n';
