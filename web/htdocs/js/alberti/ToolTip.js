@@ -20,7 +20,6 @@ function ToolTip(staticOverlayGroup) {
 	this.lastHiPriorityCall = 0;
 	
 	this.tipText = new Text().generate();
-	// this.tipText.justification = "middle";
 	this.updateTextPosition();
 	this.staticOverlayGroup.attachChild(this.tipText);
 	
@@ -37,7 +36,8 @@ ToolTip.prototype.setText = function(text, autoClear, hiPriority) {
 	if (Alberti.showToolTips && (hiPriority || Date.now() - this.lastHiPriorityCall >= ToolTip.hiPriorityTime * 1000)) {
 		this.cancelAutoClear();
 			
-		if (hiPriority) {
+		if (hiPriority && text != "") {
+			// Only record high priority time if tooltip string is non-empty
 			this.lastHiPriorityCall = Date.now();
 		}
 		
@@ -53,7 +53,8 @@ ToolTip.prototype.setText = function(text, autoClear, hiPriority) {
 					this.clearText();
 					this.clearTimeoutId = null;
 				}.bindTo(this),
-				clearTime * 1000);
+				clearTime * 1000
+			);
 		}
 	}
 };
