@@ -125,7 +125,7 @@ LayerPanel.prototype.moveRow = function(rowIndex, beforeRowIndex) {
 	
 	if (beforeRow) {
 		this.dynamicDiv.insertBefore(targetRow.rowDiv, beforeRow.rowDiv.nextSibling);
-		this.rows.splice(beforeRowIndex, 0, targetRow);
+		this.rows.splice(beforeRowIndex > rowIndex ? beforeRowIndex - 1 : beforeRowIndex, 0, targetRow);
 	} else {
 		this.dynamicDiv.insertBefore(targetRow.rowDiv, this.rows.peek().rowDiv);
 		this.rows.push(targetRow);
