@@ -60,27 +60,30 @@ AlbertiDocument.prototype.createEmptyDocument = function() {
 AlbertiDocument.prototype.importFromXML = function(xml) {
 	var parser = new DOMParser();
 	var doc = parser.parseFromString(xml, "text/xml");
-	var ulimg = doc.getElementById("underlayimg");
 	
 	Util.assert(doc.documentElement.tagName != "parsererror",
 		"AlbertiDocument::importFromXML could not parse imported file."
 	);
 	
-	Util.assert(ulimg.hasAttributeNS(Alberti.xlinkns, "href") && ulimg.hasAttributeNS(null, "opacity"),
-		"AlbertiDocument::importFromXML encountered malformed underlay image element."
-	);
+	if (Alberti.serializeUnderlayImages) {
+		var ulimg = doc.getElementById("underlayimg");
+	
+		Util.assert(ulimg.hasAttributeNS(Alberti.xlinkns, "href") && ulimg.hasAttributeNS(null, "opacity"),
+			"AlbertiDocument::importFromXML encountered malformed underlay image element."
+		);
 		
-	// Extract and load underlay image data
-	this.underlayImage.setSource(ulimg.getAttributeNS(Alberti.xlinkns, "href"));
-	this.underlayImage.opacity = ulimg.getAttributeNS(null, "opacity");
+		// Extract and load underlay image data
+		this.underlayImage.setSource(ulimg.getAttributeNS(Alberti.xlinkns, "href"));
+		this.underlayImage.opacity = ulimg.getAttributeNS(null, "opacity");
 	
-	if (ulimg.getAttributeNS(null, "display") == "none") {
-		this.underlayImage.hide();
-	} else {
-		this.underlayImage.show();
+		if (ulimg.getAttributeNS(null, "display") == "none") {
+			this.underlayImage.hide();
+		} else {
+			this.underlayImage.show();
+		}
+	
+		this.underlayImage.update();
 	}
-	
-	this.underlayImage.update();
 	
 	this.workspaceGroup = new Group(doc.getElementById("workspace"));
 	this.undoManager = new UndoManager(Alberti.maxUndos);
