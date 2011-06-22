@@ -18,10 +18,16 @@ AlbertiDocument.exportTypeSvg     = "svg";
 AlbertiDocument.exportTypePng     = "png";
  
 function AlbertiDocument(xml) {
-	this.underlayImage = new FastImage(document.getElementById("underlayimg"));
 	this.workspaceGroup = null;
 	this.undoManager = null;
 	this.layerManager = null;
+	
+	// TODO: Rather than storing an instance of FastImage, AlbertiDocument
+	// should simply store the underlay image data: source, opacity, and
+	// visibility. UserInterface can then instantiate its own FastImage object
+	// based on the AlbertiDocument data. This would be a cleaner separation 
+	// of model and view.
+	this.underlayImage = new FastImage(document.getElementById("underlayimg"));
 	
 	// A filename may be associated with an AlbertiDocument
 	this.filename = null;
@@ -65,11 +71,16 @@ AlbertiDocument.prototype.importFromXML = function(xml) {
 	);
 		
 	// Extract and load underlay image data
-	var imgNode = document.createElement("img");
-	imgNode.src = ulimg.getAttributeNS(Alberti.xlinkns, "href");
-	imgNode.opacity = ulimg.getAttributeNS(null, "opacity");
-	imgNode.style.display = ulimg.getAttributeNS(null, "display") == "none" ? "none" : "";
-	this.underlayImage = new FastImage(imgNode);
+	this.underlayImage.setSource(ulimg.getAttributeNS(Alberti.xlinkns, "href"));
+	this.underlayImage.opacity = ulimg.getAttributeNS(null, "opacity");
+	
+	if (ulimg.getAttributeNS(null, "display") == "none") {
+		this.underlayImage.hide();
+	} else {
+		this.underlayImage.show();
+	}
+	
+	this.underlayImage.update();
 	
 	this.workspaceGroup = new Group(doc.getElementById("workspace"));
 	this.undoManager = new UndoManager(Alberti.maxUndos);
@@ -151,14 +162,15 @@ AlbertiDocument.prototype.asXML = function() {
 	chunks[0]  = '<svg\n';
 	chunks[0] += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
 	chunks[0] += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
-	chunks[0] += '	xmlns:berti="'+Alberti.customns+'">\n';
+	chunks[0] += '	xmlns:berti="'+Alberti.customns+'"\n'
+	chunks[0] += '  fill="none">\n';
 	
 	// Set the document title. This will be the default filename in the save dialog.
 	chunks[0] += '<title>'+(this.filename ? this.filename : "Alberti Document")+'</title>\n';
 	
-	chunks[0] += '<image id="underlayimg" xlink:href="';      // Serialize underlay image...
+	chunks[0] += '<image id="underlayimg" xlink:href="';
 	
-	chunks[1] = this.underlayImage.imgNode.src;               // ...in its own chunk.
+	chunks[1] = this.underlayImage.imgNode.src;               // Serialize underlay image in its own chunk.
 	
 	chunks[2]  = '" ';
 	chunks[2] += 'opacity="'+this.underlayImage.opacity+'" ';
@@ -170,11 +182,7 @@ AlbertiDocument.prototype.asXML = function() {
 	chunks[4]  = '\n';
 	chunks[4] += '</svg>\n';
 	
-	Dbug.log(chunks[1].length);
-	
-	// var xml = chunks.join("");                 // Crashes Firefox
-	
-	return xml;
+	return chunks.join("");
 };
 
 AlbertiDocument.prototype.cleanup = function() {
