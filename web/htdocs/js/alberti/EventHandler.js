@@ -17,7 +17,12 @@ EventHandler.prototype.registerListener = function(type, target, useCapture) {
 		EventHandler.numListeners++;
 		
 		this.listeners.push({"type":type, "target":target, "useCapture":useCapture});
-		target.addEventListener(type, this, useCapture);
+		
+		if (target.addEventListener) {
+			target.addEventListener(type, this, useCapture);
+		} else {
+			target["on"+type] = this[type].bindTo(this);
+		}
 	}
 };
 
@@ -28,7 +33,12 @@ EventHandler.prototype.unregisterListener = function(type, target, useCapture) {
 		EventHandler.numListeners--;
 		
 		this.listeners.splice(index, 1);
-		target.removeEventListener(type, this, useCapture);
+		
+		if (target.removeEventListener) {
+			target.removeEventListener(type, this, useCapture);
+		} else {
+			delete target["on"+type];
+		}
 	}
 };
 
