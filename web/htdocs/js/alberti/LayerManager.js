@@ -294,6 +294,10 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 	}
 };
 
+LayerManager.prototype.getCurrentLayer = function() {
+	return this.currentLayer;
+};
+
 LayerManager.prototype.getTopmostLayer = function() {
 	return this.layers[this.layers.length - 1];
 };
@@ -339,9 +343,12 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	targetLayer = targetLayer ? targetLayer : this.currentLayer;
 	targetLayer.addShape(newShape);
 	
-	// Calculate new intersection points before the shape is added to the 
-	// index, so that it is not tested against itself.
-	this.intersections.testShape(newShape, this.getVisibleShapes(), Intersection.insertFlag);
+	// Do not test for intersections if target layer is hidden
+	if (!targetLayer.isHidden()) {
+		// Calculate new intersection points before the shape is added to the 
+		// index, so that it is not tested against itself.
+		this.intersections.testShape(newShape, this.getVisibleShapes(), Intersection.insertFlag);
+	}
 	
 	// Create a new shape record
 	this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
