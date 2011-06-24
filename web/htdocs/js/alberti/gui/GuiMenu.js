@@ -1,12 +1,20 @@
 /*
  * GuiMenu.js
- * extends EventHandler
+ * extends GuiControl
  * 
  * Turn a <ul> element into a menu.
  * 
  * USAGE
  * 
- * 'ulNode' is an unordered list element to be turned into a menu. 
+ * Constructor
+ * 
+ * 'id' is an ID string that can be named at your convenience. It needn't be
+ * unique. 'ulNode' is an unordered list element to be turned into a menu. 
+ * 'delegate' is a controller object that implements the action method with
+ * name 'action'. This method is invoked when the user selects a menu item. It 
+ * should take a single argument: the id attribute of the selected menu item 
+ * (i.e. a <li> element).
+ * 
  * 'triggerNode' is an element by which the menu will reside when it is
  * opened. A GuiButton should be created for the trigger node that opens the 
  * menu on mousedown. 'position' should be one of the GuiMenu position 
@@ -20,11 +28,14 @@
  * 
  * * */
 
+// Class name for opened menu item state, for styling purposes
+GuiMenu.styleMenuItemOpened = "guiMenuItemOpened";
+
 // Where to place the menu relative to its trigger element
-GuiMenu.below = 1;
-GuiMenu.above = 2;
-GuiMenu.right = 3;
-GuiMenu.left  = 4;
+GuiMenu.positionBelow = 1;
+GuiMenu.positionAbove = 2;
+GuiMenu.positionRight = 3;
+GuiMenu.positionLeft  = 4;
 
 // If the trigger button is held down beyond this amount of time (in seconds),
 // the menu will automatically close once the mouse is released.
@@ -33,8 +44,9 @@ GuiMenu.heldMenuThreshold = 0.35;
 // Menu-close fade animation length in seconds
 GuiMenu.fadeLength = 0.15;
  
-function GuiMenu(ulNode, triggerNode, position, parentMenu) {
-	GuiMenu.baseConstructor.call(this);
+function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu) {
+	GuiMenu.baseConstructor.call(this, id, ulNode, delegate);
+	this.action = action;
 	this.ulNode = ulNode;
 	this.triggerNode = triggerNode;
 	this.position = position;
@@ -57,19 +69,21 @@ function GuiMenu(ulNode, triggerNode, position, parentMenu) {
 		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, "open", false, "", "mousedown").enable();
 	}
 }
-Util.extend(GuiMenu, EventHandler);
+Util.extend(GuiMenu, GuiControl);
 
-// Make the given GuiMenu a sub-menu of this menu, using element w/ given id 
-// as trigger. Typically this element should be a child <li> element of this 
-// menu's <ul> element.
+// Make the given GuiMenu a sub-menu of this menu
 GuiMenu.prototype.addSubMenu = function(subMenu) {
-	this.subMenus[triggerNodeId] = subMenu;
+	this.subMenus.push(subMenu);
 };
 
 // Open a menu, activating event listeners
 GuiMenu.prototype.open = function() {
 	this.ulNode.style.display = "";
+	this.ulNode.style.pointerEvents = "all";
 	this.registerListener("mousemove", this.ulNode, false);
+	
+	// Style the trigger node
+	Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 	
 	// If a menu does not have a parent menu, it is responsible for closing
 	// itself and all sub-menus.
@@ -96,7 +110,11 @@ GuiMenu.prototype.open = function() {
 
 // Close the menu and its sub menus, deactivating event listeners
 GuiMenu.prototype.close = function() {
+	this.ulNode.style.pointerEvents = "none";
 	this.unregisterListener("mousemove", this.ulNode, false);
+	
+	// Remove style from trigger node
+	Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 	
 	if (!this.parentMenu) {
 		this.unregisterListener("mouseup", window, true);
@@ -123,7 +141,28 @@ GuiMenu.prototype.close = function() {
 
 // Position the menu next to its trigger element
 GuiMenu.prototype.updatePosition = function() {
+	var origin = new Coord2D(Util.getClientX(this.triggerNode), Util.getClientY(this.triggerNode));
 	
+	switch (this.position) {
+		case GuiMenu.positionLeft:
+			origin.x -= this.ulNode.clientWidth;
+			break;
+			
+		case GuiMenu.positionRight:
+			origin.x += this.triggerNode.clientWidth;
+			break;
+			
+		case GuiMenu.positionAbove:
+			origin.y -= this.ulNode.clientHeight;
+			break;
+		
+		default:
+			origin.y += this.triggerNode.clientHeight;
+			break;
+	}
+	
+	this.ulNode.style.left = origin.x+"px";
+	this.ulNode.style.top = origin.y+"px";
 };
 
 GuiMenu.prototype.openSubMenu = function(subMenu) {
@@ -164,20 +203,23 @@ GuiMenu.prototype.mousemove = function(evt) {
 };
 
 GuiMenu.prototype.mouseup = function(evt) {
+	evt.stopPropagation();
+	
 	if (Date.now() - this.openTime >= GuiMenu.heldMenuThreshold * 1000) {
 		this.close();
 	}
 	
-	evt.stopPropagation();
+	if (this.hasElement(evt.target)) {
+		this.invokeAction(this.action, evt.target.id);
+	}
 };
 
 GuiMenu.prototype.mousedown = function(evt) {
-	if (!this.menuTreeHasElement(evt.target)) {
-		// Close menu if mousedown occurred outisde menu
-		this.close();
-	}
-	
 	evt.stopPropagation();
+	
+	if (!this.menuTreeHasElement(evt.target)) {
+		this.close();                              // Close menu if mousedown occurred outside menu
+	}
 };
 
 GuiMenu.prototype.click = function(evt) {
