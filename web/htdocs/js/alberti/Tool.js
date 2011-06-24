@@ -373,18 +373,21 @@ Tool.prototype.keydown = function(evt) {
 				this.completeTool();
 			}
 			break;
-		case KeyCode.shift:
-			if (!evt.altKey && !evt.ctrlKey && !evt.metaKey) {
-				this.constrainEnabled = true;
-			
-				// Spoof a mousemove so shapes will update to constrained position
-				p = this.getLastMousePosition();
-				this.invokeMouseMove(p.x, p.y);
-			}
-			break;
 		case KeyCode.snap:
 			this.enableSnapping();
 			break;
+	}
+	
+	if (evt.keyCode != KeyCode.shift) {
+		this.constrainEnabled = false;
+	} else {
+		if (!evt.altKey && !evt.ctrlKey && !evt.metaKey) {
+			this.constrainEnabled = true;
+		
+			// Spoof a mousemove so shapes will update to constrained position
+			p = this.getLastMousePosition();
+			this.invokeMouseMove(p.x, p.y);
+		}
 	}
 };
 
