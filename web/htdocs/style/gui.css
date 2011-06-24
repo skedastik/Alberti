@@ -191,23 +191,36 @@ input.color {
 	pointer-events: none;
 }
 
-/* Menu bar * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* Menus * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #menubar {
 	position: fixed;
 	left: 52px;
 	top: 0px;	
 	height: 26px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	
 	cursor: default;
 	background-color: #000;
 }
 
+#menubar * {
+	float: left;
+}
+
+.mb_spacer {
+	height: 10px;
+	width: 5px;
+}
+
 ul.menu {
+	margin: 0;
 	padding: 4px 0 5px 0;
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
 	
+	list-style-type: none;
 	cursor: default;
 	background-color: #000;
 	
@@ -226,19 +239,41 @@ ul.menu li:hover {
 	background-repeat: repeat-x;
 }
 
-ul.menu li:active {
-	color: #ddd;
-	background-color: #000;
+ul.menu li * {
+	pointer-events: none;
 }
 
-.mi_name {
-	width: 95px;
-	float: left;
+/* Menu horizontal rule */
+ul.menu li.mi_hr hr {
+	border: 0;
+	height: 1px;
+	background-color: #555;
+}
+
+ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
+	padding: 0;
 }
 
 .mi_scut {}
 
-#file_menu {
-	list-style-type: none;
-	width: 150px;
+#file_menu .mi_name {
+	width: 95px;
+	float: left;
+}
+
+#edit_menu .mi_name {
+	width: 75px;
+	float: left;
+}
+
+.mb_btn {
+	height: 20px;
+	padding: 3px 5px 3px 5px;
+}
+
+.mb_btn.guiMenuItemOpened {
+	color: #fff;
+	background-color: #35d;
+	background-image: url('../images/layer_row_selected.png');
+	background-repeat: repeat-x;
 }
