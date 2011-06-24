@@ -36,6 +36,14 @@ UserInterface.lineTool      = 1;
 UserInterface.circleArcTool = 2;
 UserInterface.defaultTool   = UserInterface.lineTool;
 
+UserInterface.menuItemNewDoc = "mi_new_doc";
+UserInterface.menuItemOpenDoc = "mi_open_doc";
+UserInterface.menuItemSaveDoc = "mi_save_doc";
+UserInterface.menuItemUndo = "mi_undo";
+UserInterface.menuItemRedo = "mi_redo";
+UserInterface.menuItemCut = "mi_cut";
+UserInterface.menuItemPaste = "mi_paste";
+
 UserInterface.cursorDefault    = "cursorDefault";
 UserInterface.cursorZoomAndPan = "cursorZoomAndPan";
 UserInterface.cursorCrosshair  = "cursorCrosshair";
@@ -236,7 +244,14 @@ UserInterface.prototype.initLayerPanel = function() {
 // Initialize the menu bar
 UserInterface.prototype.initMenuBar = function() {
 	var fileMenuBtnDiv = document.getElementById("file_menu_btn");
-	var fileMenu = new GuiMenu(document.getElementById("file_menu"), fileMenuBtnDiv, GuiMenu.below);
+	var fileMenu = new GuiMenu(
+		"file_menu", document.getElementById("file_menu"), this, "handleMenu", fileMenuBtnDiv, GuiMenu.positionBelow
+	);
+	
+	var editMenuBtnDiv = document.getElementById("edit_menu_btn");
+	var editMenu = new GuiMenu(
+		"edit_menu", document.getElementById("edit_menu"), this, "handleMenu", editMenuBtnDiv, GuiMenu.positionBelow
+	);
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
@@ -246,6 +261,67 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 	this.albertiDoc.underlayImage.show();
 	
 	this.hideHud();                                     // Hide the HUD
+};
+
+UserInterface.prototype.handleMenu = function(itemId) {
+	switch (itemId) {
+		
+		// New document
+		case UserInterface.menuItemNewDoc:
+			var createNewDoc = true;
+			
+			// Warn the user of unsaved changes before creating a new document
+			if (!this.albertiDoc.undoManager.stateIsClean()) {
+				createNewDoc = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and create a new document?");
+			}
+			
+			if (createNewDoc) {
+				this.appController[this.newDocHandler]();        // Invoke app controller's new document handler
+			}
+			break;
+		
+		// Open document
+		case UserInterface.menuItemOpenDoc:
+			var loadPrompt = true;
+			
+			// Warn the user of unsaved changes before opening another document
+			if (!this.albertiDoc.undoManager.stateIsClean()) {
+				loadPrompt = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and open another document?");
+			}
+			
+			if (loadPrompt) {
+				this.docImporter.prompt();                         // Prompt the user to open a file
+			}
+			break;
+		
+		// Save document
+		case UserInterface.menuItemSaveDoc:
+			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
+			break;
+		
+		case UserInterface.menuItemUndo:
+			this.albertiDoc.undoManager.undo();
+			break;
+			
+		case UserInterface.menuItemRedo:
+			this.albertiDoc.undoManager.redo();
+			break;
+			
+		case UserInterface.menuItemCut:
+			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
+			this.lmDelegate.deleteSelectedShapes();
+			break;
+			
+		case UserInterface.menuItemPaste:
+			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
+			this.clipBoard.paste(this.lmDelegate);
+			this.albertiDoc.undoManager.recordStop();
+			
+			// Pasting the same content multiple times makes no sense in 
+			// Alberti, so clear the clip board after a paste.
+			this.clipBoard.clear();
+			break;
+	}
 };
 
 UserInterface.prototype.keydown = function(evt) {
@@ -274,62 +350,22 @@ UserInterface.prototype.keydown = function(evt) {
 			
 		// Undo
 		case KeyCode.undo:
-			this.albertiDoc.undoManager.undo();
+			this.handleMenu(UserInterface.menuItemUndo);
 			break;
 		
 		// Redo
 		case KeyCode.redo:
-			this.albertiDoc.undoManager.redo();
+			this.handleMenu(UserInterface.menuItemRedo);
 			break;
 		
 		// Cut shape(s)
 		case KeyCode.cut:
-			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
-			this.lmDelegate.deleteSelectedShapes();
+			this.handleMenu(UserInterface.menuItemCut);
 			break;
 		
 		// Paste shape(s)
 		case KeyCode.paste:
-			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
-			this.clipBoard.paste(this.lmDelegate);
-			this.albertiDoc.undoManager.recordStop();
-			
-			// Pasting the same content multiple times makes no sense in 
-			// Alberti, so clear the clip board after a paste.
-			this.clipBoard.clear();
-			break;
-		
-		// Create a new document
-		case KeyCode.newDoc:
-			var createNewDoc = true;
-			
-			// Warn the user of unsaved changes before creating a new document
-			if (!this.albertiDoc.undoManager.stateIsClean()) {
-				createNewDoc = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and create a new document?");
-			}
-			
-			if (createNewDoc) {
-				this.appController[this.newDocHandler]();        // Invoke app controller's new document handler
-			}
-			break;
-		
-		// Save document
-		case KeyCode.save:
-			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
-			break;
-		
-		// Open document
-		case KeyCode.load:
-			var loadPrompt = true;
-			
-			// Warn the user of unsaved changes before opening another document
-			if (!this.albertiDoc.undoManager.stateIsClean()) {
-				loadPrompt = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and open another document?");
-			}
-			
-			if (loadPrompt) {
-				this.docImporter.prompt();                         // Prompt the user to open a file
-			}
+			this.handleMenu(UserInterface.menuItemPaste);
 			break;
 		
 		// Import an underlay image
@@ -366,6 +402,26 @@ UserInterface.prototype.keydown = function(evt) {
 			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
 			this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
 			break;
+	}
+	
+	if (evt.shiftKey) {
+		switch (evt.keyCode) {
+			
+			// Create a new document
+			case KeyCode.newDoc:
+				this.handleMenu(UserInterface.menuItemNewDoc);
+				break;
+
+			// Save document
+			case KeyCode.save:
+				this.handleMenu(UserInterface.menuItemSaveDoc);
+				break;
+
+			// Open document
+			case KeyCode.load:
+				this.handleMenu(UserInterface.menuItemOpenDoc);
+				break;
+		}
 	}
 };
 
