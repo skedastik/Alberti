@@ -1,3 +1,11 @@
+body {
+	color: #ddd;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	font-size: 14px;
+}
+
+/* Layer panel * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #layer_panel {
 	position: fixed;
 	bottom: 26px;
@@ -28,10 +36,6 @@
 	border-bottom: 1px solid #444;
 	
 	overflow: hidden;
-	
-	color: #ddd;
-	font-family: "Lucida Grande", Arial, sans-serif;
-	font-size: 14px;
 }
 
 .layer_panel_row.guiBtnToggled {
@@ -185,4 +189,52 @@ input.color {
 	height: 26px;
 	background-image: url('../images/linsert.png');;
 	pointer-events: none;
+}
+
+/* Menu bar * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#menubar {
+	position: fixed;
+	left: 52px;
+	top: 0px;	
+	height: 26px;
+	
+	cursor: default;
+	background-color: #000;
+}
+
+ul.menu {
+	padding: 4px 0 5px 0;
+	border-bottom: 1px solid #888;
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+	
+	cursor: default;
+	background-color: #fff;
+	color: black;
+	
+	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+ul.menu li {
+	padding: 0 10px 2px 20px;
+}
+
+ul.menu li:hover {
+}
+
+
+.mi_name {
+	width: 95px;
+	float: left;
+}
+
+.mi_scut {}
+
+#file_menu {
+	list-style-type: none;
+	width: 150px;
 }
