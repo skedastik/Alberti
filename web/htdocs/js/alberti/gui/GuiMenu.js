@@ -8,12 +8,15 @@
  * 
  * 'ulNode' is an unordered list element to be turned into a menu. 
  * 'triggerNode' is an element by which the menu will reside when it is
- * opened. A mousedown on this element opens the menu (a GuiButton is 
- * automatically generated for this purpose). 'position' should be one of the 
- * GuiMenu position constants that determine where the menu is placed relative 
- * to its trigger element.
+ * opened. A GuiButton should be created for the trigger node that opens the 
+ * menu on mousedown. 'position' should be one of the GuiMenu position 
+ * constants that determine where the menu is placed relative to its trigger 
+ * element. You may optionally specify a parent GuiMenu to make this menu a 
+ * sub-menu. In this case, triggerNode should be a child <li> element of the 
+ * parent menu's <ul> element. A mouseover listener that opens the sub-menu 
+ * will automatically be created for the trigger node.
  * 
- * Each child <li> element should have a unique id attribute.
+ * Each child <li> and trigger element should have a unique id attribute.
  * 
  * * */
 
@@ -26,50 +29,41 @@ GuiMenu.left  = 4;
 // If the trigger button is held down beyond this amount of time (in seconds),
 // the menu will automatically close once the mouse is released.
 GuiMenu.heldMenuThreshold = 0.35;
+
+// Menu-close fade animation length in seconds
+GuiMenu.fadeLength = 0.15;
  
-function GuiMenu(ulNode, triggerNode, position) {
+function GuiMenu(ulNode, triggerNode, position, parentMenu) {
 	GuiMenu.baseConstructor.call(this);
 	this.ulNode = ulNode;
 	this.triggerNode = triggerNode;
 	this.position = position;
 	
-	this.enabled = true;
-	
-	this.subMenus = {};                           // Index of sub-menus
+	this.subMenus = [];
 	this.openedSubMenu = null;                    // Currently opened sub-menu
-	this.parentMenu = null;
+	this.parentMenu = parentMenu || null;
 	                                              
 	this.ulNode.style.display = "none";           // Menu is closed by default so hide it
 	this.ulNode.style.position = "fixed";         // "Float" the menu above the document
 	
 	this.openTime = 0;                            // Time at which menu was last opened
 	
-	// Create the menu-trigger button
-	this.triggerButton = new GuiButton("menu_btn", triggerNode, this, "open", false, "", "mousedown").enable();
+	this.fadeAnimation = null;
+	
+	if (parentMenu) {
+		this.registerListener("mouseover", document.getElementById(triggerNodeId), false);
+	} else {
+		// Create the menu-trigger button
+		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, "open", false, "", "mousedown").enable();
+	}
 }
 Util.extend(GuiMenu, EventHandler);
-
-GuiMenu.prototype.enable = function() {
-	if (!this.enabled) {
-		this.enabled = true;
-		this.triggerButton.enable();
-	}
-};
-
-GuiMenu.prototype.disable = function() {
-	if (this.enabled) {
-		this.enabled = false;
-		this.triggerButton.disable();
-	}
-};
 
 // Make the given GuiMenu a sub-menu of this menu, using element w/ given id 
 // as trigger. Typically this element should be a child <li> element of this 
 // menu's <ul> element.
-GuiMenu.prototype.addSubMenu = function(subMenu, triggerNodeId) {
-	subMenu.parentMenu = this;
+GuiMenu.prototype.addSubMenu = function(subMenu) {
 	this.subMenus[triggerNodeId] = subMenu;
-	this.registerListener("mouseover", document.getElementById(triggerNodeId), false);
 };
 
 // Open a menu, activating event listeners
@@ -78,34 +72,53 @@ GuiMenu.prototype.open = function() {
 	this.registerListener("mousemove", this.ulNode, false);
 	
 	// If a menu does not have a parent menu, it is responsible for closing
-	// itself and all sub-menus on the next mouse click.
+	// itself and all sub-menus.
 	if (!this.parentMenu) {
 		this.registerListener("mouseup", window, true);
 		this.registerListener("mousedown", window, true);
-		this.registerListener("mouseclick", window, true);
+		this.registerListener("click", window, true);
+		this.registerListener("DOMMouseScroll", window, true);
+		this.registerListener("mousewheel", window, true);
+		this.registerListener("keydown", window, false);
+		
+		// Record time at which menu was opened
+		this.openTime = Date.now();
 	}
 	
 	// Position the menu next to its trigger element
 	this.updatePosition();
 	
-	// Record time at which menu was opened
-	this.openTime = Date.now();
+	if (this.fadeAnimation) {
+		this.fadeAnimation.stop();
+		this.ulNode.style.opacity = 1;
+	}
 }
 
 // Close the menu and its sub menus, deactivating event listeners
 GuiMenu.prototype.close = function() {
-	this.ulNode.style.display = "none";
 	this.unregisterListener("mousemove", this.ulNode, false);
 	
 	if (!this.parentMenu) {
 		this.unregisterListener("mouseup", window, true);
 		this.unregisterListener("mousedown", window, true);
-		this.unregisterListener("mouseclick", window, true);
+		this.unregisterListener("click", window, true);
+		this.unregisterListener("DOMMouseScroll", window, true);
+		this.unregisterListener("mousewheel", window, true);
+		this.unregisterListener("keydown", window, false);
 	}
 	
 	if (this.openedSubMenu) {
 		this.closeSubMenu();
 	}
+	
+	this.fadeAnimation = new Animation(GuiMenu.fadeLength, function() {
+		this.ulNode.style.display = "none";
+		this.ulNode.style.opacity = 1;
+		this.fadeAnimation = null;
+	}.bindTo(this));
+	
+	this.fadeAnimation.add(this.ulNode.style, "opacity", 1.0, 0);
+	this.fadeAnimation.begin();
 };
 
 // Position the menu next to its trigger element
@@ -124,21 +137,25 @@ GuiMenu.prototype.closeSubMenu = function() {
 	this.openedSubMenu = null;
 };
 
-// Return id of given sub-menu or null if sub-menu not found
-GuiMenu.prototype.getSubMenuId = function(subMenu) {
-	for (var id in this.subMenus) {
-		if (subMenu === this.subMenus[id]) {
-			return id;
-		}
+// Returns true if given element belongs to this menu or its sub-menus, false otherwise.
+GuiMenu.prototype.menuTreeHasElement = function(element) {
+	var isChild = this.hasElement(element);
+	
+	for (var i = 0, len = this.subMenus.length; i < len && isChild; i++) {
+		isChild = this.subMenus[i].hasElement(element);
 	}
 	
-	return null;
+	return isChild;
+};
+
+// Returns true if given element belongs to this menu, false otherwise.
+GuiMenu.prototype.hasElement = function(element) {
+	return (this.ulNode === element || Util.hasChild(this.ulNode, element));
 };
 
 GuiMenu.prototype.mousemove = function(evt) {
 	if (this.openedSubMenu
-		&& (evt.target == this.ulNode || Util.hasChild(this.ulNode, evt.target))
-		&& evt.target.id != this.getSubMenuId(this.openedSubMenu)
+		&& evt.target !== this.openedSubMenu.triggerNode
 	) {
 		// If user mouses over menu item not corresponding to currently open
 		// sub-menu, close the currently open sub-menu.
@@ -146,20 +163,39 @@ GuiMenu.prototype.mousemove = function(evt) {
 	}
 };
 
-GuiMenu.prototype.mouseover = function(evt) {
-	this.openSubMenu(this.subMenus[evt.target.id])
-};
-
 GuiMenu.prototype.mouseup = function(evt) {
 	if (Date.now() - this.openTime >= GuiMenu.heldMenuThreshold * 1000) {
 		this.close();
 	}
+	
+	evt.stopPropagation();
 };
 
 GuiMenu.prototype.mousedown = function(evt) {
-	// TODO: Absorb mouse event if necessary
+	if (!this.menuTreeHasElement(evt.target)) {
+		// Close menu if mousedown occurred outisde menu
+		this.close();
+	}
+	
+	evt.stopPropagation();
 };
 
-GuiMenu.prototype.mouseclick = function(evt) {
-	// TODO: Absorb mouse event if necessary
+GuiMenu.prototype.click = function(evt) {
+	evt.stopPropagation();
+};
+
+GuiMenu.prototype.keydown = function(evt) {
+	if (evt.keyCode == KeyCode.esc) {
+		this.close();                          // Close menu if esc key pressed
+	}
+};
+
+GuiMenu.prototype.mousewheel = function(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
+};
+
+GuiMenu.prototype.DOMMouseScroll = function(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
 };
