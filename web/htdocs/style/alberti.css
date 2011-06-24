@@ -63,7 +63,7 @@ body {
 	overflow: hidden;
 }
 
-body, div, img {
+body, div, img, ul {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
 	-khtml-user-select: none;
