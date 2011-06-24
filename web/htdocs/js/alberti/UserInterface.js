@@ -159,6 +159,8 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	// Hide the center HUD if an underlay image exists.
 	if (!this.albertiDoc.underlayImage.isHidden()) {
 		this.hideHud();
+	} else {
+		this.showHud();
 	}
 	
 	// Clean up zoom & pan event listeners
