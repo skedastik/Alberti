@@ -205,15 +205,11 @@ input.color {
 
 ul.menu {
 	padding: 4px 0 5px 0;
-	border-bottom: 1px solid #888;
-	border-left: 1px solid #bbb;
-	border-right: 1px solid #bbb;
 	border-bottom-left-radius: 6px;
 	border-bottom-right-radius: 6px;
 	
 	cursor: default;
-	background-color: #fff;
-	color: black;
+	background-color: #000;
 	
 	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
@@ -224,8 +220,16 @@ ul.menu li {
 }
 
 ul.menu li:hover {
+	color: #fff;
+	background-color: #35d;
+	background-image: url('../images/layer_row_selected.png');
+	background-repeat: repeat-x;
 }
 
+ul.menu li:active {
+	color: #ddd;
+	background-color: #000;
+}
 
 .mi_name {
 	width: 95px;
