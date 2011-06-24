@@ -1,5 +1,6 @@
 /*
  * UserInterface.js
+ * extends EventHandler
  * 
  * Prepares the window for mouse and keyboard input.
  * 
@@ -103,6 +104,9 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	
 	// The layer panel provides an interface for the manipulation of layers
 	this.layerPanel = this.initLayerPanel();
+	
+	// Initialize the menu bar
+	this.initMenuBar();
 	
 	// Create textual tool tips object
 	this.toolTip = new ToolTip(this.staticOverlayGroup);
@@ -227,6 +231,12 @@ UserInterface.prototype.initLayerPanel = function() {
 	document.body.appendChild(insertMarkDiv);
 	
 	return new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
+};
+
+// Initialize the menu bar
+UserInterface.prototype.initMenuBar = function() {
+	var fileMenuBtnDiv = document.getElementById("file_menu_btn");
+	var fileMenu = new GuiMenu(document.getElementById("file_menu"), fileMenuBtnDiv, GuiMenu.below);
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
