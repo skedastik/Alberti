@@ -236,6 +236,11 @@ ul.menu li {
 	padding: 0 10px 2px 20px;
 }
 
+ul.menu li.guiMenuDisabled, ul.menu li.guiMenuDisabled:hover {
+	color: #666666;
+	background: none;
+}
+
 ul.menu li:hover {
 	color: #fff;
 	background-color: #35d;
