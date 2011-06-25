@@ -24,12 +24,15 @@
  * parent menu's <ul> element. A mouseover listener that opens the sub-menu 
  * will automatically be created for the trigger node.
  * 
+ * 'offsetX' and 'offsetY' is are optional arguments used to offset the 
+ * position of the menu.
+ * 
  * Each child <li> and trigger element should have a unique id attribute.
  * 
  * * */
 
 // Class name for opened menu item state, for styling purposes
-GuiMenu.styleMenuItemOpened = "guiMenuItemOpened";
+GuiMenu.styleMenuItemOpened = "guiMenuOpened";
 
 // Where to place the menu relative to its trigger element
 GuiMenu.positionBelow = 1;
@@ -42,14 +45,16 @@ GuiMenu.positionLeft  = 4;
 GuiMenu.heldMenuThreshold = 0.35;
 
 // Menu-close fade animation length in seconds
-GuiMenu.fadeLength = 0.15;
+GuiMenu.fadeLength = 0.1;
  
-function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu) {
+function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu, offsetX, offsetY) {
 	GuiMenu.baseConstructor.call(this, id, ulNode, delegate);
 	this.action = action;
 	this.ulNode = ulNode;
 	this.triggerNode = triggerNode;
 	this.position = position;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
 	
 	this.subMenus = [];
 	this.openedSubMenu = null;                    // Currently opened sub-menu
@@ -63,9 +68,8 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	
 	this.fadeAnimation = null;
 	
-	if (parentMenu) {
-		// This is a sub-menu, so open self when user hovers over trigger menu item
-		this.registerListener("mouseover", document.getElementById(triggerNodeId), false);
+	if (this.parentMenu) {
+		this.parentMenu.addSubMenu(this);
 	} else {
 		// This is a root menu, so create a menu-trigger button
 		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, "open", false, "", "mousedown").enable();
@@ -83,12 +87,17 @@ GuiMenu.prototype.open = function() {
 	if (!this.opened) {
 		this.opened = true;
 		
+		if (this.parentMenu) {
+			this.parentMenu.openedSubMenu = this;
+		}
+		
 		this.ulNode.style.display = "";
-		this.ulNode.style.pointerEvents = "all";
-		this.registerListener("mousemove", this.ulNode, false);
-	
+		
 		// Style the trigger node
 		Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
+		
+		this.activateSubMenuTriggers();
+		this.registerListener("mousemove", this.ulNode, false);
 	
 		// If a menu does not have a parent menu, it is responsible for closing
 		// itself and all sub-menus.
@@ -119,12 +128,9 @@ GuiMenu.prototype.open = function() {
 GuiMenu.prototype.close = function(noFade) {
 	if (this.opened) {
 		this.opened = false;
-	
-		this.ulNode.style.pointerEvents = "none";
+		
+		this.deactivateSubMenuTriggers();
 		this.unregisterListener("mousemove", this.ulNode, false);
-	
-		// Remove style from trigger node
-		Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 	
 		if (!this.parentMenu) {
 			this.unregisterListener("mouseup", window, true);
@@ -134,16 +140,21 @@ GuiMenu.prototype.close = function(noFade) {
 			this.unregisterListener("mousewheel", window, true);
 			this.unregisterListener("keydown", window, false);
 		}
-	
+		
 		if (this.openedSubMenu) {
 			this.closeSubMenu();
 		}
+		
+		var resetMenu = function() {
+			this.ulNode.style.display = "none";
+			Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);      // Remove style from trigger node
+		}.bindTo(this);
 	
 		if (noFade) {
-			this.ulNode.style.display = "none";
+			resetMenu();
 		} else {
 			this.fadeAnimation = new Animation(GuiMenu.fadeLength, function() {
-				this.ulNode.style.display = "none";
+				resetMenu();
 				this.ulNode.style.opacity = 1;
 				this.fadeAnimation = null;
 			}.bindTo(this));
@@ -156,6 +167,18 @@ GuiMenu.prototype.close = function(noFade) {
 
 GuiMenu.prototype.isOpen = function() {
 	return this.opened;
+};
+
+GuiMenu.prototype.activateSubMenuTriggers = function() {
+	for (var i = 0, len = this.subMenus.length; i < len; i++) {
+		this.subMenus[i].registerListener("mouseover", this.subMenus[i].triggerNode, false);
+	}
+};
+
+GuiMenu.prototype.deactivateSubMenuTriggers = function() {
+	for (var i = 0, len = this.subMenus.length; i < len; i++) {
+		this.subMenus[i].unregisterListener("mouseover", this.subMenus[i].triggerNode, false);
+	}
 };
 
 // Position the menu next to its trigger element
@@ -180,8 +203,8 @@ GuiMenu.prototype.updatePosition = function() {
 			break;
 	}
 	
-	this.ulNode.style.left = origin.x+"px";
-	this.ulNode.style.top = origin.y+"px";
+	this.ulNode.style.left = (origin.x + (this.offsetX ? this.offsetX : 0))+"px";
+	this.ulNode.style.top = (origin.y + (this.offsetY ? this.offsetY : 0))+"px";
 };
 
 GuiMenu.prototype.openSubMenu = function(subMenu) {
@@ -189,9 +212,10 @@ GuiMenu.prototype.openSubMenu = function(subMenu) {
 	this.openedSubMenu.open();
 };
 
-// Close the currently opened sub-menu. Will produce an error if no sub-menu open.
-GuiMenu.prototype.closeSubMenu = function() {
-	this.openedSubMenu.close();
+// Close the currently opened sub-menu. Will produce an error if no sub-menu 
+// open. Optionally pass 'true' for 'noFade' to suppress fade animation.
+GuiMenu.prototype.closeSubMenu = function(noFade) {
+	this.openedSubMenu.close(noFade);
 	this.openedSubMenu = null;
 };
 
@@ -199,8 +223,8 @@ GuiMenu.prototype.closeSubMenu = function() {
 GuiMenu.prototype.menuTreeHasElement = function(element) {
 	var isChild = this.hasElement(element);
 	
-	for (var i = 0, len = this.subMenus.length; i < len && isChild; i++) {
-		isChild = this.subMenus[i].hasElement(element);
+	for (var i = 0, len = this.subMenus.length; i < len && !isChild; i++) {
+		isChild = this.subMenus[i].menuTreeHasElement(element);
 	}
 	
 	return isChild;
@@ -212,12 +236,10 @@ GuiMenu.prototype.hasElement = function(element) {
 };
 
 GuiMenu.prototype.mousemove = function(evt) {
-	if (this.openedSubMenu
-		&& evt.target !== this.openedSubMenu.triggerNode
-	) {
+	if (this.openedSubMenu && evt.target !== this.openedSubMenu.triggerNode) {
 		// If user mouses over menu item not corresponding to currently open
 		// sub-menu, close the currently open sub-menu.
-		this.closeSubMenu();
+		this.closeSubMenu(true);
 	}
 };
 
@@ -228,7 +250,7 @@ GuiMenu.prototype.mouseup = function(evt) {
 		this.close();
 	}
 	
-	if (this.hasElement(evt.target)) {
+	if (this.menuTreeHasElement(evt.target)) {
 		this.invokeAction(this.action, evt.target.id);
 	}
 };
