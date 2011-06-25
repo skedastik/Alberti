@@ -35,15 +35,15 @@ function FileImporter(inputElement, mimeType, importAsText, controller, importHa
 	// and listen for file imports.
 	this.inputElement.accept = mimeType;
 	this.registerListener("change", this.inputElement, false);
-	
-	// Hide the input element
-	this.inputElement.style.display = "none";
 }
 Util.extend(FileImporter, EventHandler);
 
 // Prompt the user to import a file by inducing a click on the file input
-// element (as of 6/16/2011 this does not work in Safari).
+// element.
 FileImporter.prototype.prompt = function() {
+	// Calling this click method works consistently in Mozilla, but other 
+	// browers (Safari, Chrome, Opera) seem to require that a click already
+	// have occurred in the file input, otherwise the call is ignored.
 	this.inputElement.click();
 };
 
