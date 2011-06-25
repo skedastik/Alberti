@@ -244,18 +244,18 @@ UserInterface.prototype.initLayerPanel = function() {
 // Initialize the menu bar
 UserInterface.prototype.initMenuBar = function() {
 	var fileMenuBtnDiv = document.getElementById("file_menu_btn");
-	var fileMenu = new GuiMenu(
+	this.fileMenu = new GuiMenu(
 		"file_menu", document.getElementById("file_menu"), this, "handleMenu", fileMenuBtnDiv, GuiMenu.positionBelow
 	);
 	
 	var editMenuBtnDiv = document.getElementById("edit_menu_btn");
-	var editMenu = new GuiMenu(
+	this.editMenu = new GuiMenu(
 		"edit_menu", document.getElementById("edit_menu"), this, "handleMenu", editMenuBtnDiv, GuiMenu.positionBelow
 	);
 	
 	var menuBar = new GuiMenuBar();
-	menuBar.addMenu(fileMenu);
-	menuBar.addMenu(editMenu);
+	menuBar.addMenu(this.fileMenu);
+	menuBar.addMenu(this.editMenu);
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
