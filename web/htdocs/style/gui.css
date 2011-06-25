@@ -297,6 +297,15 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	padding-right: 10px;
 }
 
+/* Open doc file input */
+#fi {
+	position: absolute;
+	margin-left: -20px;
+	width: 150px;
+	opacity: 0;
+	cursor: default;
+}
+
 #edit_menu_btn {
 	padding-left: 10px;
 }
