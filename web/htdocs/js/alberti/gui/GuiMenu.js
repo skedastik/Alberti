@@ -41,10 +41,6 @@ GuiMenu.positionAbove = 2;
 GuiMenu.positionRight = 3;
 GuiMenu.positionLeft  = 4;
 
-// If the trigger button is held down beyond this amount of time (in seconds),
-// the menu will automatically close once the mouse is released.
-GuiMenu.heldMenuThreshold = 0.35;
-
 // Menu-close fade animation length in seconds
 GuiMenu.fadeLength = 0.1;
  
@@ -110,7 +106,7 @@ GuiMenu.prototype.open = function() {
 			this.registerListener("click", window, true);
 			this.registerListener("DOMMouseScroll", window, true);
 			this.registerListener("mousewheel", window, true);
-			this.registerListener("keydown", window, false);
+			this.registerListener("keydown", window, true);
 		
 			// Record time at which menu was opened
 			this.openTime = Date.now();
@@ -141,7 +137,7 @@ GuiMenu.prototype.close = function(noFade) {
 			this.unregisterListener("click", window, true);
 			this.unregisterListener("DOMMouseScroll", window, true);
 			this.unregisterListener("mousewheel", window, true);
-			this.unregisterListener("keydown", window, false);
+			this.unregisterListener("keydown", window, true);
 		}
 		
 		if (this.openedSubMenu) {
@@ -266,16 +262,6 @@ GuiMenu.prototype.mousemove = function(evt) {
 
 GuiMenu.prototype.mouseup = function(evt) {
 	evt.stopPropagation();
-	
-	if (Date.now() - this.openTime >= GuiMenu.heldMenuThreshold * 1000) {
-		this.close();
-	}
-	
-	// If mouseup occurred within menu, and selected menu item is not
-	// disabled, invoke the menu item action.
-	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
-		this.invokeAction(this.action, evt.target.id);
-	}
 };
 
 GuiMenu.prototype.mousedown = function(evt) {
@@ -288,6 +274,22 @@ GuiMenu.prototype.mousedown = function(evt) {
 
 GuiMenu.prototype.click = function(evt) {
 	evt.stopPropagation();
+	
+	// If click occurred within menu, and selected menu item is not disabled,
+	// invoke the menu item action.
+	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
+		this.invokeAction(this.action, evt.target.id);
+	}
+	
+	if (this.parentMenu || evt.target !== this.triggerNode) {
+		// Click occurred, so close this menu if it is a sub-menu. If it is 
+		// not a sub-menu, close the menu only if the click occurred anywhere 
+		// other than the trigger node [reason being that the mousedown that
+		// triggered the menu to open in the first place will always be 
+		// followed by a click event in the trigger node (if that didn't make
+		// sense, don't worry; it's an obscure and complex interaction)].
+		this.close();
+	}
 };
 
 GuiMenu.prototype.mouseover = function(evt) {
@@ -295,6 +297,8 @@ GuiMenu.prototype.mouseover = function(evt) {
 };
 
 GuiMenu.prototype.keydown = function(evt) {
+	evt.stopPropagation();
+	
 	if (evt.keyCode == KeyCode.esc) {
 		this.close();                          // Close menu if esc key pressed
 	}
