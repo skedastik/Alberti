@@ -252,6 +252,10 @@ UserInterface.prototype.initMenuBar = function() {
 	var editMenu = new GuiMenu(
 		"edit_menu", document.getElementById("edit_menu"), this, "handleMenu", editMenuBtnDiv, GuiMenu.positionBelow
 	);
+	
+	var menuBar = new GuiMenuBar();
+	menuBar.addMenu(fileMenu);
+	menuBar.addMenu(editMenu);
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
