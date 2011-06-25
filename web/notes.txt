@@ -16,6 +16,13 @@ Alberti into a single file, thereby eliminating the cross-origin CSS request).
 
 OPERA RELATED BUGS
 
+- As of 6.24.2011, Opera does not seem to allow intercepting of mouse clicks 
+on file input elements via capturing. This means the unsaved-changes warning 
+will not appear when selecting File > Open in Alberti. Furthermore, the HTML5 
+file input javascript interface does not seem to be working properly 
+(element's "files" property is an empty array?), so importing doesn't work at 
+all.
+
 - As of 6.2.2011, Opera does not support the pointer-events CSS property as 
 applied to HTML elements. This means no drag and drop.
 
