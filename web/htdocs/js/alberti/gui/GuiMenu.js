@@ -33,6 +33,7 @@
 
 // Class name for opened menu item state, for styling purposes
 GuiMenu.styleMenuItemOpened = "guiMenuOpened";
+GuiMenu.styleMenuItemDisabled = "guiMenuDisabled";
 
 // Where to place the menu relative to its trigger element
 GuiMenu.positionBelow = 1;
@@ -59,6 +60,8 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	this.subMenus = [];
 	this.openedSubMenu = null;                    // Currently opened sub-menu
 	this.parentMenu = parentMenu || null;
+	
+	this.disabledMenuItems = [];                  // id attributes of disabled menu items
 	                                              
 	this.ulNode.style.display = "none";           // Menu is closed by default so hide it
 	this.ulNode.style.position = "fixed";         // "Float" the menu above the document
@@ -169,6 +172,24 @@ GuiMenu.prototype.isOpen = function() {
 	return this.opened;
 };
 
+// Enable menu item whose <li> has the given id attribute
+GuiMenu.prototype.enableMenuItem = function(id) {
+	var index = this.disabledMenuItems.indexOf(id);
+	
+	if (index > -1) {
+		Util.removeHtmlClass(document.getElementById(id), GuiMenu.styleMenuItemDisabled);
+		this.disabledMenuItems.splice(index, 1);
+	}
+};
+
+// Disable menu item whose <li> has the given id attribute
+GuiMenu.prototype.disableMenuItem = function(id) {
+	if (this.disabledMenuItems.indexOf(id) == -1) {
+		Util.addHtmlClass(document.getElementById(id), GuiMenu.styleMenuItemDisabled);
+		this.disabledMenuItems.push(id);
+	}
+};
+
 GuiMenu.prototype.activateSubMenuTriggers = function() {
 	for (var i = 0, len = this.subMenus.length; i < len; i++) {
 		this.subMenus[i].registerListener("mouseover", this.subMenus[i].triggerNode, false);
@@ -250,7 +271,9 @@ GuiMenu.prototype.mouseup = function(evt) {
 		this.close();
 	}
 	
-	if (this.menuTreeHasElement(evt.target)) {
+	// If mouseup occurred within menu, and selected menu item is not
+	// disabled, invoke the menu item action.
+	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
 		this.invokeAction(this.action, evt.target.id);
 	}
 };
