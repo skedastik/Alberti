@@ -58,14 +58,16 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	this.ulNode.style.display = "none";           // Menu is closed by default so hide it
 	this.ulNode.style.position = "fixed";         // "Float" the menu above the document
 	
+	this.opened = false;
 	this.openTime = 0;                            // Time at which menu was last opened
 	
 	this.fadeAnimation = null;
 	
 	if (parentMenu) {
+		// This is a sub-menu, so open self when user hovers over trigger menu item
 		this.registerListener("mouseover", document.getElementById(triggerNodeId), false);
 	} else {
-		// Create the menu-trigger button
+		// This is a root menu, so create a menu-trigger button
 		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, "open", false, "", "mousedown").enable();
 	}
 }
@@ -78,65 +80,82 @@ GuiMenu.prototype.addSubMenu = function(subMenu) {
 
 // Open a menu, activating event listeners
 GuiMenu.prototype.open = function() {
-	this.ulNode.style.display = "";
-	this.ulNode.style.pointerEvents = "all";
-	this.registerListener("mousemove", this.ulNode, false);
-	
-	// Style the trigger node
-	Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
-	
-	// If a menu does not have a parent menu, it is responsible for closing
-	// itself and all sub-menus.
-	if (!this.parentMenu) {
-		this.registerListener("mouseup", window, true);
-		this.registerListener("mousedown", window, true);
-		this.registerListener("click", window, true);
-		this.registerListener("DOMMouseScroll", window, true);
-		this.registerListener("mousewheel", window, true);
-		this.registerListener("keydown", window, false);
+	if (!this.opened) {
+		this.opened = true;
 		
-		// Record time at which menu was opened
-		this.openTime = Date.now();
-	}
+		this.ulNode.style.display = "";
+		this.ulNode.style.pointerEvents = "all";
+		this.registerListener("mousemove", this.ulNode, false);
 	
-	// Position the menu next to its trigger element
-	this.updatePosition();
+		// Style the trigger node
+		Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 	
-	if (this.fadeAnimation) {
-		this.fadeAnimation.stop();
-		this.ulNode.style.opacity = 1;
+		// If a menu does not have a parent menu, it is responsible for closing
+		// itself and all sub-menus.
+		if (!this.parentMenu) {
+			this.registerListener("mouseup", window, true);
+			this.registerListener("mousedown", window, true);
+			this.registerListener("click", window, true);
+			this.registerListener("DOMMouseScroll", window, true);
+			this.registerListener("mousewheel", window, true);
+			this.registerListener("keydown", window, false);
+		
+			// Record time at which menu was opened
+			this.openTime = Date.now();
+		}
+	
+		// Position the menu next to its trigger element
+		this.updatePosition();
+	
+		if (this.fadeAnimation) {
+			this.fadeAnimation.stop();
+			this.ulNode.style.opacity = 1;
+		}
 	}
 }
 
-// Close the menu and its sub menus, deactivating event listeners
-GuiMenu.prototype.close = function() {
-	this.ulNode.style.pointerEvents = "none";
-	this.unregisterListener("mousemove", this.ulNode, false);
+// Close the menu and its sub menus, deactivating event listeners. Optionally
+// pass 'true' for 'noFade' to suppress fade animation.
+GuiMenu.prototype.close = function(noFade) {
+	if (this.opened) {
+		this.opened = false;
 	
-	// Remove style from trigger node
-	Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
+		this.ulNode.style.pointerEvents = "none";
+		this.unregisterListener("mousemove", this.ulNode, false);
 	
-	if (!this.parentMenu) {
-		this.unregisterListener("mouseup", window, true);
-		this.unregisterListener("mousedown", window, true);
-		this.unregisterListener("click", window, true);
-		this.unregisterListener("DOMMouseScroll", window, true);
-		this.unregisterListener("mousewheel", window, true);
-		this.unregisterListener("keydown", window, false);
+		// Remove style from trigger node
+		Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
+	
+		if (!this.parentMenu) {
+			this.unregisterListener("mouseup", window, true);
+			this.unregisterListener("mousedown", window, true);
+			this.unregisterListener("click", window, true);
+			this.unregisterListener("DOMMouseScroll", window, true);
+			this.unregisterListener("mousewheel", window, true);
+			this.unregisterListener("keydown", window, false);
+		}
+	
+		if (this.openedSubMenu) {
+			this.closeSubMenu();
+		}
+	
+		if (noFade) {
+			this.ulNode.style.display = "none";
+		} else {
+			this.fadeAnimation = new Animation(GuiMenu.fadeLength, function() {
+				this.ulNode.style.display = "none";
+				this.ulNode.style.opacity = 1;
+				this.fadeAnimation = null;
+			}.bindTo(this));
+		
+			this.fadeAnimation.add(this.ulNode.style, "opacity", 1.0, 0);
+			this.fadeAnimation.begin();
+		}
 	}
-	
-	if (this.openedSubMenu) {
-		this.closeSubMenu();
-	}
-	
-	this.fadeAnimation = new Animation(GuiMenu.fadeLength, function() {
-		this.ulNode.style.display = "none";
-		this.ulNode.style.opacity = 1;
-		this.fadeAnimation = null;
-	}.bindTo(this));
-	
-	this.fadeAnimation.add(this.ulNode.style, "opacity", 1.0, 0);
-	this.fadeAnimation.begin();
+};
+
+GuiMenu.prototype.isOpen = function() {
+	return this.opened;
 };
 
 // Position the menu next to its trigger element
@@ -224,6 +243,10 @@ GuiMenu.prototype.mousedown = function(evt) {
 
 GuiMenu.prototype.click = function(evt) {
 	evt.stopPropagation();
+};
+
+GuiMenu.prototype.mouseover = function(evt) {
+	this.open();
 };
 
 GuiMenu.prototype.keydown = function(evt) {
