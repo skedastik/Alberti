@@ -262,6 +262,10 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	float: left;
 }
 
+.mi_spacer {
+	visibility: hidden;
+}
+
 .mi_scut {}
 
 #file_menu .mi_name {
