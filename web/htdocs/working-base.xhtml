@@ -61,8 +61,7 @@
 	<script type="text/ecmascript" src="js/alberti/UserInterface.js"></script>
 </head>
 <body onload="main()" style="display:none">
-	<input type="file" id="fi" />
-	<input type="file" id="uii" />
+	<input type="file" id="uii" class="hidden_input" style="display:none" />
 	<img id="underlayimg" src="images/dummy.png" style="display:none" />
 	<svg id="svgroot" style="position: absolute; width:100%; height:100%"
 		xmlns="http://www.w3.org/2000/svg" version="1.1"
@@ -109,7 +108,10 @@
 	</div>
 	<ul id="file_menu" class="menu">
 		<li id="mi_new_doc"><span class="mi_name">New</span><span class="mi_scut">&#x21e7;N</span></li>
-		<li id="mi_open_doc"><span class="mi_name">Open...</span><span class="mi_scut">&#x21e7;O</span></li>
+		<li id="mi_open_doc">
+			<div><input type="file" id="fi" /></div>
+			<span class="mi_name">Open...</span><span class="mi_scut">&#x21e7;O</span>
+		</li>
 		<li class="mi_hr"><hr /></li>
 		<li id="mi_save_doc"><span class="mi_name">Save as...</span><span class="mi_scut">&#x21e7;S</span></li>
 	</ul>
