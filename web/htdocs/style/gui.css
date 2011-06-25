@@ -210,7 +210,7 @@ input.color {
 }
 
 .mb_spacer {
-	height: 10px;
+	height: 26px;
 	width: 5px;
 }
 
@@ -226,6 +226,10 @@ ul.menu {
 	
 	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+ul.submenu {
+	border-top-right-radius: 5px;
 }
 
 ul.menu li {
@@ -254,24 +258,26 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	padding: 0;
 }
 
+.mi_name {
+	float: left;
+}
+
 .mi_scut {}
 
 #file_menu .mi_name {
 	width: 95px;
-	float: left;
 }
 
 #edit_menu .mi_name {
 	width: 105px;
-	float: left;
 }
 
 .mb_btn {
 	height: 20px;
-	padding: 4px 5px 2px 5px;
+	padding: 4px 6px 2px 6px;
 }
 
-.mb_btn.guiMenuItemOpened {
+.guiMenuOpened {
 	color: #fff;
 	background-color: #35d;
 	background-image: url('../images/layer_row_selected.png');
