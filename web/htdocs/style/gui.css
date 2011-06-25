@@ -262,13 +262,13 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 #edit_menu .mi_name {
-	width: 75px;
+	width: 105px;
 	float: left;
 }
 
 .mb_btn {
 	height: 20px;
-	padding: 3px 5px 3px 5px;
+	padding: 4px 5px 2px 5px;
 }
 
 .mb_btn.guiMenuItemOpened {
@@ -276,4 +276,12 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	background-color: #35d;
 	background-image: url('../images/layer_row_selected.png');
 	background-repeat: repeat-x;
+}
+
+#file_menu_btn {
+	padding-right: 10px;
+}
+
+#edit_menu_btn {
+	padding-left: 10px;
 }
