@@ -12,8 +12,9 @@
  * unique. 'ulNode' is an unordered list element to be turned into a menu. 
  * 'delegate' is a controller object that implements the action method with
  * name 'action'. This method is invoked when the user selects a menu item. It 
- * should take a single argument: the id attribute of the selected menu item 
- * (i.e. a <li> element).
+ * should take two arguments: the id attribute of the selected menu item (i.e.
+ * a <li> element) and the associated click event. The action method can
+ * optionally return 'true' to prevent the menu from automatically closing.
  * 
  * 'triggerNode' is an element by which the menu will reside when it is
  * opened. A GuiButton should be created for the trigger node that opens the 
@@ -275,13 +276,16 @@ GuiMenu.prototype.mousedown = function(evt) {
 GuiMenu.prototype.click = function(evt) {
 	evt.stopPropagation();
 	
+	var preserveMenu = false;
+	
 	// If click occurred within menu, and selected menu item is not disabled,
-	// invoke the menu item action.
+	// invoke the menu item action. Menu item action can return true in order
+	// to prevent menu from closing.
 	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
-		this.invokeAction(this.action, evt.target.id);
+		preserveMenu = this.invokeAction(this.action, evt.target.id, evt);
 	}
 	
-	if (this.parentMenu || evt.target !== this.triggerNode) {
+	if (!preserveMenu && (this.parentMenu || evt.target !== this.triggerNode)) {
 		// Click occurred, so close this menu if it is a sub-menu. If it is 
 		// not a sub-menu, close the menu only if the click occurred anywhere 
 		// other than the trigger node [reason being that the mousedown that
