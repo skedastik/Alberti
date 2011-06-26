@@ -14,7 +14,10 @@
  * name 'action'. This method is invoked when the user selects a menu item. It 
  * should take two arguments: the id attribute of the selected menu item (i.e.
  * a <li> element) and the associated click event. The action method can
- * optionally return 'true' to prevent the menu from automatically closing.
+ * optionally return 'true' to prevent the menu from automatically closing
+ * until the window object regains focus [useful for file upload dialogs
+ * triggered by a menu item click (as in the file input hack; see handleMenu
+ * method of UserInterface, under case 'UserInterface.menuItemOpenDoc')].
  * 
  * 'triggerNode' is an element by which the menu will reside when it is
  * opened. A GuiButton should be created for the trigger node that opens the 
@@ -108,6 +111,7 @@ GuiMenu.prototype.open = function() {
 			this.registerListener("DOMMouseScroll", window, true);
 			this.registerListener("mousewheel", window, true);
 			this.registerListener("keydown", window, true);
+			this.registerListener("focus", window, false);
 		
 			// Record time at which menu was opened
 			this.openTime = Date.now();
@@ -139,6 +143,7 @@ GuiMenu.prototype.close = function(noFade) {
 			this.unregisterListener("DOMMouseScroll", window, true);
 			this.unregisterListener("mousewheel", window, true);
 			this.unregisterListener("keydown", window, true);
+			this.unregisterListener("focus", window, false);
 		}
 		
 		if (this.openedSubMenu) {
@@ -316,4 +321,10 @@ GuiMenu.prototype.mousewheel = function(evt) {
 GuiMenu.prototype.DOMMouseScroll = function(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
+};
+
+GuiMenu.prototype.focus = function(evt) {
+	// Close the menu when the window regains focus (such as when the file 
+	// upload dialog closes).
+	this.close();
 };
