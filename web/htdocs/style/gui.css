@@ -304,6 +304,7 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	width: 150px;
 	opacity: 0;
 	cursor: default;
+	pointer-events: all;
 }
 
 #edit_menu_btn {
