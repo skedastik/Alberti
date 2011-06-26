@@ -24,11 +24,11 @@ GuiControl.prototype.getId = function() {
 	return this.id;
 };
 
-// Invoke the given action with following arguments
+// Invoke the given action with following arguments. Returns result of action method.
 GuiControl.prototype.invokeAction = function(action) {
 	if (this.delegate[action]) {
 		var args = Array.prototype.slice.call(arguments, 1);
-		this.delegate[action].apply(this.delegate, args);
+		return this.delegate[action].apply(this.delegate, args);
 	}
 };
 
