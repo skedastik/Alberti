@@ -17,7 +17,8 @@ Alberti into a single file, thereby eliminating the cross-origin CSS request).
 OPERA RELATED BUGS
 
 - As of 6.2.2011, Opera does not support the pointer-events CSS property as 
-applied to HTML elements. This means no drag and drop.
+applied to HTML elements. This means no drag and drop & no menu functionality. 
+At this point, I'm officially dropping support for Opera.
 
 - Rendering of lines with crispEdges on is a bit funky when it comes to stroke 
 widths with decimal components.
