@@ -4,6 +4,20 @@ body {
 	font-size: 14px;
 }
 
+/* File inputs */
+#fi, #uii {
+	position: absolute;
+	opacity: 0;
+	cursor: default;
+	pointer-events: all;
+}
+
+/* This file input will be superimposed on "Open..." menu item */
+#fi {
+	margin-left: -20px;
+	width: 150px;
+}
+
 /* Layer panel * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #layer_panel {
@@ -295,16 +309,6 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 
 #file_menu_btn {
 	padding-right: 10px;
-}
-
-/* Open doc file input */
-#fi {
-	position: absolute;
-	margin-left: -20px;
-	width: 150px;
-	opacity: 0;
-	cursor: default;
-	pointer-events: all;
 }
 
 #edit_menu_btn {

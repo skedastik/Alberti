@@ -13,11 +13,7 @@
  * 'delegate' is a controller object that implements the action method with
  * name 'action'. This method is invoked when the user selects a menu item. It 
  * should take two arguments: the id attribute of the selected menu item (i.e.
- * a <li> element) and the associated click event. The action method can
- * optionally return 'true' to prevent the menu from automatically closing
- * until the window object regains focus [useful for file upload dialogs
- * triggered by a menu item click (as in the file input hack; see handleMenu
- * method of UserInterface, under case 'UserInterface.menuItemOpenDoc')].
+ * a <li> element) and the associated click event.
  * 
  * 'triggerNode' is an element by which the menu will reside when it is
  * opened. A GuiButton should be created for the trigger node that opens the 
@@ -62,9 +58,11 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	this.parentMenu = parentMenu || null;
 	
 	this.disabledMenuItems = [];                  // id attributes of disabled menu items
-	                                              
-	this.ulNode.style.display = "none";           // Menu is closed by default so hide it
-	this.ulNode.style.position = "fixed";         // "Float" the menu above the document
+	
+	// Menu is closed by default so hide it.
+	GuiMenu.applyHiddenStyle(this.ulNode);
+	
+	this.ulNode.style.position = "fixed";
 	
 	this.opened = false;
 	this.openTime = 0;                            // Time at which menu was last opened
@@ -94,8 +92,6 @@ GuiMenu.prototype.open = function() {
 			this.parentMenu.openedSubMenu = this;
 		}
 		
-		this.ulNode.style.display = "";
-		
 		// Style the trigger node
 		Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 		
@@ -111,7 +107,6 @@ GuiMenu.prototype.open = function() {
 			this.registerListener("DOMMouseScroll", window, true);
 			this.registerListener("mousewheel", window, true);
 			this.registerListener("keydown", window, true);
-			this.registerListener("focus", window, false);
 		
 			// Record time at which menu was opened
 			this.openTime = Date.now();
@@ -143,7 +138,6 @@ GuiMenu.prototype.close = function(noFade) {
 			this.unregisterListener("DOMMouseScroll", window, true);
 			this.unregisterListener("mousewheel", window, true);
 			this.unregisterListener("keydown", window, true);
-			this.unregisterListener("focus", window, false);
 		}
 		
 		if (this.openedSubMenu) {
@@ -151,7 +145,7 @@ GuiMenu.prototype.close = function(noFade) {
 		}
 		
 		var resetMenu = function() {
-			this.ulNode.style.display = "none";
+			GuiMenu.applyHiddenStyle(this.ulNode);
 			Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);      // Remove style from trigger node
 		}.bindTo(this);
 	
@@ -281,16 +275,14 @@ GuiMenu.prototype.mousedown = function(evt) {
 GuiMenu.prototype.click = function(evt) {
 	evt.stopPropagation();
 	
-	var preserveMenu = false;
-	
 	// If click occurred within menu, and selected menu item is not disabled,
 	// invoke the menu item action. Menu item action can return true in order
 	// to prevent menu from closing.
 	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
-		preserveMenu = this.invokeAction(this.action, evt.target.id, evt);
+		this.invokeAction(this.action, evt.target.id, evt);
 	}
 	
-	if (!preserveMenu && (this.parentMenu || evt.target !== this.triggerNode)) {
+	if (this.parentMenu || evt.target !== this.triggerNode) {
 		// Click occurred, so close this menu if it is a sub-menu. If it is 
 		// not a sub-menu, close the menu only if the click occurred anywhere 
 		// other than the trigger node [reason being that the mousedown that
@@ -323,8 +315,11 @@ GuiMenu.prototype.DOMMouseScroll = function(evt) {
 	evt.preventDefault();
 };
 
-GuiMenu.prototype.focus = function(evt) {
-	// Close the menu when the window regains focus (such as when the file 
-	// upload dialog closes).
-	this.close();
-};
+// Apply fixed positioning w/ negative offsets to hide the given element.
+// "display:none" is avoided because the menu may contain elements that need 
+// to be visible at all times (such as file inputs).
+GuiMenu.applyHiddenStyle = function(node) {
+	node.style.position = "fixed";
+	node.style.top = "-1000px";
+	node.style.left = "-1000px";
+}

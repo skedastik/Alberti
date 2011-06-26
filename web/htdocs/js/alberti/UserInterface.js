@@ -279,8 +279,6 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 };
 
 UserInterface.prototype.handleMenu = function(itemId, evt) {
-	var preserveMenu = false;
-	
 	switch (itemId) {
 		
 		// New document
@@ -308,11 +306,6 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 				// User chose not to discard unsaved changes so suppress the 
 				// upload file dialog.
 				evt.preventDefault();
-			} else {
-				// User is about to load a file, so prevent menu from closing, 
-				// reason being that the file input must remain visible in 
-				// order for it to receive files.
-				preserveMenu = true;
 			}
 			break;
 		
@@ -344,8 +337,6 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 			this.clipBoard.clear();
 			break;
 	}
-	
-	return preserveMenu;
 };
 
 UserInterface.prototype.keydown = function(evt) {
