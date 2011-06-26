@@ -39,11 +39,8 @@ function FileImporter(inputElement, mimeType, importAsText, controller, importHa
 Util.extend(FileImporter, EventHandler);
 
 // Prompt the user to import a file by inducing a click on the file input
-// element.
+// element. Only seems to work in Firefox.
 FileImporter.prototype.prompt = function() {
-	// Calling this click method works consistently in Mozilla, but other 
-	// browers (Safari, Chrome, Opera) seem to require that a click already
-	// have occurred in the file input, otherwise the call is ignored.
 	this.inputElement.click();
 };
 
@@ -59,6 +56,8 @@ FileImporter.prototype.change = function(evt) {
 	} else {
 		this.fileReader.readAsDataURL(this.inputElement.files[0]);
 	}
+	
+	// TODO: Regenerate file input so as to allow importing same file repeatedly
 };
 
 FileImporter.prototype.loadend = function(evt) {
