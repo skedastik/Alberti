@@ -37,7 +37,7 @@ UserInterface.circleArcTool = 2;
 UserInterface.defaultTool   = UserInterface.lineTool;
 
 UserInterface.menuItemNewDoc = "mi_new_doc";
-UserInterface.menuItemOpenDoc = "mi_open_doc";
+UserInterface.menuItemOpenDoc = "fi";
 UserInterface.menuItemSaveDoc = "mi_save_doc";
 UserInterface.menuItemUndo = "mi_undo";
 UserInterface.menuItemRedo = "mi_redo";
@@ -258,6 +258,17 @@ UserInterface.prototype.initMenuBar = function() {
 	menuBar.addMenu(this.editMenu);
 };
 
+// Asks user to confirm discarding of unsaved changes. Returns true without
+// prompting user if there are no unsaved changes, or if the user chooses to 
+// discard the unsaved changes. Otherwise returns false.
+UserInterface.prototype.discardUnsavedChanges = function() {
+	if (!this.albertiDoc.undoManager.stateIsClean()) {
+		return confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and open another document?");
+	}
+	
+	return true;
+};
+
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 	this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
 	this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
@@ -267,7 +278,9 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 	this.hideHud();                                     // Hide the HUD
 };
 
-UserInterface.prototype.handleMenu = function(itemId) {
+UserInterface.prototype.handleMenu = function(itemId, evt) {
+	var preserveMenu = false;
+	
 	switch (itemId) {
 		
 		// New document
@@ -286,15 +299,20 @@ UserInterface.prototype.handleMenu = function(itemId) {
 		
 		// Open document
 		case UserInterface.menuItemOpenDoc:
-			var loadPrompt = true;
-			
-			// Warn the user of unsaved changes before opening another document
-			if (!this.albertiDoc.undoManager.stateIsClean()) {
-				loadPrompt = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and open another document?");
-			}
-			
-			if (loadPrompt) {
-				this.docImporter.prompt();                         // Prompt the user to open a file
+			// An invisible (zero-opacity) file input is superimposed on
+			// the "Open" menu item in order to trigger a file upload dialog
+			// on click. As of 6/25/2011, there is no other way to achieve 
+			// this kind of behavior. We have an opportunity to intercept that 
+			// click here.
+			if (!this.discardUnsavedChanges()) {
+				// User chose not to discard unsaved changes so suppress the 
+				// upload file dialog.
+				evt.preventDefault();
+			} else {
+				// User is about to load a file, so prevent menu from closing, 
+				// reason being that the file input must remain visible in 
+				// order for it to receive files.
+				preserveMenu = true;
 			}
 			break;
 		
@@ -326,6 +344,8 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			this.clipBoard.clear();
 			break;
 	}
+	
+	return preserveMenu;
 };
 
 UserInterface.prototype.keydown = function(evt) {
@@ -423,7 +443,9 @@ UserInterface.prototype.keydown = function(evt) {
 
 			// Open document
 			case KeyCode.load:
-				this.handleMenu(UserInterface.menuItemOpenDoc);
+				if (this.discardUnsavedChanges()) {
+					this.docImporter.prompt();                         // Prompt the user to open a file
+				}
 				break;
 		}
 	}
