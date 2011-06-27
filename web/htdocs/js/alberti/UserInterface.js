@@ -133,13 +133,9 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	this.currentTool = null;
 	this.setTool(UserInterface.defaultTool);
 	
-	this.leftMouseDown = false;
-	
 	// Set up listeners at the window level
 	this.registerListener("keydown", window, false);
 	this.registerListener("keyup", window, false);
-	this.registerListener("mousedown", window, false);
-	this.registerListener("mouseup", window, false);
 	
 	// Suppress the right-click context menu
 	this.registerListener("contextmenu", window, true);
@@ -344,14 +340,12 @@ UserInterface.prototype.keydown = function(evt) {
 		
 		// Activate panning
 		case KeyCode.alt:
-			if (!this.leftMouseDown) {
-				// Enable panning while the alt-key and no other keys are pressed
-				this.zap.enablePanning();
-				this.setCursor(UserInterface.cursorZoomAndPan);
-				
-				// Disable tool while panning is enabled
-				this.tools[this.currentTool].tool.disable();
-			}
+			// Enable panning while the alt-key and no other keys are pressed
+			this.zap.enablePanning();
+			this.setCursor(UserInterface.cursorZoomAndPan);
+			
+			// Disable tool while panning is enabled
+			this.tools[this.currentTool].tool.disable();
 			break;
 		
 		// Delete shape(s)
@@ -452,18 +446,6 @@ UserInterface.prototype.keyup = function(evt) {
 			// enable tool while panning is disabled
 			this.tools[this.currentTool].tool.enable();
 			break;
-	}
-};
-
-UserInterface.prototype.mousedown = function(evt) {
-	if (evt.button == 0) {
-		this.leftMouseDown = true;
-	}
-};
-
-UserInterface.prototype.mouseup = function(evt) {
-	if (evt.button == 0) {
-		this.leftMouseDown = false;
 	}
 };
 
