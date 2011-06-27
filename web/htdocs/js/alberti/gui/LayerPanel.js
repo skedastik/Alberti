@@ -1,5 +1,6 @@
 /*
  * LayerPanel.js
+ * extends EventHandler
  * 
  * GUI for manipulating layers. Be sure to call setController before 
  * performing operations on the LayerPanel object.
