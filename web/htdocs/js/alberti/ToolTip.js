@@ -3,29 +3,15 @@
  * 
  * Textual tool tips.
  * 
- * TODO
- * 
- * - Move window resizing awareness into UserInterface.
- * 
  * * */
 
 ToolTip.hiPriorityTime = 0.75;      // High priority messages will display for a minimum of time (seconds)
 
-function ToolTip(staticOverlayGroup) {
-	ToolTip.baseConstructor.call(this);
-	this.staticOverlayGroup = staticOverlayGroup;
-	
+function ToolTip(div) {
+	this.div = div;                 // div element that holds tool tip text
 	this.clearTimeoutId = null;
-	
 	this.lastHiPriorityCall = 0;
-	
-	this.tipText = new Text().generate();
-	this.updateTextPosition();
-	this.staticOverlayGroup.attachChild(this.tipText);
-	
-	this.registerListener("resize", window, false);
 }
-Util.extend(ToolTip, EventHandler);
 
 // If autoClear is true, the text will automatically clear after a period of
 // time determined by text word count. If hiPriority is set to true, future
@@ -41,8 +27,7 @@ ToolTip.prototype.setText = function(text, autoClear, hiPriority) {
 			this.lastHiPriorityCall = Date.now();
 		}
 		
-		this.tipText.textData = text;
-		this.tipText.push();
+		this.div.innerHTML = text;
 		
 		if (autoClear && text) {
 			var wordCount = text.match(/\S+/g).length;
@@ -62,18 +47,6 @@ ToolTip.prototype.setText = function(text, autoClear, hiPriority) {
 ToolTip.prototype.clearText = function() {
 	this.cancelAutoClear();
 	this.setText("", false, true);
-};
-
-ToolTip.prototype.updateTextPosition = function() {
-	// this.tipText.anchor.x = Math.round(window.innerWidth / 2);
-	// this.tipText.anchor.y = window.innerHeight - 8;
-	this.tipText.anchor.x = 7;
-	this.tipText.anchor.y = 15;
-	this.tipText.push();
-};
-
-ToolTip.prototype.resize = function() {
-	this.updateTextPosition();
 };
 
 ToolTip.prototype.cancelAutoClear = function() {
