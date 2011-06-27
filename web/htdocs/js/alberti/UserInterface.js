@@ -149,7 +149,7 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	
 	this.ulImgImporter = new FileImporter(
 		document.getElementById("uii"),
-		"image/gif,image/jpeg,image/png,image/tiff,image/gif",
+		"image/gif,image/jpeg,image/png,image/tiff",
 		false,
 		this,
 		"handleImportUlImage", "jpg|jpeg|png|tiff|tif|gif"
