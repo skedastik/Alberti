@@ -173,9 +173,11 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	if (!this.albertiDoc.underlayImage.isHidden()) {
 		this.hideHud();
 		this.ulSlider.show();
+		this.ulMenu.enableMenuItem("mi_remove_ul");       // Enable "Remove Underlay" menu item
 	} else {
 		this.showHud();
 		this.ulSlider.hide();
+		this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
 	}
 	
 	// Clean up zoom & pan event listeners
