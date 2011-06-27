@@ -5,6 +5,7 @@
 	<link rel="stylesheet" href="style/alberti.css" type="text/css" />
 	<link rel="stylesheet" href="style/gui.css" type="text/css" />
 	<script type="text/ecmascript" src="js/jscolor/jscolor.js"></script>
+	<script type="text/ecmascript" src="js/fryn-html5slider/html5slider.js"></script>
 	<script type="text/ecmascript" src="js/core/DebugUtil.js"></script>
 	<script type="text/ecmascript" src="js/core/Util.js"></script>
 	<script type="text/ecmascript" src="js/alberti/KeyCodes.js"></script>
@@ -58,6 +59,7 @@
 	<script type="text/ecmascript" src="js/alberti/gui/LayerPanelController.js"></script>
 	<script type="text/ecmascript" src="js/alberti/gui/LayerPanelRow.js"></script>
 	<script type="text/ecmascript" src="js/alberti/gui/LayerPanel.js"></script>
+	<script type="text/ecmascript" src="js/alberti/gui/UnderlaySlider.js"></script>
 	<script type="text/ecmascript" src="js/alberti/UserInterface.js"></script>
 </head>
 <body onload="main()" style="display:none">
@@ -109,6 +111,11 @@
 		<div id="edit_menu_btn" class="mb_btn">Edit</div>
 		<div class="mb_vr"></div>
 		<div id="ul_menu_btn" class="mb_btn">UL</div>
+		<div id="ul_slider_cab">
+			<div id="ul_slider_wrapper">
+				<label for="ul_opac_slider">Opacity:</label><input id="ul_opac_slider" type="range" min="0" max="1.0" value="1.0" step="0.01"/>
+			</div>
+		</div>
 	</div>
 	<ul id="file_menu" class="menu">
 		<li id="mi_new_doc"><span class="mi_name">New</span><span class="mi_scut">&#x21e7;N</span></li>
