@@ -11,7 +11,9 @@
  * accepted MIME type. Pass 'true' for the 'importAsText' argument in order to
  * import files as text rather than data URL's. The 'controller' argument is 
  * an object that implements an import handler method. 'importHandler' is the 
- * name of this method.
+ * name of this method. 'allowedExtensions' is an optional case-insensitive 
+ * string argument, containing the allowed file extensions separated by pipes
+ * ('|').
  * 
  * The import handler should take a string argument representing the imported
  * data and a string argument containing the filename. If 'importAsText' was 
@@ -20,12 +22,13 @@
  * 
  * * */
  
-function FileImporter(inputElement, mimeType, importAsText, controller, importHandler) {
+function FileImporter(inputElement, mimeType, importAsText, controller, importHandler, allowedExtensions) {
 	FileImporter.baseConstructor.call(this);
 	this.inputElement = inputElement;
 	this.importAsText = importAsText;           // File data should be imported as text rather than data URL?
 	this.controller = controller;
 	this.importHandler = importHandler;
+	this.allowedExtensions = allowedExtensions;
 	
 	Util.assert(typeof FileReader !== "undefined", "Your browser does not support the required FileReader object.");
 	
@@ -61,12 +64,19 @@ FileImporter.prototype.change = function(evt) {
 };
 
 FileImporter.prototype.loadend = function(evt) {
-	this.controller[this.importHandler](this.fileReader.result, this.getFilename());
+	var regex = new RegExp("\\.("+this.allowedExtensions+")$", "i");
 	
+	if (this.getFilename().match(regex)) {
+		this.controller[this.importHandler](this.fileReader.result, this.getFilename());
+		this.regenerateInput();
+	}
+};
+
+// Re-create the input element so that the same file can be loaded repeatedly
+FileImporter.prototype.regenerateInput = function() {
 	// Unregister change listener as input element is about to be re-created
 	this.unregisterListener("change", this.inputElement, false);
 	
-	// Re-create the input element so that the same file can be loaded repeatedly
 	var newInput = document.createElement("input");
 	newInput.type = "file";
 	newInput.id = this.inputElement.id;
