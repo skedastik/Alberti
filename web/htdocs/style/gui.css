@@ -4,6 +4,13 @@ body {
 	font-size: 14px;
 }
 
+#striptop {
+	position: fixed;
+	height: 7px;
+	width: 100%;
+	background-color: #000;
+}
+
 /* File inputs */
 #fi, #uii {
 	position: absolute;
