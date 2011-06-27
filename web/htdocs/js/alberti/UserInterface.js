@@ -117,7 +117,7 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	this.initMenuBar();
 	
 	// Create textual tool tips object
-	this.toolTip = new ToolTip(this.staticOverlayGroup);
+	this.toolTip = new ToolTip(document.getElementById("tooltip"));
 	
 	// Initialize the toolset
 	this.tools = [
