@@ -56,10 +56,21 @@ FileImporter.prototype.change = function(evt) {
 	} else {
 		this.fileReader.readAsDataURL(this.inputElement.files[0]);
 	}
-	
-	// TODO: Regenerate file input so as to allow importing same file repeatedly
 };
 
 FileImporter.prototype.loadend = function(evt) {
 	this.controller[this.importHandler](this.fileReader.result, this.getFilename());
+	
+	// Unregister change listener as input element is about to be re-created
+	this.unregisterListener("change", this.inputElement, false);
+	
+	// Re-create the input element so that the same file can be loaded repeatedly
+	var newInput = document.createElement("input");
+	newInput.type = "file";
+	newInput.id = this.inputElement.id;
+	
+	Util.replaceElement(this.inputElement, newInput);
+	this.inputElement = newInput;
+	
+	this.registerListener("change", this.inputElement, false);
 };
