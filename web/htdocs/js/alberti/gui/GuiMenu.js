@@ -42,7 +42,7 @@ GuiMenu.positionRight = 3;
 GuiMenu.positionLeft  = 4;
 
 // Menu-close fade animation length in seconds
-GuiMenu.fadeLength = 0.1;
+GuiMenu.fadeLength = 0.15;
  
 function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu, offsetX, offsetY) {
 	GuiMenu.baseConstructor.call(this, id, ulNode, delegate);
