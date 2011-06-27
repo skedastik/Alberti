@@ -47,7 +47,6 @@ GuiMenu.fadeLength = 0.15;
 function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu, offsetX, offsetY) {
 	GuiMenu.baseConstructor.call(this, id, ulNode, delegate);
 	this.action = action;
-	this.ulNode = ulNode;
 	this.triggerNode = triggerNode;
 	this.position = position || GuiMenu.positionBelow;
 	this.offsetX = offsetX;
@@ -59,9 +58,8 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	
 	this.disabledMenuItems = [];                  // id attributes of disabled menu items
 	
-	
-	this.ulNode.style.display = "none";           // Menu is closed by default so hide it.
-	this.ulNode.style.position = "fixed";
+	this.htmlNode.style.display = "none";           // Menu is closed by default so hide it.
+	this.htmlNode.style.position = "fixed";
 	
 	this.opened = false;
 	this.openTime = 0;                            // Time at which menu was last opened
@@ -90,7 +88,7 @@ GuiMenu.prototype.open = function() {
 	if (!this.opened) {
 		this.opened = true;
 		
-		this.ulNode.style.display = "";
+		this.htmlNode.style.display = "";
 		
 		if (this.parentMenu) {
 			this.parentMenu.openedSubMenu = this;
@@ -99,7 +97,7 @@ GuiMenu.prototype.open = function() {
 		// Style the trigger node
 		Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 		
-		this.registerListener("mousemove", this.ulNode, false);
+		this.registerListener("mousemove", this.htmlNode, false);
 	
 		// If a menu does not have a parent menu, it is responsible for closing
 		// itself and all sub-menus.
@@ -120,7 +118,7 @@ GuiMenu.prototype.open = function() {
 	
 		if (this.fadeAnimation) {
 			this.fadeAnimation.stop();
-			this.ulNode.style.opacity = 1;
+			this.htmlNode.style.opacity = 1;
 		}
 	}
 }
@@ -131,7 +129,7 @@ GuiMenu.prototype.close = function(noFade) {
 	if (this.opened) {
 		this.opened = false;
 		
-		this.unregisterListener("mousemove", this.ulNode, false);
+		this.unregisterListener("mousemove", this.htmlNode, false);
 	
 		if (!this.parentMenu) {
 			this.unregisterListener("mouseup", window, true);
@@ -147,7 +145,7 @@ GuiMenu.prototype.close = function(noFade) {
 		}
 		
 		var resetMenu = function() {
-			this.ulNode.style.display = "none";
+			this.htmlNode.style.display = "none";
 			Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);      // Remove style from trigger node
 		}.bindTo(this);
 	
@@ -156,11 +154,11 @@ GuiMenu.prototype.close = function(noFade) {
 		} else {
 			this.fadeAnimation = new Animation(GuiMenu.fadeLength, function() {
 				resetMenu();
-				this.ulNode.style.opacity = 1;
+				this.htmlNode.style.opacity = 1;
 				this.fadeAnimation = null;
 			}.bindTo(this));
 		
-			this.fadeAnimation.add(this.ulNode.style, "opacity", 1.0, 0);
+			this.fadeAnimation.add(this.htmlNode.style, "opacity", 1.0, 0);
 			this.fadeAnimation.begin();
 		}
 	}
@@ -194,7 +192,7 @@ GuiMenu.prototype.updatePosition = function() {
 	
 	switch (this.position) {
 		case GuiMenu.positionLeft:
-			origin.x -= this.ulNode.clientWidth;
+			origin.x -= this.htmlNode.clientWidth;
 			break;
 			
 		case GuiMenu.positionRight:
@@ -202,7 +200,7 @@ GuiMenu.prototype.updatePosition = function() {
 			break;
 			
 		case GuiMenu.positionAbove:
-			origin.y -= this.ulNode.clientHeight;
+			origin.y -= this.htmlNode.clientHeight;
 			break;
 		
 		default:
@@ -210,8 +208,8 @@ GuiMenu.prototype.updatePosition = function() {
 			break;
 	}
 	
-	this.ulNode.style.left = (origin.x + (this.offsetX ? this.offsetX : 0))+"px";
-	this.ulNode.style.top = (origin.y + (this.offsetY ? this.offsetY : 0))+"px";
+	this.htmlNode.style.left = (origin.x + (this.offsetX ? this.offsetX : 0))+"px";
+	this.htmlNode.style.top = (origin.y + (this.offsetY ? this.offsetY : 0))+"px";
 };
 
 GuiMenu.prototype.openSubMenu = function(subMenu) {
@@ -239,7 +237,7 @@ GuiMenu.prototype.menuTreeHasElement = function(element) {
 
 // Returns true if given element belongs to this menu, false otherwise.
 GuiMenu.prototype.hasElement = function(element) {
-	return (this.ulNode === element || Util.hasChild(this.ulNode, element));
+	return (this.htmlNode === element || Util.hasChild(this.htmlNode, element));
 };
 
 GuiMenu.prototype.mousemove = function(evt) {
