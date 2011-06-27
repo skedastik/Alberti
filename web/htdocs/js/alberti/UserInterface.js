@@ -37,12 +37,14 @@ UserInterface.circleArcTool = 2;
 UserInterface.defaultTool   = UserInterface.lineTool;
 
 UserInterface.menuItemNewDoc = "mi_new_doc";
-UserInterface.menuItemOpenDoc = "fi";
+UserInterface.menuItemOpenDoc = "mi_open_doc";
 UserInterface.menuItemSaveDoc = "mi_save_doc";
 UserInterface.menuItemUndo = "mi_undo";
 UserInterface.menuItemRedo = "mi_redo";
 UserInterface.menuItemCut = "mi_cut";
 UserInterface.menuItemPaste = "mi_paste";
+UserInterface.menuItemImportUl = "mi_import_ul";
+UserInterface.menuItemRemoveUl = "mi_remove_ul";
 
 UserInterface.cursorDefault    = "cursorDefault";
 UserInterface.cursorZoomAndPan = "cursorZoomAndPan";
@@ -239,15 +241,22 @@ UserInterface.prototype.initLayerPanel = function() {
 
 // Initialize the menu bar
 UserInterface.prototype.initMenuBar = function() {
-	var fileMenuBtnDiv = document.getElementById("file_menu_btn");
-	this.fileMenu = new GuiMenu(
-		"file_menu", document.getElementById("file_menu"), this, "handleMenu", fileMenuBtnDiv, GuiMenu.positionBelow
+	this.fileMenu = new GuiMenu("file_menu",
+		document.getElementById("file_menu"), this, "handleMenu",
+		document.getElementById("file_menu_btn")
 	);
 	
-	var editMenuBtnDiv = document.getElementById("edit_menu_btn");
-	this.editMenu = new GuiMenu(
-		"edit_menu", document.getElementById("edit_menu"), this, "handleMenu", editMenuBtnDiv, GuiMenu.positionBelow
+	this.editMenu = new GuiMenu("edit_menu",
+		document.getElementById("edit_menu"), this, "handleMenu",
+		document.getElementById("edit_menu_btn")
 	);
+	
+	this.ulMenu = new GuiMenu("ul_menu",
+		document.getElementById("ul_menu"), this, "handleMenu",
+		document.getElementById("ul_menu_btn")
+	);
+	
+	this.ulMenu.disableMenuItem("mi_remove_ul");
 	
 	var menuBar = new GuiMenuBar();
 	menuBar.addMenu(this.fileMenu);
@@ -266,12 +275,17 @@ UserInterface.prototype.discardUnsavedChanges = function() {
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
-	this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
-	this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
-	this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
-	this.albertiDoc.underlayImage.show();
+	// Do not allow importing of SVG images as underlay
+	if (!this.ulImgImporter.getFilename().match(/\.svg$/i)) {
+		this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
+		this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
+		this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
+		this.albertiDoc.underlayImage.show();
 	
-	this.hideHud();                                     // Hide the HUD
+		this.hideHud();                                     // Hide the HUD
+	
+		this.ulMenu.enableMenuItem("mi_remove_ul");         // Enable "Remove Underlay" menu item
+	}
 };
 
 UserInterface.prototype.handleMenu = function(itemId, evt) {
@@ -293,15 +307,8 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 		
 		// Open document
 		case UserInterface.menuItemOpenDoc:
-			// An invisible (zero-opacity) file input is superimposed on
-			// the "Open" menu item in order to trigger a file upload dialog
-			// on click. As of 6/25/2011, there is no other way to achieve 
-			// this kind of behavior. We have an opportunity to intercept that 
-			// click here.
-			if (!this.discardUnsavedChanges()) {
-				// User chose not to discard unsaved changes so suppress the 
-				// upload file dialog.
-				evt.preventDefault();
+			if (this.discardUnsavedChanges()) {
+				this.docImporter.prompt();                         // Prompt the user to open a file
 			}
 			break;
 		
@@ -331,6 +338,15 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 			// Pasting the same content multiple times makes no sense in 
 			// Alberti, so clear the clip board after a paste.
 			this.clipBoard.clear();
+			break;
+		
+		case UserInterface.menuItemImportUl:
+			this.ulImgImporter.prompt();
+			break;
+		
+		case UserInterface.menuItemRemoveUl:
+			this.albertiDoc.underlayImage.hide();
+			this.ulMenu.disableMenuItem("mi_remove_ul");    // Disable "Remove Underlay" menu item
 			break;
 	}
 };
