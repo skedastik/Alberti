@@ -11,6 +11,15 @@ body {
 	background-color: #000;
 }
 
+#tooltip {
+	position: fixed;
+	left: 9px;
+	bottom: 6px;
+	
+	font-size: 11px;
+	color: #f00;
+}
+
 /* File inputs */
 #fi, #uii {
 	position: absolute;
