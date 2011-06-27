@@ -144,11 +144,15 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	
 	// Create file importer for loading Alberti documents, and one for loading underlay images, passing self as controller
 	this.docImporter = new FileImporter(
-		document.getElementById("fi"), "image/svg+xml", true, this.appController, "handleOpenDocument"
+		document.getElementById("fi"), "image/svg+xml", true, this.appController, "handleOpenDocument", "svg"
 	);
 	
-	this.ulImgImporter = new FileImporter(document.getElementById("uii"),
-		"image/gif,image/jpeg,image/png,image/tiff", false, this, "handleImportUlImage"
+	this.ulImgImporter = new FileImporter(
+		document.getElementById("uii"),
+		"image/gif,image/jpeg,image/png,image/tiff,image/gif",
+		false,
+		this,
+		"handleImportUlImage", "jpg|jpeg|png|tiff|tif|gif"
 	);
 	
 	// Warn user about unsaved data before leaving page
@@ -166,11 +170,12 @@ Util.extend(UserInterface, EventHandler);
 UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	this.albertiDoc = albertiDoc;
 	
-	// Hide the center HUD if an underlay image exists.
 	if (!this.albertiDoc.underlayImage.isHidden()) {
 		this.hideHud();
+		this.ulSlider.show();
 	} else {
 		this.showHud();
+		this.ulSlider.hide();
 	}
 	
 	// Clean up zoom & pan event listeners
@@ -261,6 +266,10 @@ UserInterface.prototype.initMenuBar = function() {
 	var menuBar = new GuiMenuBar();
 	menuBar.addMenu(this.fileMenu);
 	menuBar.addMenu(this.editMenu);
+	
+	this.ulSlider = new UnderlaySlider("ul_slider", document.getElementById("ul_opac_slider"),
+		this, "handleUlSlider", document.getElementById("ul_slider_cab")
+	);
 };
 
 // Asks user to confirm discarding of unsaved changes. Returns true without
@@ -275,17 +284,15 @@ UserInterface.prototype.discardUnsavedChanges = function() {
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
-	// Do not allow importing of SVG images as underlay
-	if (!this.ulImgImporter.getFilename().match(/\.svg$/i)) {
-		this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
-		this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
-		this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
-		this.albertiDoc.underlayImage.show();
-	
-		this.hideHud();                                     // Hide the HUD
-	
-		this.ulMenu.enableMenuItem("mi_remove_ul");         // Enable "Remove Underlay" menu item
-	}
+	this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
+	this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
+	this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
+	this.albertiDoc.underlayImage.show();
+
+	this.hideHud();                                     // Hide the HUD
+
+	this.ulMenu.enableMenuItem("mi_remove_ul");         // Enable "Remove Underlay" menu item
+	this.ulSlider.show();                               // Show the underlay opacity slider
 };
 
 UserInterface.prototype.handleMenu = function(itemId, evt) {
@@ -346,9 +353,15 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 		
 		case UserInterface.menuItemRemoveUl:
 			this.albertiDoc.underlayImage.hide();
-			this.ulMenu.disableMenuItem("mi_remove_ul");    // Disable "Remove Underlay" menu item
+			this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
+			this.ulSlider.hide();                             // Hide the underlay opacity slider
 			break;
 	}
+};
+
+UserInterface.prototype.handleUlSlider = function(ulSlider, value) {
+	this.albertiDoc.underlayImage.opacity = value;
+	this.albertiDoc.underlayImage.update();
 };
 
 UserInterface.prototype.keydown = function(evt) {
