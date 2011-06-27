@@ -322,3 +322,26 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 #ul_menu_btn {
 	/* TODO */
 }
+
+#ul_slider_cab {
+	margin: 4px 0 0 4px;
+	overflow: hidden;
+}
+
+#ul_slider_wrapper {
+	background: #666;
+	padding: 0 4px 0 4px;
+	height: 17px;
+	border-radius: 6px;
+	
+	font-size: 11px;
+	line-height: 16px;
+}
+
+#ul_slider_wrapper label {
+	padding: 0 2px 0 2px;
+}
+
+#ul_opac_slider {
+	width: 100px;
+}
