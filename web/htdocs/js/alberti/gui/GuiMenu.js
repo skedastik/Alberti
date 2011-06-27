@@ -49,7 +49,7 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	this.action = action;
 	this.ulNode = ulNode;
 	this.triggerNode = triggerNode;
-	this.position = position;
+	this.position = position || GuiMenu.positionBelow;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
 	
@@ -59,9 +59,8 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	
 	this.disabledMenuItems = [];                  // id attributes of disabled menu items
 	
-	// Menu is closed by default so hide it.
-	GuiMenu.applyHiddenStyle(this.ulNode);
 	
+	this.ulNode.style.display = "none";           // Menu is closed by default so hide it.
 	this.ulNode.style.position = "fixed";
 	
 	this.opened = false;
@@ -81,12 +80,17 @@ Util.extend(GuiMenu, GuiControl);
 // Make the given GuiMenu a sub-menu of this menu
 GuiMenu.prototype.addSubMenu = function(subMenu) {
 	this.subMenus.push(subMenu);
+	
+	// Open self on menu item mouseover
+	subMenu.registerListener("mouseover", subMenu.triggerNode, false);
 };
 
 // Open a menu, activating event listeners
 GuiMenu.prototype.open = function() {
 	if (!this.opened) {
 		this.opened = true;
+		
+		this.ulNode.style.display = "";
 		
 		if (this.parentMenu) {
 			this.parentMenu.openedSubMenu = this;
@@ -95,7 +99,6 @@ GuiMenu.prototype.open = function() {
 		// Style the trigger node
 		Util.addHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);
 		
-		this.activateSubMenuTriggers();
 		this.registerListener("mousemove", this.ulNode, false);
 	
 		// If a menu does not have a parent menu, it is responsible for closing
@@ -128,7 +131,6 @@ GuiMenu.prototype.close = function(noFade) {
 	if (this.opened) {
 		this.opened = false;
 		
-		this.deactivateSubMenuTriggers();
 		this.unregisterListener("mousemove", this.ulNode, false);
 	
 		if (!this.parentMenu) {
@@ -145,7 +147,7 @@ GuiMenu.prototype.close = function(noFade) {
 		}
 		
 		var resetMenu = function() {
-			GuiMenu.applyHiddenStyle(this.ulNode);
+			this.ulNode.style.display = "none";
 			Util.removeHtmlClass(this.triggerNode, GuiMenu.styleMenuItemOpened);      // Remove style from trigger node
 		}.bindTo(this);
 	
@@ -183,18 +185,6 @@ GuiMenu.prototype.disableMenuItem = function(id) {
 	if (this.disabledMenuItems.indexOf(id) == -1) {
 		Util.addHtmlClass(document.getElementById(id), GuiMenu.styleMenuItemDisabled);
 		this.disabledMenuItems.push(id);
-	}
-};
-
-GuiMenu.prototype.activateSubMenuTriggers = function() {
-	for (var i = 0, len = this.subMenus.length; i < len; i++) {
-		this.subMenus[i].registerListener("mouseover", this.subMenus[i].triggerNode, false);
-	}
-};
-
-GuiMenu.prototype.deactivateSubMenuTriggers = function() {
-	for (var i = 0, len = this.subMenus.length; i < len; i++) {
-		this.subMenus[i].unregisterListener("mouseover", this.subMenus[i].triggerNode, false);
 	}
 };
 
@@ -314,12 +304,3 @@ GuiMenu.prototype.DOMMouseScroll = function(evt) {
 	evt.stopPropagation();
 	evt.preventDefault();
 };
-
-// Apply fixed positioning w/ negative offsets to hide the given element.
-// "display:none" is avoided because the menu may contain elements that need 
-// to be visible at all times (such as file inputs).
-GuiMenu.applyHiddenStyle = function(node) {
-	node.style.position = "fixed";
-	node.style.top = "-1000px";
-	node.style.left = "-1000px";
-}
