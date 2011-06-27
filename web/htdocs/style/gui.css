@@ -6,7 +6,7 @@ body {
 
 #striptop {
 	position: fixed;
-	height: 7px;
+	height: 5px;
 	width: 100%;
 	background-color: #000;
 }
@@ -20,18 +20,11 @@ body {
 	color: #f00;
 }
 
-/* File inputs */
-#fi, #uii {
-	position: absolute;
+#hidden_div {
+	position: fixed;
+	top: -1000px;
+	left: -1000px;
 	opacity: 0;
-	cursor: default;
-	pointer-events: all;
-}
-
-/* This file input will be superimposed on "Open..." menu item */
-#fi {
-	margin-left: -20px;
-	width: 150px;
 }
 
 /* Layer panel * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -69,8 +62,7 @@ body {
 }
 
 .layer_panel_row.guiBtnToggled {
-	background-image: url('../images/layer_row_selected.png');
-	background-repeat: repeat-x;
+	background: url('../images/layer_row_selected.png') repeat-x;
 }
 
 .layer_panel_row.guiBtnDisabled {
@@ -84,8 +76,7 @@ body {
 	border-bottom-left-radius: 13px;
 	border-bottom: 0;
 	
-	background-image: url('../images/layer_row_ghost.png');
-	background-repeat: repeat-y;
+	background: url('../images/layer_row_ghost.png') repeat-y;
 }
 
 #layer_panel_control_strip .layer_panel_row {
@@ -217,7 +208,7 @@ input.color {
 	right: 0px;
 	width: 180px;
 	height: 26px;
-	background-image: url('../images/linsert.png');;
+	background-image: url('../images/linsert.png');
 	pointer-events: none;
 }
 
@@ -231,6 +222,8 @@ input.color {
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	
+	padding: 0 5px 0 5px;
+	
 	cursor: default;
 	background-color: #000;
 }
@@ -239,9 +232,11 @@ input.color {
 	float: left;
 }
 
-.mb_spacer {
+.mb_vr {
+	width: 1px;
 	height: 26px;
-	width: 5px;
+	
+	background-color: #555;
 }
 
 ul.menu {
@@ -249,6 +244,7 @@ ul.menu {
 	padding: 4px 0 5px 0;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
+	border-top-right-radius: 5px;
 	
 	list-style-type: none;
 	cursor: default;
@@ -256,10 +252,6 @@ ul.menu {
 	
 	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
-}
-
-ul.submenu {
-	border-top-right-radius: 5px;
 }
 
 ul.menu li {
@@ -273,9 +265,7 @@ ul.menu li.guiMenuDisabled, ul.menu li.guiMenuDisabled:hover {
 
 ul.menu li:hover {
 	color: #fff;
-	background-color: #35d;
-	background-image: url('../images/layer_row_selected.png');
-	background-repeat: repeat-x;
+	background: #35d url('../images/layer_row_selected.png') repeat-x;
 }
 
 ul.menu li * {
@@ -318,9 +308,7 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 
 .guiMenuOpened {
 	color: #fff;
-	background-color: #35d;
-	background-image: url('../images/layer_row_selected.png');
-	background-repeat: repeat-x;
+	background: #35d url('../images/layer_row_selected.png') repeat-x;
 }
 
 #file_menu_btn {
@@ -329,4 +317,8 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 
 #edit_menu_btn {
 	padding-left: 10px;
+}
+
+#ul_menu_btn {
+	/* TODO */
 }
