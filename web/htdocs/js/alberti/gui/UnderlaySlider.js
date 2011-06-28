@@ -66,6 +66,10 @@ UnderlaySlider.prototype.hide = function() {
 	}
 };
 
+UnderlaySlider.prototype.setValue = function(value) {
+	this.htmlNode.value = value;
+};
+
 UnderlaySlider.prototype.change = function(evt) {
 	this.invokeAction(this.action, this, this.htmlNode.value);
 };
