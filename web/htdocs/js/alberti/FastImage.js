@@ -36,13 +36,17 @@ FastImage.prototype.isHidden = function() {
 };
 
 FastImage.prototype.hide = function() {
-	this.hidden = true;
-	this.imgNode.style.display = "none";
+	if (!this.hidden) {
+		this.hidden = true;
+		this.imgNode.style.display = "none";
+	}
 };
 
 FastImage.prototype.show = function() {
-	this.hidden = false;
-	this.imgNode.style.display = "";
+	if (this.hidden) {
+		this.hidden = false;
+		this.imgNode.style.display = "";
+	}
 };
 
 FastImage.prototype.update = function() {
