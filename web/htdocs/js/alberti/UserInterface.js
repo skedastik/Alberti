@@ -174,6 +174,7 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 		this.hideHud();
 		this.ulSlider.show();
 		this.ulMenu.enableMenuItem("mi_remove_ul");       // Enable "Remove Underlay" menu item
+		this.ulSlider.setValue(1.0);                      // Reset slider to full opacity
 	} else {
 		this.showHud();
 		this.ulSlider.hide();
@@ -295,6 +296,7 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 
 	this.ulMenu.enableMenuItem("mi_remove_ul");         // Enable "Remove Underlay" menu item
 	this.ulSlider.show();                               // Show the underlay opacity slider
+	this.ulSlider.setValue(1.0);                        // Reset slider to full opacity
 };
 
 UserInterface.prototype.handleMenu = function(itemId, evt) {
@@ -362,8 +364,13 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 };
 
 UserInterface.prototype.handleUlSlider = function(ulSlider, value) {
-	this.albertiDoc.underlayImage.opacity = value;
-	this.albertiDoc.underlayImage.update();
+	if (value > 0) {
+		this.albertiDoc.underlayImage.show();
+		this.albertiDoc.underlayImage.opacity = value;
+		this.albertiDoc.underlayImage.update();
+	} else {
+		this.albertiDoc.underlayImage.hide();
+	}
 };
 
 UserInterface.prototype.keydown = function(evt) {
