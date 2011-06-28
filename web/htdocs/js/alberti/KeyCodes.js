@@ -35,5 +35,4 @@ var KeyCode = {
 	newDoc:     78,        // 'n' - Create a new document
 	save:       83,        // 's' - Save the document
 	load:       79,        // 'o' - Open a document
-	loadUlImg:  73         // 'i' - Import an underlay image
 };
