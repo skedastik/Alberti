@@ -266,9 +266,9 @@ UserInterface.prototype.initMenuBar = function() {
 	
 	this.ulMenu.disableMenuItem("mi_remove_ul");
 	
-	var menuBar = new GuiMenuBar();
-	menuBar.addMenu(this.fileMenu);
-	menuBar.addMenu(this.editMenu);
+	this.menuBar = new GuiMenuBar();
+	this.menuBar.addMenu(this.fileMenu);
+	this.menuBar.addMenu(this.editMenu);
 	
 	this.ulSlider = new UnderlaySlider("ul_slider", document.getElementById("ul_opac_slider"),
 		this, "handleUlSlider", document.getElementById("ul_slider_cab")
