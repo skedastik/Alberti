@@ -11,6 +11,15 @@
  * document. If no arguments are passed to the constructor, a new, empty 
  * document is generated.
  * 
+ * TODO
+ * 
+ * Rather than storing an instance of FastImage, AlbertiDocument should simply 
+ * store the underlay image data: source, opacity, and visibility. 
+ * UserInterface can then instantiate its own FastImage object based on the 
+ * AlbertiDocument data. This would be a cleaner separation of model and view
+ * and eliminate some code duplication regarding resetting UserInterface's
+ * underlay image cabinet.
+ * 
  * * */
 
 // Various exportable formats
@@ -22,11 +31,6 @@ function AlbertiDocument(xml) {
 	this.undoManager = null;
 	this.layerManager = null;
 	
-	// TODO: Rather than storing an instance of FastImage, AlbertiDocument
-	// should simply store the underlay image data: source, opacity, and
-	// visibility. UserInterface can then instantiate its own FastImage object
-	// based on the AlbertiDocument data. This would be a cleaner separation 
-	// of model and view.
 	this.underlayImage = new FastImage(document.getElementById("underlayimg"));
 	
 	// A filename may be associated with an AlbertiDocument
