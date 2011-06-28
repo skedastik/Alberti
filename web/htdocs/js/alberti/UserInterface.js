@@ -359,6 +359,7 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 			this.albertiDoc.underlayImage.hide();
 			this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
 			this.ulSlider.hide();                             // Hide the underlay opacity slider
+			this.showHud();
 			break;
 	}
 };
@@ -368,8 +369,10 @@ UserInterface.prototype.handleUlSlider = function(ulSlider, value) {
 		this.albertiDoc.underlayImage.show();
 		this.albertiDoc.underlayImage.opacity = value;
 		this.albertiDoc.underlayImage.update();
+		this.hideHud();
 	} else {
 		this.albertiDoc.underlayImage.hide();
+		this.showHud();
 	}
 };
 
@@ -413,11 +416,6 @@ UserInterface.prototype.keydown = function(evt) {
 		// Paste shape(s)
 		case KeyCode.paste:
 			this.handleMenu(UserInterface.menuItemPaste);
-			break;
-		
-		// Import an underlay image
-		case KeyCode.loadUlImg:
-			this.ulImgImporter.prompt();                       // Prompt the user to open an image file
 			break;
 		
 		// Tool selection keys 0-9
