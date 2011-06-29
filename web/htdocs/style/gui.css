@@ -328,6 +328,7 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	background-color: #35d;
 	background-image: url('../images/layer_row_selected.png'), url('../images/ul_btn_selected.png');
 	background-repeat: repeat-x, no-repeat;
+	background-position: bottom, center;
 }
 
 .btn_wrapper {
