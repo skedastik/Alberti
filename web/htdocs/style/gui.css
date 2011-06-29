@@ -218,7 +218,7 @@ input.color {
 	position: fixed;
 	left: 52px;
 	top: 0px;	
-	height: 26px;
+	height: 29px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	
@@ -234,9 +234,9 @@ input.color {
 
 .mb_vr {
 	width: 1px;
-	height: 26px;
+	height: 29px;
 	
-	background-color: #555;
+	background-color: #444;
 }
 
 ul.menu {
@@ -302,13 +302,13 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 .mb_btn {
-	height: 20px;
-	padding: 4px 6px 2px 6px;
+	height: 19px;
+	padding: 7px 6px 3px 6px;
 }
 
 .guiMenuOpened {
 	color: #fff;
-	background: #35d url('../images/layer_row_selected.png') repeat-x;
+	background: #35d url('../images/layer_row_selected.png') bottom repeat-x;
 }
 
 #file_menu_btn {
@@ -320,28 +320,70 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 #ul_menu_btn {
-	/* TODO */
+	width: 20px;
+	background: url('../images/ul_btn.png') center no-repeat;
 }
 
-#ul_slider_cab {
-	margin: 4px 0 0 4px;
-	overflow: hidden;
+#ul_menu_btn.guiMenuOpened {
+	background-color: #35d;
+	background-image: url('../images/layer_row_selected.png'), url('../images/ul_btn_selected.png');
+	background-repeat: repeat-x, no-repeat;
 }
 
-#ul_slider_wrapper {
+.btn_wrapper {
+	margin: 4px 4px 0 4px;
 	background: #666;
 	padding: 0 4px 0 4px;
-	height: 17px;
+	height: 21px;
 	border-radius: 6px;
 	
 	font-size: 11px;
-	line-height: 16px;
 }
 
-#ul_slider_wrapper label {
-	padding: 0 2px 0 2px;
+#ul_slider_cab {
+	overflow: hidden;
+}
+
+#ul_slider_cab label {
+	margin: 1px 2px 0 2px;
+}
+
+#ul_slider_wrapper {
+	margin-top: 2px;
 }
 
 #ul_opac_slider {
 	width: 100px;
+}
+
+.top_btn {
+	width: 25px;
+	height: 20px;
+	padding: 1px 3px 0 3px;
+}
+
+#center_cam_btn {
+	background: url('../images/center_cam.png') center no-repeat;
+}
+
+#center_cam_btn:active {
+	background-image: url('../images/center_cam_sel.png');
+}
+
+#next_vp_btn {
+	padding-right: 6px;
+	background: url('../images/next_vp.png') center no-repeat;
+}
+
+#next_vp_btn:active {
+	background-image: url('../images/next_vp_sel.png');
+}
+
+#prev_vp_btn {
+	padding-left: 6px;
+	background: url('../images/prev_vp.png') center no-repeat;
+}
+
+#prev_vp_btn:active {
+	background-image: url('../images/prev_vp_sel.png');
 }
