@@ -334,8 +334,6 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 .btn_wrapper {
 	margin: 4px 4px 0 4px;
 	background: #666;
-	padding: 0 4px 0 4px;
-	height: 21px;
 	border-radius: 6px;
 	
 	font-size: 11px;
@@ -358,9 +356,9 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 .top_btn {
-	width: 25px;
+	width: 20px;
 	height: 20px;
-	padding: 1px 3px 0 3px;
+	padding: 1px 5px 0 5px;
 }
 
 #center_cam_btn {
@@ -372,7 +370,6 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 #next_vp_btn {
-	padding-right: 6px;
 	background: url('../images/next_vp.png') center no-repeat;
 }
 
@@ -381,10 +378,146 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 #prev_vp_btn {
-	padding-left: 6px;
 	background: url('../images/prev_vp.png') center no-repeat;
 }
 
 #prev_vp_btn:active {
 	background-image: url('../images/prev_vp_sel.png');
+}
+
+/* Tools * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#toolbar {
+	position: fixed;
+	left: 0px;
+	top: 52px;	
+	width: 31px;
+	border-top-right-radius: 9px;
+	border-bottom-right-radius: 9px;
+	
+	padding: 0 0 4px 0;
+	
+	cursor: default;
+	background-color: #000;
+}
+
+/* Toolbar horizontal rule */
+.tb_hr {
+	width: 26px;
+	height: 1px;
+	margin: 2px 0 2px -2px;
+	
+	background-color: #555;
+	border-bottom: 1px solid #777;
+}
+
+.btn_wrapper_side {
+	margin: 4px 4px 0 1px;
+	padding-left: 2px;
+	
+	background: #666;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+
+.side_btn {
+	width: 22px;
+	height: 20px;
+	padding: 3px 0 3px 0;
+}
+
+#select_tool_btn {
+	background: url('../images/select_tool_btn.png') center no-repeat;
+}
+
+#select_tool_btn:active{
+	background: url('../images/select_tool_btn_sel.png') center no-repeat;
+}
+
+#line_tool_btn {
+	background: url('../images/line_tool_btn.png') center no-repeat;
+}
+
+#line_tool_btn:active{
+	background: url('../images/line_tool_btn_sel.png') center no-repeat;
+}
+
+#arc_tool_btn {
+	background: url('../images/arc_tool_btn.png') center no-repeat;
+}
+
+#arc_tool_btn:active{
+	background: url('../images/arc_tool_btn_sel.png') center no-repeat;
+}
+
+#bez_tool_btn {
+	background: url('../images/bez_tool_btn.png') center no-repeat;
+}
+
+#bez_tool_btn:active{
+	background: url('../images/bez_tool_btn_sel.png') center no-repeat;
+}
+
+#para_line_tool_btn {
+	background: url('../images/para_line_tool_btn.png') center no-repeat;
+}
+
+#para_line_tool_btn:active{
+	background: url('../images/para_line_tool_btn_sel.png') center no-repeat;
+}
+
+#perp_line_tool_btn {
+	background: url('../images/perp_line_tool_btn.png') center no-repeat;
+}
+
+#perp_line_tool_btn:active{
+	background: url('../images/perp_line_tool_btn_sel.png') center no-repeat;
+}
+
+#rect_tool_btn {
+	background: url('../images/rect_tool_btn.png') center no-repeat;
+}
+
+#rect_tool_btn:active{
+	background: url('../images/rect_tool_btn_sel.png') center no-repeat;
+}
+
+#circ_rad_tool_btn {
+	background: url('../images/circ_rad_tool_btn.png') center no-repeat;
+}
+
+#circ_rad_tool_btn:active{
+	background: url('../images/circ_rad_tool_btn_sel.png') center no-repeat;
+}
+
+#circ_dia_tool_btn {
+	background: url('../images/circ_dia_tool_btn.png') center no-repeat;
+}
+
+#circ_dia_tool_btn:active{
+	background: url('../images/circ_dia_tool_btn_sel.png') center no-repeat;
+}
+
+#pp1_tool_btn {
+	background: url('../images/1pp_tool_btn.png') center no-repeat;
+}
+
+#pp1_tool_btn:active{
+	background: url('../images/1pp_tool_btn_sel.png') center no-repeat;
+}
+
+#pp2_tool_btn {
+	background: url('../images/2pp_tool_btn.png') center no-repeat;
+}
+
+#pp2_tool_btn:active{
+	background: url('../images/2pp_tool_btn_sel.png') center no-repeat;
+}
+
+#pp3_tool_btn {
+	background: url('../images/3pp_tool_btn.png') center no-repeat;
+}
+
+#pp3_tool_btn:active{
+	background: url('../images/3pp_tool_btn_sel.png') center no-repeat;
 }
