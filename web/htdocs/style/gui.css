@@ -4,6 +4,20 @@ body {
 	font-size: 14px;
 }
 
+/* Preload images */
+body:after {
+	content:
+	url('../images/center_cam_sel.png')
+	url('../images/next_vp_sel.png')
+	url('../images/prev_vp_sel.png')
+	url('../images/ul_btn_selected.png')
+	url('../images/addlayer_active.png')
+	url('../images/remlayer_active.png')
+	url('../images/lpcollapse_on.png');
+	
+	display: none;
+}
+
 #striptop {
 	position: fixed;
 	height: 5px;
@@ -216,7 +230,7 @@ input.color {
 
 #menubar {
 	position: fixed;
-	left: 52px;
+	left: 31px;
 	top: 0px;	
 	height: 29px;
 	border-bottom-left-radius: 5px;
@@ -390,134 +404,82 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 #toolbar {
 	position: fixed;
 	left: 0px;
-	top: 52px;	
-	width: 31px;
+	top: 35px;	
+	width: 26px;
+	
+	border-width: 4px 4px 4px 1px;
+	border-style: solid;
+	border-color: #000;
 	border-top-right-radius: 9px;
 	border-bottom-right-radius: 9px;
 	
-	padding: 0 0 4px 0;
-	
 	cursor: default;
-	background-color: #000;
+	background: #666;
 }
 
 /* Toolbar horizontal rule */
 .tb_hr {
 	width: 26px;
 	height: 1px;
-	margin: 2px 0 2px -2px;
+	margin: 2px 0 2px 0;
 	
-	background-color: #555;
-	border-bottom: 1px solid #777;
-}
-
-.btn_wrapper_side {
-	margin: 4px 4px 0 1px;
-	padding-left: 2px;
-	
-	background: #666;
-	border-top-right-radius: 6px;
-	border-bottom-right-radius: 6px;
+	background-color: #464646;
+	border-bottom: 1px solid #7c7c7c;
 }
 
 .side_btn {
-	width: 22px;
-	height: 20px;
-	padding: 3px 0 3px 0;
+	width: 26px;
+	height: 26px;
 }
 
 #select_tool_btn {
 	background: url('../images/select_tool_btn.png') center no-repeat;
 }
 
-#select_tool_btn:active{
-	background: url('../images/select_tool_btn_sel.png') center no-repeat;
-}
-
 #line_tool_btn {
 	background: url('../images/line_tool_btn.png') center no-repeat;
-}
-
-#line_tool_btn:active{
-	background: url('../images/line_tool_btn_sel.png') center no-repeat;
 }
 
 #arc_tool_btn {
 	background: url('../images/arc_tool_btn.png') center no-repeat;
 }
 
-#arc_tool_btn:active{
-	background: url('../images/arc_tool_btn_sel.png') center no-repeat;
-}
-
 #bez_tool_btn {
 	background: url('../images/bez_tool_btn.png') center no-repeat;
-}
-
-#bez_tool_btn:active{
-	background: url('../images/bez_tool_btn_sel.png') center no-repeat;
 }
 
 #para_line_tool_btn {
 	background: url('../images/para_line_tool_btn.png') center no-repeat;
 }
 
-#para_line_tool_btn:active{
-	background: url('../images/para_line_tool_btn_sel.png') center no-repeat;
-}
-
 #perp_line_tool_btn {
 	background: url('../images/perp_line_tool_btn.png') center no-repeat;
-}
-
-#perp_line_tool_btn:active{
-	background: url('../images/perp_line_tool_btn_sel.png') center no-repeat;
 }
 
 #rect_tool_btn {
 	background: url('../images/rect_tool_btn.png') center no-repeat;
 }
 
-#rect_tool_btn:active{
-	background: url('../images/rect_tool_btn_sel.png') center no-repeat;
+#circ_tool_menu_btn_gfx.rad {
+	background-image: url('../images/circ_rad_tool_btn.png'), url('../images/expand.png');
+	background-position: center, right 19px;
+	background-repeat: no-repeat;
 }
 
-#circ_rad_tool_btn {
-	background: url('../images/circ_rad_tool_btn.png') center no-repeat;
-}
-
-#circ_rad_tool_btn:active{
-	background: url('../images/circ_rad_tool_btn_sel.png') center no-repeat;
-}
-
-#circ_dia_tool_btn {
+/*#circ_dia_tool_btn {
 	background: url('../images/circ_dia_tool_btn.png') center no-repeat;
+}*/
+
+#pp_tool_menu_btn_gfx.pp3 {
+	background-image: url('../images/1pp_tool_btn.png'), url('../images/expand.png');
+	background-position: center, right 19px;
+	background-repeat: no-repeat;
 }
 
-#circ_dia_tool_btn:active{
-	background: url('../images/circ_dia_tool_btn_sel.png') center no-repeat;
-}
-
-#pp1_tool_btn {
-	background: url('../images/1pp_tool_btn.png') center no-repeat;
-}
-
-#pp1_tool_btn:active{
-	background: url('../images/1pp_tool_btn_sel.png') center no-repeat;
-}
-
-#pp2_tool_btn {
+/*#pp2_tool_btn {
 	background: url('../images/2pp_tool_btn.png') center no-repeat;
-}
-
-#pp2_tool_btn:active{
-	background: url('../images/2pp_tool_btn_sel.png') center no-repeat;
 }
 
 #pp3_tool_btn {
 	background: url('../images/3pp_tool_btn.png') center no-repeat;
-}
-
-#pp3_tool_btn:active{
-	background: url('../images/3pp_tool_btn_sel.png') center no-repeat;
-}
+}*/
