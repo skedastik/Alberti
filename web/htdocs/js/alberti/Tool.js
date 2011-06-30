@@ -149,7 +149,7 @@ Tool.prototype.activate = function() {
 		this.registerListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			this.registerListener("mouseup", Alberti.svgRoot, false);
+			this.registerListener("mouseup", window, false);
 		}
 	}
 };
@@ -164,7 +164,7 @@ Tool.prototype.deactivate = function() {
 		this.unregisterListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			this.unregisterListener("mouseup", Alberti.svgRoot, false);
+			this.unregisterListener("mouseup", window, false);
 		}
 		
 		this.toolTip.clearText();
@@ -182,7 +182,7 @@ Tool.prototype.enable = function() {
 		this.registerListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			this.registerListener("mouseup", Alberti.svgRoot, false);
+			this.registerListener("mouseup", window, false);
 		}
 	}
 };
@@ -196,7 +196,7 @@ Tool.prototype.disable = function() {
 		this.unregisterListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
-			this.unregisterListener("mouseup", Alberti.svgRoot, false);
+			this.unregisterListener("mouseup", window, false);
 		}
 		
 		this.toolTip.clearText();
