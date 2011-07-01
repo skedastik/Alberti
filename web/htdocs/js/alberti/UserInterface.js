@@ -326,6 +326,7 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 };
 
 UserInterface.prototype.handleMenu = function(itemId, evt) {
+	Dbug.log(itemId);
 	switch (itemId) {
 		
 		// New document
@@ -445,22 +446,22 @@ UserInterface.prototype.keydown = function(evt) {
 			
 		// Undo
 		case KeyCode.undo:
-			this.handleMenu(UserInterface.menuItemUndo);
+			this.handleMenu("mi_undo");
 			break;
 		
 		// Redo
 		case KeyCode.redo:
-			this.handleMenu(UserInterface.menuItemRedo);
+			this.handleMenu("mi_redo");
 			break;
 		
 		// Cut shape(s)
 		case KeyCode.cut:
-			this.handleMenu(UserInterface.menuItemCut);
+			this.handleMenu("mi_cut");
 			break;
 		
 		// Paste shape(s)
 		case KeyCode.paste:
-			this.handleMenu(UserInterface.menuItemPaste);
+			this.handleMenu("mi_paste");
 			break;
 		
 		// Collapse/reveal layer panel
@@ -494,12 +495,12 @@ UserInterface.prototype.keydown = function(evt) {
 			
 			// Create a new document
 			case KeyCode.newDoc:
-				this.handleMenu(UserInterface.menuItemNewDoc);
+				this.handleMenu("mi_new_doc");
 				break;
 
 			// Save document
 			case KeyCode.save:
-				this.handleMenu(UserInterface.menuItemSaveDoc);
+				this.handleMenu("mi_save_doc");
 				break;
 
 			// Open document
