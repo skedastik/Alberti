@@ -4,6 +4,20 @@ body {
 	font-size: 14px;
 }
 
+/* Preload images */
+body:after {
+	content:
+	url('../images/center_cam_sel.png')
+	url('../images/next_vp_sel.png')
+	url('../images/prev_vp_sel.png')
+	url('../images/ul_btn_selected.png')
+	url('../images/addlayer_active.png')
+	url('../images/remlayer_active.png')
+	url('../images/lpcollapse_on.png');
+	
+	display: none;
+}
+
 #striptop {
 	position: fixed;
 	height: 5px;
@@ -216,9 +230,9 @@ input.color {
 
 #menubar {
 	position: fixed;
-	left: 52px;
+	left: 31px;
 	top: 0px;	
-	height: 26px;
+	height: 29px;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	
@@ -230,13 +244,15 @@ input.color {
 
 #menubar * {
 	float: left;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .mb_vr {
 	width: 1px;
-	height: 26px;
+	height: 29px;
 	
-	background-color: #555;
+	background-color: #444;
 }
 
 ul.menu {
@@ -302,13 +318,13 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 .mb_btn {
-	height: 20px;
-	padding: 4px 6px 2px 6px;
+	height: 19px;
+	padding: 7px 6px 3px 6px;
 }
 
 .guiMenuOpened {
 	color: #fff;
-	background: #35d url('../images/layer_row_selected.png') repeat-x;
+	background: #35d url('../images/layer_row_selected.png') bottom repeat-x;
 }
 
 #file_menu_btn {
@@ -320,28 +336,155 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 #ul_menu_btn {
-	/* TODO */
+	width: 20px;
+	background: url('../images/ul_btn.png') center no-repeat;
 }
 
-#ul_slider_cab {
-	margin: 4px 0 0 4px;
-	overflow: hidden;
+#ul_menu_btn.guiMenuOpened {
+	background-color: #35d;
+	background-image: url('../images/layer_row_selected.png'), url('../images/ul_btn_selected.png');
+	background-repeat: repeat-x, no-repeat;
+	background-position: bottom, center;
+}
+
+.btn_wrapper {
+	height: 21px;
+	margin: 4px 4px 0 4px;
+	
+	background: #666;
+	border-radius: 3px;
+	
+	font-size: 11px;
+}
+
+#ul_slider_cab label {
+	margin: 1px 2px 0 0;
 }
 
 #ul_slider_wrapper {
-	background: #666;
+	margin-top: 2px;
 	padding: 0 4px 0 4px;
-	height: 17px;
-	border-radius: 6px;
-	
-	font-size: 11px;
-	line-height: 16px;
-}
-
-#ul_slider_wrapper label {
-	padding: 0 2px 0 2px;
 }
 
 #ul_opac_slider {
+	float: none;
 	width: 100px;
 }
+
+.top_btn {
+	width: 20px;
+	height: 20px;
+	padding: 1px 5px 0 5px;
+}
+
+#center_cam_btn {
+	background: url('../images/center_cam.png') center no-repeat;
+}
+
+#center_cam_btn:active {
+	background-image: url('../images/center_cam_sel.png');
+}
+
+#next_vp_btn {
+	background: url('../images/next_vp.png') center no-repeat;
+}
+
+#next_vp_btn:active {
+	background-image: url('../images/next_vp_sel.png');
+}
+
+#prev_vp_btn {
+	background: url('../images/prev_vp.png') center no-repeat;
+}
+
+#prev_vp_btn:active {
+	background-image: url('../images/prev_vp_sel.png');
+}
+
+/* Tools * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#toolbar {
+	position: fixed;
+	left: 0px;
+	top: 35px;	
+	width: 26px;
+	
+	border-width: 4px 4px 4px 1px;
+	border-style: solid;
+	border-color: #000;
+	border-top-right-radius: 9px;
+	border-bottom-right-radius: 9px;
+	
+	cursor: default;
+	background: #666;
+}
+
+/* Toolbar horizontal rule */
+.tb_hr {
+	width: 26px;
+	height: 1px;
+	
+	background-color: #464646;
+	border-bottom: 1px solid #7c7c7c;
+}
+
+.side_btn > div {
+	width: 26px;
+	height: 26px;
+}
+
+.side_btn.guiBtnToggled {
+	background: url('../images/layer_row_selected.png') repeat-x;
+}
+
+#select_tool_btn_gfx {
+	background: url('../images/select_tool_btn.png') center no-repeat;
+}
+
+#line_tool_btn_gfx {
+	background: url('../images/line_tool_btn.png') center no-repeat;
+}
+
+#arc_tool_btn_gfx {
+	background: url('../images/arc_tool_btn.png') center no-repeat;
+}
+
+#bez_tool_btn {
+	background: url('../images/bez_tool_btn.png') center no-repeat;
+}
+
+#para_line_tool_btn {
+	background: url('../images/para_line_tool_btn.png') center no-repeat;
+}
+
+#perp_line_tool_btn {
+	background: url('../images/perp_line_tool_btn.png') center no-repeat;
+}
+
+#rect_tool_btn {
+	background: url('../images/rect_tool_btn.png') center no-repeat;
+}
+
+#circ_tool_menu_btn_gfx.rad {
+	background-image: url('../images/circ_rad_tool_btn.png'), url('../images/expand.png');
+	background-position: center, right 19px;
+	background-repeat: no-repeat;
+}
+
+/*#circ_dia_tool_btn {
+	background: url('../images/circ_dia_tool_btn.png') center no-repeat;
+}*/
+
+#pp_tool_menu_btn_gfx.pp3 {
+	background-image: url('../images/1pp_tool_btn.png'), url('../images/expand.png');
+	background-position: center, right 19px;
+	background-repeat: no-repeat;
+}
+
+/*#pp2_tool_btn {
+	background: url('../images/2pp_tool_btn.png') center no-repeat;
+}
+
+#pp3_tool_btn {
+	background: url('../images/3pp_tool_btn.png') center no-repeat;
+}*/
