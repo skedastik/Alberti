@@ -111,18 +111,18 @@
  * 
  * * */
  
-function Tool(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip, numSteps, minSteps, mouseupFlag) {
-	Tool.baseConstructor.call(this, masterGroup, layerManager, overlayGroup);
-	this.undoManager =  undoManager;
-	this.underlayGroup = underlayGroup;
-	this.toolTip = toolTip;
+function Tool(numSteps, minSteps, mouseupFlag) {
+	Tool.baseConstructor.call(this, null, null, null);
+	this.undoManager =  null;
+	this.underlayGroup = null;
+	this.toolTip = null;
 	
 	this.numSteps = numSteps;
-	this.minSteps = arguments.length > 4 ? minSteps : numSteps;
+	this.minSteps = arguments.length > 1 ? minSteps : numSteps;
 	this.steps = [];
 	this.currentStep = -1;
 	
-	this.mouseupFlag = arguments.length > 7 ? mouseupFlag : false;
+	this.mouseupFlag = arguments.length > 2 ? mouseupFlag : false;
 	
 	this.enabled = false;
 	this.active = false;
@@ -134,15 +134,18 @@ function Tool(masterGroup, layerManager, undoManager, overlayGroup, underlayGrou
 }
 Util.extend(Tool, TransformHandler);
 
-Tool.prototype.setManagers = function(layerManager, undoManager) {
-	this.layerManager = layerManager;
-	this.undoManager = undoManager;
-};
-
-Tool.prototype.activate = function() {
+Tool.prototype.activate = function(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip) {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
+		
+		this.masterGroup = masterGroup;
+		this.layerManager = layerManager;
+		this.undoManager =  undoManager;
+		this.overlayGroup = overlayGroup;
+		this.underlayGroup = underlayGroup;
+		this.toolTip = toolTip;
+		
 		this.registerListener("mousedown", Alberti.svgRoot, false);
 		this.registerListener("mousemove", window, false);
 		this.registerListener("keydown", window, false);
@@ -158,6 +161,7 @@ Tool.prototype.deactivate = function() {
 	if (this.active) {
 		this.active = false;
 		this.enabled = false;
+		
 		this.unregisterListener("mousedown", Alberti.svgRoot, false);
 		this.unregisterListener("mousemove", window, false);
 		this.unregisterListener("keydown", window, false);
@@ -170,6 +174,13 @@ Tool.prototype.deactivate = function() {
 		this.toolTip.clearText();
 		this.onDeactivate();
 		this.reset();
+		
+		this.masterGroup = null;
+		this.layerManager = null;
+		this.undoManager =  null;
+		this.overlayGroup = null;
+		this.underlayGroup = null;
+		this.toolTip = null;
 	}
 };
 
