@@ -6,8 +6,8 @@
  * 
  * * */
  
-function ToolLine(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip) {
-	ToolLine.baseConstructor.call(this, masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip, 4, 2);
+function ToolLine() {
+	ToolLine.baseConstructor.call(this, 4, 2);
 }
 Util.extend(ToolLine, Tool);
 

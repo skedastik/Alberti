@@ -6,8 +6,8 @@
  * 
  * * */
  
-function ToolCircleArc(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip) {
-	ToolCircleArc.baseConstructor.call(this, masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip, -1, 4);
+function ToolCircleArc() {
+	ToolCircleArc.baseConstructor.call(this, -1, 4);
 	
 	this.clockDirection = 1;            // 1 if the user is mousing clockwise, -1 otherwise
 	this.lastDeltaAngle = 0;            // Helps determine mouse clock direction

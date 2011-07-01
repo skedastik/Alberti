@@ -5,8 +5,8 @@
  * 
  * * */
  
-function ToolSelection(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip) {
-	ToolSelection.baseConstructor.call(this, masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip, 2, 2, true);
+function ToolSelection() {
+	ToolSelection.baseConstructor.call(this, 2, 2, true);
 }
 Util.extend(ToolSelection, Tool);
 
