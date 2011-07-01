@@ -419,6 +419,14 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	background: #666;
 }
 
+#toolbar > div:first-child {
+	border-top-right-radius: 6px;
+}
+
+#toolbar > div:last-child {
+	border-bottom-right-radius: 6px;
+}
+
 /* Toolbar horizontal rule */
 .tb_hr {
 	width: 26px;
