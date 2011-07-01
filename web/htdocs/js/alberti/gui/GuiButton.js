@@ -129,8 +129,9 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 GuiButton.prototype.respond = function(evt) {
 	// Only invoke delegate's action if the button div itself was clicked, or
 	// if the button responds to bubbling events. Do not respond to any events
-	// with prevented defaults.
-	if (!evt.defaultPrevented && (evt.target === this.htmlNode || this.respondsToBubbledEvents)) {
+	// with prevented defaults. Allow for spoofed events (e.g. calling click()
+	// on a GuiButton instance), in which case evt would be undefined.
+	if (!evt || (!evt.defaultPrevented && (evt.target === this.htmlNode || this.respondsToBubbledEvents))) {
 		if (this.autoToggle) {
 			this.toggle();
 		}
