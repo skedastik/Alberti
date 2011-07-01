@@ -27,6 +27,10 @@
  * 'offsetX' and 'offsetY' is are optional arguments used to offset the 
  * position of the menu.
  * 
+ * If optional 'delayedOpen' argument is true, user must hold mouse down on
+ * trigger node for a short span of time in order for menu to open (only has 
+ * effect on root menus).
+ * 
  * Each child <li> and trigger element should have a unique id attribute.
  * 
  * * */
@@ -41,16 +45,17 @@ GuiMenu.positionAbove = 2;
 GuiMenu.positionRight = 3;
 GuiMenu.positionLeft  = 4;
 
-// Menu-close fade animation length in seconds
-GuiMenu.fadeLength = 0.15;
+GuiMenu.fadeLength = 0.15;    // Menu-close fade animation length in seconds
+GuiMenu.openDelay  = 0.2;     // For delayed-open menus, length of open delay in seconds
  
-function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu, offsetX, offsetY) {
+function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu, offsetX, offsetY, delayOpen) {
 	GuiMenu.baseConstructor.call(this, id, ulNode, delegate);
 	this.action = action;
 	this.triggerNode = triggerNode;
 	this.position = position || GuiMenu.positionBelow;
 	this.offsetX = offsetX;
 	this.offsetY = offsetY;
+	this.delayOpen = delayOpen || false;
 	
 	this.subMenus = [];
 	this.openedSubMenu = null;                    // Currently opened sub-menu
@@ -69,8 +74,15 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	if (this.parentMenu) {
 		this.parentMenu.addSubMenu(this);
 	} else {
+		var action = "open";
+		
+		if (this.delayOpen) {
+			this.openTimeoutId = null;
+			action = "delayedOpen";
+		}
+		
 		// This is a root menu, so create a menu-trigger button
-		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, "open", false, "", "mousedown").enable();
+		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, action, false, "", "mousedown").enable();
 	}
 }
 Util.extend(GuiMenu, GuiControl);
@@ -81,6 +93,17 @@ GuiMenu.prototype.addSubMenu = function(subMenu) {
 	
 	// Open self on menu item mouseover
 	subMenu.registerListener("mouseover", subMenu.triggerNode, false);
+};
+
+GuiMenu.prototype.delayedOpen = function() {
+	if (!this.openTimeoutId) {
+		this.openTimeoutId = setTimeout(function() {
+			this.mouseup();
+			this.open();
+		}.bindTo(this), GuiMenu.openDelay * 1000);
+	
+		this.registerListener("mouseup", window, false);
+	}
 };
 
 // Open a menu, activating event listeners
@@ -102,7 +125,6 @@ GuiMenu.prototype.open = function() {
 		// If a menu does not have a parent menu, it is responsible for closing
 		// itself and all sub-menus.
 		if (!this.parentMenu) {
-			this.registerListener("mouseup", window, true);
 			this.registerListener("mousedown", window, true);
 			this.registerListener("click", window, true);
 			this.registerListener("DOMMouseScroll", window, true);
@@ -132,7 +154,6 @@ GuiMenu.prototype.close = function(noFade) {
 		this.unregisterListener("mousemove", this.htmlNode, false);
 	
 		if (!this.parentMenu) {
-			this.unregisterListener("mouseup", window, true);
 			this.unregisterListener("mousedown", window, true);
 			this.unregisterListener("click", window, true);
 			this.unregisterListener("DOMMouseScroll", window, true);
@@ -248,8 +269,12 @@ GuiMenu.prototype.mousemove = function(evt) {
 	}
 };
 
-GuiMenu.prototype.mouseup = function(evt) {
-	evt.stopPropagation();
+GuiMenu.prototype.mouseup = function() {
+	if (this.openTimeoutId) {
+		clearTimeout(this.openTimeoutId);
+		this.openTimeoutId = null;
+		this.unregisterListener("mouseup", window, false);
+	}
 };
 
 GuiMenu.prototype.mousedown = function(evt) {
