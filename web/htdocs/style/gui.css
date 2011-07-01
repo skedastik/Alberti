@@ -244,6 +244,8 @@ input.color {
 
 #menubar * {
 	float: left;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 .mb_vr {
@@ -346,26 +348,26 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 .btn_wrapper {
+	height: 21px;
 	margin: 4px 4px 0 4px;
+	
 	background: #666;
-	border-radius: 6px;
+	border-radius: 3px;
 	
 	font-size: 11px;
 }
 
-#ul_slider_cab {
-	overflow: hidden;
-}
-
 #ul_slider_cab label {
-	margin: 1px 2px 0 2px;
+	margin: 1px 2px 0 0;
 }
 
 #ul_slider_wrapper {
 	margin-top: 2px;
+	padding: 0 4px 0 4px;
 }
 
 #ul_opac_slider {
+	float: none;
 	width: 100px;
 }
 
