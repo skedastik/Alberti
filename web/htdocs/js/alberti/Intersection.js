@@ -29,7 +29,7 @@
  * 
  * * */
 
-Intersection.searchRadius = 15;
+Intersection.searchRadius = 20;
 
 Intersection.insertFlag     = 0;
 Intersection.deleteFlag     = 1;
