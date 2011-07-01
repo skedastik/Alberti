@@ -31,26 +31,13 @@
  * 
  * * */
 
-UserInterface.selectionTool = 0;
-UserInterface.lineTool      = 1;
-UserInterface.circleArcTool = 2;
-UserInterface.defaultTool   = UserInterface.lineTool;
-
-UserInterface.menuItemNewDoc = "mi_new_doc";
-UserInterface.menuItemOpenDoc = "mi_open_doc";
-UserInterface.menuItemSaveDoc = "mi_save_doc";
-UserInterface.menuItemUndo = "mi_undo";
-UserInterface.menuItemRedo = "mi_redo";
-UserInterface.menuItemCut = "mi_cut";
-UserInterface.menuItemPaste = "mi_paste";
-UserInterface.menuItemImportUl = "mi_import_ul";
-UserInterface.menuItemRemoveUl = "mi_remove_ul";
+UserInterface.defaultTool   = "lineTool";
 
 UserInterface.cursorDefault    = "cursorDefault";
 UserInterface.cursorZoomAndPan = "cursorZoomAndPan";
 UserInterface.cursorCrosshair  = "cursorCrosshair";
 
-function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, saveHandler, loadHandler) {
+function UserInterface(clipBoard, appController, newDocHandler, saveHandler, loadHandler) {
 	UserInterface.baseConstructor.call(this);
 	this.clipBoard = clipBoard;
 	this.appController = appController;
@@ -58,6 +45,112 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	this.saveHandler = saveHandler;
 	this.loadHandler = loadHandler;
 	
+	// Initialization broken up into methods below; order is sensitive
+	this.initSvg();
+	this.initAutoScale();
+	this.initLayerPanel();
+	this.initMenuBar();
+	this.initToolBar();
+	this.initToolSet();
+	this.initFileImporters();
+	
+	this.toolTip = new ToolTip(document.getElementById("tooltip"));
+	
+	// Set up listeners at the window level
+	this.registerListener("keydown", window, false);
+	this.registerListener("keyup", window, false);
+	
+	// Suppress the right-click context menu
+	this.registerListener("contextmenu", window, true);
+	
+	// Warn user about unsaved data before leaving page
+	window.onbeforeunload = function(evt) {
+		if (!this.albertiDoc.undoManager.stateIsClean()) {
+			var msg = "There are unsaved changes to this document.";
+			evt.returnValue = msg;
+			return msg;
+		}
+	}.bindTo(this);
+}
+Util.extend(UserInterface, EventHandler);
+
+// Prepares the interface for the given Alberti document
+UserInterface.prototype.prepareForDocument = function(albertiDoc) {
+	this.albertiDoc = albertiDoc;
+	
+	if (this.currentTool === null) {
+		this.setTool(UserInterface.defaultTool);
+	}
+	
+	if (!this.albertiDoc.underlayImage.isHidden()) {
+		this.hideHud();
+		this.ulSlider.show();
+		this.ulMenu.enableMenuItem("mi_remove_ul");       // Enable "Remove Underlay" menu item
+		this.ulSlider.setValue(1.0);                      // Reset slider to full opacity
+	} else {
+		this.showHud();
+		this.ulSlider.hide();
+		this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
+	}
+	
+	// Clean up zoom & pan event listeners
+	if (this.zap) {
+		this.zap.killAllListeners();
+	}
+	
+	// Enable our own zooming and panning mechanism
+	this.zap = new Zap(this.masterGroup, this.autoScale, this.albertiDoc, this.toolTip);
+	
+	// Create controller for layer panel and connect it to layer panel
+	this.lpController = new LayerPanelController(this.layerPanel);
+	this.layerPanel.setController(this.lpController);
+	
+	// Create layer manager delegate and connect it to layer panel controller
+	this.lmDelegate = new LayerManagerDelegate(this.albertiDoc.layerManager, this.lpController);
+	this.lpController.setLayerManagerDelegate(this.lmDelegate);
+	
+	// Tell layer panel controller to populate layer panel with data
+	this.lpController.populateLayerPanel();
+};
+
+UserInterface.prototype.setTool = function(toolName) {
+	if (this.tools[toolName] && toolName != this.currentTool) {
+		if (this.currentTool !== null) {
+			this.tools[this.currentTool].tool.deactivate();
+		}
+		
+		this.currentTool = toolName;
+		
+		this.tools[this.currentTool].tool.activate(
+			this.masterGroup,
+			this.albertiDoc.layerManager,
+			this.albertiDoc.undoManager,
+			this.overlayGroup,
+			this.underlayGroup,
+			this.toolTip
+		);
+		
+		this.setCursorToCurrentTool();
+	}
+};
+
+UserInterface.prototype.setCursorToCurrentTool = function() {
+	this.setCursor(this.tools[this.currentTool].cursor);
+};
+
+UserInterface.prototype.setCursor = function(cursorClass) {
+	this.rootGroup.set("class", cursorClass);
+};
+
+UserInterface.prototype.showHud = function() {
+	this.hudGroup.set("display", "");
+};
+
+UserInterface.prototype.hideHud = function() {
+	this.hudGroup.set("display", "none");
+};
+
+UserInterface.prototype.initSvg = function() {
 	// staticUnderlayGroup contains non-interactive HUD elements, rendered 
 	// below all other groups, unaffected by dynamic coordinate system 
 	// transformations. It's origin is in the upper-left corner of the window.
@@ -99,9 +192,21 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	// The hud group contains the center HUD--an 'X' displayed at the center 
 	// of the workspace at all times.
 	this.hudGroup = new Group(document.getElementById("hud"));
+};
+
+UserInterface.prototype.initToolSet = function() {
+	this.tools = {
+		selectionTool: {tool: new ToolSelection(), cursor: UserInterface.cursorDefault},
+		lineTool:      {tool: new ToolLine(),      cursor: UserInterface.cursorCrosshair },
+		arcTool:       {tool: new ToolCircleArc(), cursor: UserInterface.cursorCrosshair }
+	};
 	
+	this.currentTool = null;
+};
+
+UserInterface.prototype.initAutoScale = function() {
 	// SVG has no shape element for individual points, so we use a special SVG
-	// group as a template.
+	// group as a template. This group must be auto-scaled.
 	var pointTemplate = new SvgContainer(document.getElementById(Point.templateId));
 	
 	// Register the center HUD, the master group, the Point template, and
@@ -111,37 +216,9 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 	this.autoScale.registerObject(pointTemplate, AutoScale.scale, 1.0);
 	this.autoScale.registerObject(this.hudGroup, AutoScale.scale, 1.0);
 	this.autoScale.registerStyle(document.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
-	
-	// The layer panel provides an interface for the manipulation of layers
-	this.layerPanel = this.initLayerPanel();
-	
-	// Initialize the menu bar
-	this.initMenuBar();
-	
-	// Create textual tool tips object
-	this.toolTip = new ToolTip(document.getElementById("tooltip"));
-	
-	// Initialize the toolset
-	this.tools = [
-		{"tool" : new ToolSelection(this.masterGroup, null, null, this.overlayGroup, this.underlayGroup, this.toolTip),
-			"cursor" : UserInterface.cursorDefault },
-		{"tool" : new ToolLine(this.masterGroup, null, null, this.overlayGroup, this.underlayGroup, this.toolTip),
-			"cursor" : UserInterface.cursorCrosshair },
-		{"tool" : new ToolCircleArc(this.masterGroup, null, null, this.overlayGroup, this.underlayGroup, this.toolTip),
-			"cursor" : UserInterface.cursorCrosshair }
-	];
-	
-	// Set default tool
-	this.currentTool = null;
-	this.setTool(UserInterface.defaultTool);
-	
-	// Set up listeners at the window level
-	this.registerListener("keydown", window, false);
-	this.registerListener("keyup", window, false);
-	
-	// Suppress the right-click context menu
-	this.registerListener("contextmenu", window, true);
-	
+};
+
+UserInterface.prototype.initFileImporters = function() {
 	// Create file importer for loading Alberti documents, and one for loading underlay images, passing self as controller
 	this.docImporter = new FileImporter(
 		document.getElementById("fi"), "image/svg+xml", true, this.appController, "handleOpenDocument", "svg"
@@ -154,87 +231,8 @@ function UserInterface(albertiDoc, clipBoard, appController, newDocHandler, save
 		this,
 		"handleImportUlImage", "jpg|jpeg|png|tiff|tif|gif"
 	);
-	
-	// Warn user about unsaved data before leaving page
-	window.onbeforeunload = function(evt) {
-		if (!this.albertiDoc.undoManager.stateIsClean()) {
-			var msg = "There are unsaved changes to this document.";
-			evt.returnValue = msg;
-			return msg;
-		}
-	}.bindTo(this);
-}
-Util.extend(UserInterface, EventHandler);
-
-// Prepares the interface for the given Alberti document
-UserInterface.prototype.prepareForDocument = function(albertiDoc) {
-	this.albertiDoc = albertiDoc;
-	
-	if (!this.albertiDoc.underlayImage.isHidden()) {
-		this.hideHud();
-		this.ulSlider.show();
-		this.ulMenu.enableMenuItem("mi_remove_ul");       // Enable "Remove Underlay" menu item
-		this.ulSlider.setValue(1.0);                      // Reset slider to full opacity
-	} else {
-		this.showHud();
-		this.ulSlider.hide();
-		this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
-	}
-	
-	// Clean up zoom & pan event listeners
-	if (this.zap) {
-		this.zap.killAllListeners();
-	}
-	
-	// Enable our own zooming and panning mechanism
-	this.zap = new Zap(this.masterGroup, this.autoScale, this.albertiDoc, this.toolTip);
-	
-	// Create controller for layer panel and connect it to layer panel
-	this.lpController = new LayerPanelController(this.layerPanel);
-	this.layerPanel.setController(this.lpController);
-	
-	// Create layer manager delegate and connect it to layer panel controller
-	this.lmDelegate = new LayerManagerDelegate(this.albertiDoc.layerManager, this.lpController);
-	this.lpController.setLayerManagerDelegate(this.lmDelegate);
-	
-	// Tell layer panel controller to populate layer panel with data
-	this.lpController.populateLayerPanel();
-	
-	// Update tools to manipulate new document
-	for (var i = 0, len = this.tools.length; i < len; i++) {
-		this.tools[i].tool.setManagers(this.lmDelegate, this.albertiDoc.undoManager);
-	}
 };
 
-UserInterface.prototype.setTool = function(toolNumber) {
-	if (this.tools[toolNumber] && toolNumber != this.currentTool) {
-		if (this.currentTool !== null) {
-			this.tools[this.currentTool].tool.deactivate();
-		}
-		
-		this.currentTool = toolNumber;
-		this.tools[this.currentTool].tool.activate();
-		this.setCursorToCurrentTool();
-	}
-};
-
-UserInterface.prototype.setCursorToCurrentTool = function() {
-	this.setCursor(this.tools[this.currentTool].cursor);
-};
-
-UserInterface.prototype.setCursor = function(cursorClass) {
-	this.rootGroup.set("class", cursorClass);
-};
-
-UserInterface.prototype.showHud = function() {
-	this.hudGroup.set("display", "");
-};
-
-UserInterface.prototype.hideHud = function() {
-	this.hudGroup.set("display", "none");
-};
-
-// Create and return layer panel
 UserInterface.prototype.initLayerPanel = function() {
 	var mainDiv = document.getElementById("layer_panel");
 	var dynamicDiv = document.getElementById("layer_panel_dynamic");
@@ -244,7 +242,7 @@ UserInterface.prototype.initLayerPanel = function() {
 	insertMarkDiv.id = "insertmark";
 	document.body.appendChild(insertMarkDiv);
 	
-	return new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
+	this.layerPanel = new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
 };
 
 // Initialize the menu bar
@@ -275,6 +273,34 @@ UserInterface.prototype.initMenuBar = function() {
 	);
 };
 
+UserInterface.prototype.initToolBar = function() {
+	this.selectToolBtn = new GuiButton("select_tool_btn", document.getElementById("select_tool_btn"), 
+		this, "handleToolBar", false, "Selection Tool [1]", "", true
+	).enable();
+	
+	this.lineToolBtn = new GuiButton("line_tool_btn", document.getElementById("line_tool_btn"), 
+		this, "handleToolBar", false, "Line Tool [2]", "", true
+	).enable();
+	
+	this.arcToolBtn = new GuiButton("arc_tool_btn", document.getElementById("arc_tool_btn"), 
+		this, "handleToolBar", false, "Arc Tool [3]", "", true
+	).enable();
+	
+	this.tbButtonFamily = new GuiButtonFamily();
+	this.tbButtonFamily.addButton(this.selectToolBtn);
+	this.tbButtonFamily.addButton(this.lineToolBtn);
+	this.tbButtonFamily.addButton(this.arcToolBtn);
+	
+	this.tbButtonFamily.toggleButton(this.lineToolBtn);
+	
+	// Map key codes to toolbar buttons
+	this.tbHotKeys = {
+		49: this.selectToolBtn,         // '1'
+		50: this.lineToolBtn,           // '2'
+		51: this.arcToolBtn             // '3'
+	}
+};
+
 // Asks user to confirm discarding of unsaved changes. Returns true without
 // prompting user if there are no unsaved changes, or if the user chooses to 
 // discard the unsaved changes. Otherwise returns false.
@@ -303,7 +329,7 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 	switch (itemId) {
 		
 		// New document
-		case UserInterface.menuItemNewDoc:
+		case "mi_new_doc":
 			var createNewDoc = true;
 			
 			// Warn the user of unsaved changes before creating a new document
@@ -317,31 +343,31 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 			break;
 		
 		// Open document
-		case UserInterface.menuItemOpenDoc:
+		case "mi_open_doc":
 			if (this.discardUnsavedChanges()) {
 				this.docImporter.prompt();                         // Prompt the user to open a file
 			}
 			break;
 		
 		// Save document
-		case UserInterface.menuItemSaveDoc:
+		case "mi_save_doc":
 			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
 			break;
 		
-		case UserInterface.menuItemUndo:
+		case "mi_undo":
 			this.albertiDoc.undoManager.undo();
 			break;
 			
-		case UserInterface.menuItemRedo:
+		case "mi_redo":
 			this.albertiDoc.undoManager.redo();
 			break;
 			
-		case UserInterface.menuItemCut:
+		case "mi_cut":
 			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
 			this.lmDelegate.deleteSelectedShapes();
 			break;
 			
-		case UserInterface.menuItemPaste:
+		case "mi_paste":
 			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
 			this.clipBoard.paste(this.lmDelegate);
 			this.albertiDoc.undoManager.recordStop();
@@ -351,17 +377,36 @@ UserInterface.prototype.handleMenu = function(itemId, evt) {
 			this.clipBoard.clear();
 			break;
 		
-		case UserInterface.menuItemImportUl:
+		case "mi_import_ul":
 			this.ulImgImporter.prompt();
 			break;
 		
-		case UserInterface.menuItemRemoveUl:
+		case "mi_remove_ul":
 			this.albertiDoc.underlayImage.hide();
 			this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
 			this.ulSlider.hide();                             // Hide the underlay opacity slider
 			this.showHud();
 			break;
 	}
+};
+
+UserInterface.prototype.handleToolBar = function(button, evt) {
+	switch (button.getId()) {
+		
+		case "select_tool_btn":
+			this.setTool("selectionTool");
+			break;
+		
+		case "line_tool_btn":
+			this.setTool("lineTool");
+			break;
+		
+		case "arc_tool_btn":
+			this.setTool("arcTool");
+			break;
+	}
+	
+	this.tbButtonFamily.toggleButton(button);
 };
 
 UserInterface.prototype.handleUlSlider = function(ulSlider, value) {
@@ -418,19 +463,6 @@ UserInterface.prototype.keydown = function(evt) {
 			this.handleMenu(UserInterface.menuItemPaste);
 			break;
 		
-		// Tool selection keys 0-9
-		case KeyCode.number1:
-		case KeyCode.number2:
-		case KeyCode.number3:
-		case KeyCode.number4:
-		case KeyCode.number5:
-		case KeyCode.number6:
-		case KeyCode.number7:
-		case KeyCode.number8:
-		case KeyCode.number9:
-			this.setTool(evt.keyCode - 49);
-			break;
-		
 		// Collapse/reveal layer panel
 		case KeyCode.lpCollapse:
 			this.layerPanel.toggleCollapse();
@@ -446,6 +478,14 @@ UserInterface.prototype.keydown = function(evt) {
 		case KeyCode.arrowDown:
 			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
 			this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
+			break;
+		
+		default:
+			// If toolbar hotkey was pressed, click corresponding toolbar button
+			var tbButton = this.tbHotKeys[evt.keyCode.toString()];
+			if (tbButton) {
+				tbButton.click();
+			}
 			break;
 	}
 	
