@@ -441,8 +441,17 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	height: 26px;
 }
 
+.side_btn:active {
+	background: url('../images/tb_btn_active.png') repeat-x;
+}
+
 .side_btn.guiBtnToggled {
-	background: url('../images/layer_row_selected.png') repeat-x;
+	background: url('../images/tb_btn_selected.png') repeat-x;
+}
+
+.side_btn.guiBtnToggled:active {
+	background: url('../images/tb_btn_selected.png') repeat-x;
+	background-color: #585858;
 }
 
 #select_tool_btn_gfx {
