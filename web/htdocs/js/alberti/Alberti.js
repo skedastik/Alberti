@@ -18,7 +18,7 @@ function Alberti() {
 	
 	// Create the user interface, passing self as application controller
 	this.ui = new UserInterface(
-		this.doc, this.clipBoard, this, "handleNewDocument", "handleSaveDocument", "handleOpenDocument"
+		this.clipBoard, this, "handleNewDocument", "handleSaveDocument", "handleOpenDocument"
 	);
 	
 	// Open with an empty document by default
