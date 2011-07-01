@@ -421,26 +421,29 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 .tb_hr {
 	width: 26px;
 	height: 1px;
-	margin: 2px 0 2px 0;
 	
 	background-color: #464646;
 	border-bottom: 1px solid #7c7c7c;
 }
 
-.side_btn {
+.side_btn > div {
 	width: 26px;
 	height: 26px;
 }
 
-#select_tool_btn {
+.side_btn.guiBtnToggled {
+	background: url('../images/layer_row_selected.png') repeat-x;
+}
+
+#select_tool_btn_gfx {
 	background: url('../images/select_tool_btn.png') center no-repeat;
 }
 
-#line_tool_btn {
+#line_tool_btn_gfx {
 	background: url('../images/line_tool_btn.png') center no-repeat;
 }
 
-#arc_tool_btn {
+#arc_tool_btn_gfx {
 	background: url('../images/arc_tool_btn.png') center no-repeat;
 }
 
