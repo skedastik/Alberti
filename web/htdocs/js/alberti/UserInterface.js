@@ -390,8 +390,8 @@ UserInterface.prototype.handleMenu = function(itemId) {
 	}
 };
 
-UserInterface.prototype.handleToolBar = function(button, evt) {
-	switch (button.getId()) {
+UserInterface.prototype.handleToolBarItemId = function(btnId) {
+	switch (btnId) {
 		
 		case "select_tool_btn":
 			this.setTool("selectionTool");
@@ -405,7 +405,10 @@ UserInterface.prototype.handleToolBar = function(button, evt) {
 			this.setTool("arcTool");
 			break;
 	}
-	
+};
+
+UserInterface.prototype.handleToolBar = function(button) {
+	this.handleToolBarItemId(button.getId());
 	this.tbButtonFamily.toggleButton(button);
 };
 
