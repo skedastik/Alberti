@@ -1,10 +1,23 @@
 #!/usr/bin/perl
 #
 # Merge and minify js, CSS, and HTML into a single XHTML file for deployment
-# at deploy/index.xhtml. Also copies images to deploy directory.
+# at deploy/index.xhtml. Also copies images to deploy directory. You may 
+# optionally supply a '--raw' argument to avoid minification.
 #
 
-print "Merging and minifying...\n";
+$arg0 = $ARGV[0];
+$minify = 1;
+
+if ($arg0) {
+	if ($arg0 ne '--raw') {
+		print "deploy.pl: Illegal option '$arg0'.\nUse '--raw' to avoid minification.\n";
+		exit;
+	}
+	
+	$minify = 0;
+}
+
+print "Merging".($minify ? " and minifying" : "")."...\n";
 
 $htdocsPath =   '../htdocs';                           # Path to htdocs
 $htmlPath =     $htdocsPath.'/working-base.xhtml';     # Path to HTML file
@@ -40,8 +53,10 @@ open FILE, ">$varPath/js" or die $!;
 print FILE $js;
 close FILE;
 
-$css = `java -jar yuicompressor-2.4.6.jar --type css $varPath/css`;
-$js = `java -jar yuicompressor-2.4.6.jar --type js --preserve-semi $varPath/js`;
+if ($minify) {
+	$css = `java -jar yuicompressor-2.4.6.jar --type css $varPath/css`;
+	$js = `java -jar yuicompressor-2.4.6.jar --type js --preserve-semi $varPath/js`;
+}
 
 # Deploy index.xhtml
 open FILE, ">$deployPath/index.xhtml" or die $!;
