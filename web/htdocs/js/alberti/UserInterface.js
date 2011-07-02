@@ -325,8 +325,7 @@ UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
 	this.ulSlider.setValue(1.0);                        // Reset slider to full opacity
 };
 
-UserInterface.prototype.handleMenu = function(itemId, evt) {
-	Dbug.log(itemId);
+UserInterface.prototype.handleMenu = function(itemId) {
 	switch (itemId) {
 		
 		// New document
