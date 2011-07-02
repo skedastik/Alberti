@@ -255,8 +255,16 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 		
 		var visibleShapes = this.getVisibleShapes();
 		
-		// Delete intersection points of all shapes in the layer
-		for (var i = 0, sLen = targetLayer.shapes.length; i < sLen; i++) {
+		// Delete intersection points of all shapes in the layer. Do so in
+		// reverse order so that intersections are tested in the same order
+		// as when they were inserted. The reason for this is that, 
+		// due to floating point rounding errors, testing shape A against 
+		// shape B may yield different results than testing shape B against 
+		// shape A. Normally this would be corrected by rounding, but 
+		// javascript's Math.round() is asymmetric--it always rounds up rather
+		// than away from 0. The rounding errors caused by this are rare, but 
+		// it's already happened at least once (as of 7/1/2011).
+		for (var i = targetLayer.shapes.length - 1; i >= 0; i--) {
 			var shape = targetLayer.shapes[i];
 			this.intersections.testShape(shape, visibleShapes, Intersection.bulkDeleteFlag);
 			
