@@ -134,14 +134,18 @@ function Tool(numSteps, minSteps, mouseupFlag) {
 }
 Util.extend(Tool, TransformHandler);
 
+Tool.prototype.setManagers = function(layerManager, undoManager) {
+	this.layerManager = layerManager;
+	this.undoManager = undoManager;
+};
+
 Tool.prototype.activate = function(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip) {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
 		
 		this.masterGroup = masterGroup;
-		this.layerManager = layerManager;
-		this.undoManager =  undoManager;
+		this.setManagers(layerManager, undoManager);
 		this.overlayGroup = overlayGroup;
 		this.underlayGroup = underlayGroup;
 		this.toolTip = toolTip;
