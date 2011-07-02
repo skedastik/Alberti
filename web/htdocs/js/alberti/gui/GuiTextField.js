@@ -23,9 +23,8 @@
  * 
  * * */
  
-function GuiTextField(id, elt, delegate, action, autoHide) {
-	GuiTextField.baseConstructor.call(this, id, elt, delegate);
-	this.action = action;
+function GuiTextField(id, elt, controller, action, autoHide) {
+	GuiTextField.baseConstructor.call(this, id, elt, controller, action);
 	this.autoHide = autoHide;
 	
 	this.active = true;

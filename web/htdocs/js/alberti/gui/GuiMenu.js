@@ -10,7 +10,7 @@
  * 
  * 'id' is an ID string that can be named at your convenience. It needn't be
  * unique. 'ulNode' is an unordered list element to be turned into a menu. 
- * 'delegate' is a controller object that implements the action method with
+ * 'controller' is a controller object that implements the action method with
  * name 'action'. This method is invoked when the user selects a menu item. It 
  * should take two arguments: the id attribute of the selected menu item (i.e.
  * a <li> element) and the associated click event.
@@ -48,9 +48,8 @@ GuiMenu.positionLeft  = 4;
 GuiMenu.fadeLength = 0.15;    // Menu-close fade animation length in seconds
 GuiMenu.openDelay  = 0.2;     // For delayed-open menus, length of open delay in seconds
  
-function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu, offsetX, offsetY, delayOpen) {
-	GuiMenu.baseConstructor.call(this, id, ulNode, delegate);
-	this.action = action;
+function GuiMenu(id, ulNode, controller, action, triggerNode, position, parentMenu, offsetX, offsetY, delayOpen) {
+	GuiMenu.baseConstructor.call(this, id, ulNode, controller, action);
 	this.triggerNode = triggerNode;
 	this.position = position || GuiMenu.positionBelow;
 	this.offsetX = offsetX;

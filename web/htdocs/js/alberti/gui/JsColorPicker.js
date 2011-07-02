@@ -3,15 +3,15 @@
  * extends GuiControl
  * 
  * Wraps Jan Odvárko's jscolor color picker in a GuiControl class. Three 
- * arguments are passed to the delegate's action method: a reference to the 
+ * arguments are passed to the controller's action method: a reference to the 
  * JsColorPicker object, and a hashed RGB color string.
  * 
  * * */
 
-function JsColorPicker(id, elt, delegate, action, inputElement) {
-	JsColorPicker.baseConstructor.call(this, id, elt, delegate);
-	this.action = action;
+function JsColorPicker(id, elt, controller, action, inputElement) {
+	JsColorPicker.baseConstructor.call(this, id, elt, controller, action);
 	this.inputElement = inputElement;
+	
 	this.jscolor = new jscolor.color(this.inputElement, {
 		hash: true,
 		caps: false,
@@ -67,9 +67,9 @@ JsColorPicker.prototype.clickWasInPicker = function(evt) {
 	return Util.hasChild(jscolor.picker.boxB, evt.target);
 };
 
-// Update delegate with the given color
-JsColorPicker.prototype.updateDelegate = function(color) {
-	// Do not invoke delegate action if color has not changed
+// Update controller with the given color
+JsColorPicker.prototype.updateController = function(color) {
+	// Do not invoke controller action if color has not changed
 	if (color != this.lastColor) {
 		this.lastColor = color;
 		this.invokeAction(this.action, this, color);
@@ -80,7 +80,7 @@ JsColorPicker.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
 		case KeyCode.esc:
 			// If user hit 'escape' key, reset color
-			this.updateDelegate(this.originalColor);
+			this.updateController(this.originalColor);
 			
 		case KeyCode.enter:
 			this.deactivate();
@@ -91,7 +91,7 @@ JsColorPicker.prototype.keydown = function(evt) {
 
 JsColorPicker.prototype.change = function(evt) {
 	// Update workspace colors with each pick
-	this.updateDelegate(this.getColor());
+	this.updateController(this.getColor());
 };
 
 JsColorPicker.prototype.click = function(evt) {

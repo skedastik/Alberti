@@ -10,9 +10,8 @@
 
 UnderlaySlider.fxLength = 0.25;      // Length of cabinet hide/show animation in seconds
 
-function UnderlaySlider(id, rangeInput, delegate, action, cabinetDiv) {
-	UnderlaySlider.baseConstructor.call(this, id, rangeInput, delegate);
-	this.action = action;
+function UnderlaySlider(id, rangeInput, controller, action, cabinetDiv) {
+	UnderlaySlider.baseConstructor.call(this, id, rangeInput, controller, action);
 	this.cabinetDiv = cabinetDiv;
 	
 	// Extremely hacky method of obtaining offsetWidth of element that has just loaded
