@@ -1,6 +1,0 @@
-#!
-body=$(cat ../htdocs/template/body)
-footer=$(cat ../htdocs/template/footer)
-header=$(cat ../var/header)
-
-echo $header$body$footer > ../var/index
