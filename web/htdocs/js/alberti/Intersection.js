@@ -280,7 +280,7 @@ Intersection.carccarc = function(arc1, arc2) {
 		points[0] = new Coord2D(p2.x + newdy, p2.y - newdx);
 		points[1] = new Coord2D(p2.x - newdy, p2.y + newdx);
 			
-	} else if (Util.equals(rsum, d) || (Util.equals(rdiff, d))) {
+	} else if (d != 0 && (Util.equals(rsum, d) || (Util.equals(rdiff, d)))) {
 		var rratio = arc1.radius / d;
 		points[0] = new Coord2D(arc1.center.x + rratio * dx, arc1.center.y + rratio * dy);
 	}
