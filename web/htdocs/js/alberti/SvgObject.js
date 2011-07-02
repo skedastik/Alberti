@@ -8,7 +8,7 @@
  * NOTES
  * 
  * When setting attributes, SvgObject rounds to the decimal place specified by
- * Alberti.decimalPrecision so as to leave an adequate number of significant 
+ * Alberti.tolerance so as to leave an adequate number of significant 
  * digits for large numerical attributes.
  * 
  * USAGE
@@ -99,8 +99,7 @@ SvgObject.prototype.set = function(attr, value, namespace) {
 	if ((value === "" || value === null)) {
 		this.svgNode.removeAttributeNS(arguments.length > 2 ? namespace : null, attr);
 	} else {
-		this.svgNode.setAttributeNS(arguments.length > 2 ? namespace : null, attr,
-			typeof value == "number" ? Util.roundToDecimal(value, Alberti.decimalPrecision) : value);
+		this.svgNode.setAttributeNS(arguments.length > 2 ? namespace : null, attr, value);
 	}
 	
 	return this;
