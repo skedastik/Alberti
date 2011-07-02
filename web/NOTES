@@ -1,0 +1,7 @@
+HARDWARE ACCELERATION of UNDERLAY IMAGES
+
+Alberti's underlay image feature involves intensive image transformations and 
+as such demands hardware acceleration. As of 7/2/2011, only WebKit-based 
+browsers support CSS-based HW acceleration (via the 'translate3d' and 
+'scale3d' -webkit-transform properties). The feature is still available in 
+Mozilla browsers, though performance may be poor.

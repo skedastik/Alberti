@@ -1,23 +1,34 @@
 What is Alberti?
 
-Alberti is a perspective layout drawing application, named after Leon Battista Alberti, who quantified modern perspective drawing in his treatise "Della Pittura". 
+Alberti is a perspective layout drawing application, named after Leon Battista 
+Alberti, who quantified modern perspective drawing in his treatise "Della 
+Pittura". 
 
 Why is it needed?
 
-Anyone who has seriously undertaken a complex, accurate perspective drawing knows that it takes an enormous amount of physical space. Depending on the requirements of the drawing, a 14x17 in. layout might require a drafting table 5 feet wide and 10 feet deep. On top of this, you would need a number of impractically large tools: a straight-edge, a drafting triangle, possibly a compass fashioned out of a peg and string.
+Anyone who has seriously undertaken a complex, accurate perspective drawing 
+knows that it takes an enormous amount of physical space. Depending on the 
+requirements of the drawing, a 14x17 in. layout might require a drafting table 
+5 feet wide and 10 feet deep. On top of this, you would need a number of 
+impractically large tools: a straight-edge, a drafting triangle, possibly a 
+compass fashioned out of a peg and string.
 
 In short, it makes perfect sense to do this in software.
 
-Then why not use an existing solution like AutoCAD or 3ds Max? Because these tools are overkill. Alberti provides a highly streamlined interface tailored specifically to the requirements of rapid, natural perspective layout drawing. It is not a 3D modeling tool, nor is it meant to be.
+Then why not use an existing solution like AutoCAD or 3ds Max? Because these 
+tools are overkill. Alberti provides a highly streamlined interface tailored 
+specifically to the requirements of rapid, natural perspective layout drawing. 
+It is not a 3D modeling tool, nor is it meant to be.
 
 Features
 
-In its most basic state, Alberti provides an infinite, zoomable workspace, and two core tools: a line tool and an arc tool. With these tools and a knowledge of perspective, the basis of any conceivable form can be accurately constructed.
+At its most basic, Alberti provides an infinite, zoomable workspace, and two 
+core tools: a line tool and an arc tool. With these tools and a knowledge of 
+perspective, the basis of any conceivable form can be accurately constructed.
 
-Natural extensions of these tools follow: perpendicular and parallel line tools. Automatic perspective space construction tools (in three-point, two-point, and one-point perspective flavors).
+Natural extensions of these tools follow: perpendicular and parallel line 
+tools. Automatic perspective space construction tools (in three-point, 
+two-point, and one-point perspective flavors).
 
-Also, Alberti will allow the user to import images (such as scanned sketches) onto which a perspective space can be superimposed.
-
-Browser demo
-
-To demo the current feature set, open up htdocs/working-base.xhtml in a browser (as of 5.24.2011, Alberti has only been tested in Safari). See instructions.txt for further details.
+Also, Alberti allows the user to import images (such as scanned sketches) onto 
+which a perspective space can be superimposed.

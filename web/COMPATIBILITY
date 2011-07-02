@@ -1,0 +1,13 @@
+As of 7/2/2011, Alberti has only been tested in the following environments:
+
+OS X
+- Firefox 5
+- Safari 5.0.5 (WebKit Nightly r89772)
+
+UNSUPPORTED ENVIRONMENTS
+
+Safari 5.0.5 does not support the HTML5 File API. As such, you must download
+the latest WebKit nightly to run Alberti under Safari.
+
+Alberti does not support Internet Explorer or Opera, and is known to have 
+event-handling issues in Firefox under Windows.

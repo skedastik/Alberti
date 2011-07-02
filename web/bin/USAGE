@@ -1,0 +1,12 @@
+Run the deployment script:
+
+  > ./deploy-to-web.pl
+
+Which should output:
+
+  > Merging and minifying...
+  > Copying images...
+  > Deployment complete.
+
+Open outputted file at Alberti/web/deploy/index.xhtml in a compatible browser 
+(see COMPATIBILITY).
