@@ -10,7 +10,7 @@
  * unique). Argument 'elt' should be an HTML element that will serve as the 
  * button. Event listeners will be registered on this element when the button 
  * is enabled. If the 'autoToggle' argument is set to true, the button will 
- * automatically toggle on/off each time it is clicked. The 'delegate' 
+ * automatically toggle on/off each time it is clicked. The 'controller' 
  * argument is a reference to a controller object, and 'action' is a method 
  * name belonging to that object. This method will be invoked each time the 
  * button is clicked. Two arguments will be passed to the action method, the 
@@ -40,9 +40,8 @@
 GuiButton.styleDisabled = "guiBtnDisabled";
 GuiButton.styleToggled = "guiBtnToggled";
 
-function GuiButton(id, elt, delegate, action, autoToggle, tooltip, eventType, respondsToBubbledEvents) {
-	GuiButton.baseConstructor.call(this, id, elt, delegate);
-	this.action = action;
+function GuiButton(id, elt, controller, action, autoToggle, tooltip, eventType, respondsToBubbledEvents) {
+	GuiButton.baseConstructor.call(this, id, elt, controller, action);
 	this.autoToggle = autoToggle;
 	this.eventType = eventType ? eventType : "click";
 	this.respondsToBubbledEvents = respondsToBubbledEvents;
@@ -125,9 +124,33 @@ GuiButton.prototype.toggle = function(toggleFlag) {
 	return this;
 };
 
+// A button can have a state defined by a string. This state string will also
+// be added to the class attribute of the button's HTML node, and the previous
+// state removed.
+GuiButton.prototype.setState = function(stateString) {
+	if (this.state) {
+		Util.removeHtmlClass(this.htmlNode, this.state);
+	}
+	
+	this.state = stateString;
+	
+	Util.addHtmlClass(this.htmlNode, this.state);
+};
+
+GuiButton.prototype.clearState = function() {
+	if (this.state) {
+		Util.removeHtmlClass(this.htmlNode, this.state);
+		delete this.state;
+	}
+};
+
+GuiButton.prototype.getState = function() {
+	return this.state;
+};
+
 // Respond to the given mouse event
 GuiButton.prototype.respond = function(evt) {
-	// Only invoke delegate's action if the button div itself was clicked, or
+	// Only invoke controller's action if button div itself was clicked, or
 	// if the button responds to bubbling events. Do not respond to any events
 	// with prevented defaults. Allow for spoofed events (e.g. calling click()
 	// on a GuiButton instance), in which case evt would be undefined.
