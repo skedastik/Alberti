@@ -219,7 +219,7 @@ var Util = {
 			n += Util.twoPi;
 		}
 		
-		return (n >= a && n <= b) || (n + Util.twoPi >= a && n + Util.twoPi <= b);
+		return Util.between(n, a, b) || Util.between(n + Util.twoPi, a, b);
 	},
 	
 	// Returns 0 is x is zero, 1 if x is positive, -1 if x is negative
@@ -234,16 +234,16 @@ var Util = {
 	// that delta value and need to be sure it is nonzero. Also useful for
 	// checking the equality of floats, allowing for epsilon uncertainties.
 	equals: function(x, y) {
-		return Util.roundToDecimal(x, Alberti.decimalPrecision)
-			== Util.roundToDecimal(y, Alberti.decimalPrecision);
+		return Util.roundToDecimal(x, Alberti.tolerance)
+			== Util.roundToDecimal(y, Alberti.tolerance);
 	},
 	
 	// Returns true if x is between numbers u and v, inclusive, and allowing
 	// for floating point error.
 	between: function(x, u, v) {
-		x = Util.roundToDecimal(x, Alberti.decimalPrecision);
-		u = Util.roundToDecimal(u, Alberti.decimalPrecision);
-		v = Util.roundToDecimal(v, Alberti.decimalPrecision);
+		x = Util.roundToDecimal(x, Alberti.tolerance);
+		u = Util.roundToDecimal(u, Alberti.tolerance);
+		v = Util.roundToDecimal(v, Alberti.tolerance);
 		
 		return x <= Math.max(u, v) && x >= Math.min(u, v);
 	}

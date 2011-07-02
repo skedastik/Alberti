@@ -12,11 +12,8 @@ Alberti.showToolTips = true;                            // Show tool helper tips
 
 Alberti.maxUndos = 100;                                  // Maximum number of undo actions
 
-// All numerical SVG attributes are rounded to this decimal place so as to
-// leave an adequate number of significant digits for large numerical values. 
-// This value is also used when checking equality between two floats (see 
-// Util.equals method).
-Alberti.decimalPrecision = 3;
+// This value is used when checking equality between two floats (see Util.equals method).
+Alberti.tolerance = 3;
 
 // useful constants for various calculations
 Alberti.halfOriginalWindowWidth = Math.round(window.innerWidth / 2);

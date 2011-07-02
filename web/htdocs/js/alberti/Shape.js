@@ -21,10 +21,10 @@ Shape.prototype.getBoundingBox = function() {
 	var svgRect = this.svgNode.getBBox();
 	
 	return new Rect2D(
-		Util.roundToDecimal(svgRect.x, Alberti.decimalPrecision),
-		Util.roundToDecimal(svgRect.y, Alberti.decimalPrecision),
-		Util.roundToDecimal(svgRect.x + svgRect.width, Alberti.decimalPrecision),
-		Util.roundToDecimal(svgRect.y + svgRect.height, Alberti.decimalPrecision));
+		Util.roundToDecimal(svgRect.x, Alberti.tolerance),
+		Util.roundToDecimal(svgRect.y, Alberti.tolerance),
+		Util.roundToDecimal(svgRect.x + svgRect.width, Alberti.tolerance),
+		Util.roundToDecimal(svgRect.y + svgRect.height, Alberti.tolerance));
 };
 
 // Display the shape as selected

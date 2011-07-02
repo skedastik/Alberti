@@ -68,8 +68,8 @@ Coord2D.prototype.distanceTo = function(p) {
 // point precision reasons), then return it
 Coord2D.roundForSafety = function(coord) {
 	var coordRounded = coord.clone();
-	coordRounded.x = Util.roundToDecimal(coordRounded.x, Alberti.decimalPrecision);
-	coordRounded.y = Util.roundToDecimal(coordRounded.y, Alberti.decimalPrecision);
+	coordRounded.x = Util.roundToDecimal(coordRounded.x, Alberti.tolerance);
+	coordRounded.y = Util.roundToDecimal(coordRounded.y, Alberti.tolerance);
 	
 	return coordRounded;
 }
