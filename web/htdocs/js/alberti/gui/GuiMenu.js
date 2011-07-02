@@ -29,7 +29,7 @@
  * 
  * If optional 'delayedOpen' argument is true, user must hold mouse down on
  * trigger node for a short span of time in order for menu to open (only has 
- * effect on root menus).
+ * effect on root menus), or alternatively, use right-click.
  * 
  * Each child <li> and trigger element should have a unique id attribute.
  * 
@@ -74,15 +74,12 @@ function GuiMenu(id, ulNode, delegate, action, triggerNode, position, parentMenu
 	if (this.parentMenu) {
 		this.parentMenu.addSubMenu(this);
 	} else {
-		var action = "open";
-		
 		if (this.delayOpen) {
 			this.openTimeoutId = null;
-			action = "delayedOpen";
 		}
 		
-		// This is a root menu, so create a menu-trigger button
-		this.triggerButton = new GuiButton("menu_btn", triggerNode, this, action, false, "", "mousedown").enable();
+		// This is a root menu, so listen for mousedowns on trigger node
+		this.registerListener("mousedown", this.triggerNode, false);
 	}
 }
 Util.extend(GuiMenu, GuiControl);
@@ -278,10 +275,18 @@ GuiMenu.prototype.mouseup = function() {
 };
 
 GuiMenu.prototype.mousedown = function(evt) {
-	evt.stopPropagation();
-	
-	if (!this.menuTreeHasElement(evt.target)) {
-		this.close();                              // Close menu if mousedown occurred outside menu
+	if (evt.currentTarget === this.triggerNode) {
+		if (this.delayOpen && evt.button == 0) {
+			this.delayedOpen();
+		} else {
+			this.open();
+		}
+	} else {
+		evt.stopPropagation();
+		
+		if (!this.menuTreeHasElement(evt.target)) {
+			this.close();                              // Close menu if mousedown occurred outside menu
+		}
 	}
 };
 
