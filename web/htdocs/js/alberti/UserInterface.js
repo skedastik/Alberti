@@ -80,6 +80,8 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	
 	if (this.currentTool === null) {
 		this.setTool(UserInterface.defaultTool);
+	} else {
+		this.toolIndex[this.currentTool].tool.setManagers(this.albertiDoc.layerManager, this.albertiDoc.undoManager);
 	}
 	
 	if (!this.albertiDoc.underlayImage.isHidden()) {
@@ -114,14 +116,14 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 };
 
 UserInterface.prototype.setTool = function(toolName) {
-	if (this.tools[toolName] && toolName != this.currentTool) {
+	if (this.toolIndex[toolName] && toolName != this.currentTool) {
 		if (this.currentTool !== null) {
-			this.tools[this.currentTool].tool.deactivate();
+			this.toolIndex[this.currentTool].tool.deactivate();
 		}
 		
 		this.currentTool = toolName;
 		
-		this.tools[this.currentTool].tool.activate(
+		this.toolIndex[this.currentTool].tool.activate(
 			this.masterGroup,
 			this.albertiDoc.layerManager,
 			this.albertiDoc.undoManager,
@@ -135,7 +137,7 @@ UserInterface.prototype.setTool = function(toolName) {
 };
 
 UserInterface.prototype.setCursorToCurrentTool = function() {
-	this.setCursor(this.tools[this.currentTool].cursor);
+	this.setCursor(this.toolIndex[this.currentTool].cursor);
 };
 
 UserInterface.prototype.setCursor = function(cursorClass) {
@@ -195,7 +197,7 @@ UserInterface.prototype.initSvg = function() {
 };
 
 UserInterface.prototype.initToolSet = function() {
-	this.tools = {
+	this.toolIndex = {
 		selectionTool: {tool: new ToolSelection(), cursor: UserInterface.cursorDefault},
 		lineTool:      {tool: new ToolLine(),      cursor: UserInterface.cursorCrosshair },
 		arcTool:       {tool: new ToolCircleArc(), cursor: UserInterface.cursorCrosshair }
@@ -434,7 +436,7 @@ UserInterface.prototype.keydown = function(evt) {
 			this.setCursor(UserInterface.cursorZoomAndPan);
 			
 			// Disable tool while panning is enabled
-			this.tools[this.currentTool].tool.disable();
+			this.toolIndex[this.currentTool].tool.disable();
 			break;
 		
 		// Delete shape(s)
@@ -523,7 +525,7 @@ UserInterface.prototype.keyup = function(evt) {
 			this.setCursorToCurrentTool();
 			
 			// enable tool while panning is disabled
-			this.tools[this.currentTool].tool.enable();
+			this.toolIndex[this.currentTool].tool.enable();
 			break;
 	}
 };
