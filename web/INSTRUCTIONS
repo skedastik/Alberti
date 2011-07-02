@@ -1,7 +1,7 @@
 These instructions exist only for testing purposes and are liable to change 
 over time.
 
-Run the deployment script (see Alberti/web/bin/usage.txt for instructions).
+Run the deployment script (see Alberti/web/bin/USAGE for instructions).
 
 When Alberti is first opened in a browser, you will see the Alberti workspace. 
 An 'X' marks the center of the workspace, which spans infinitely in all 
