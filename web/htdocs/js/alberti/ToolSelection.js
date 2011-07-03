@@ -5,8 +5,8 @@
  * 
  * * */
  
-function ToolSelection() {
-	ToolSelection.baseConstructor.call(this, 2, 2, true);
+function ToolSelection(uiObjects) {
+	ToolSelection.baseConstructor.call(this, 2, 2, true, uiObjects);
 }
 Util.extend(ToolSelection, Tool);
 

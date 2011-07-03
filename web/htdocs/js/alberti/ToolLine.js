@@ -6,8 +6,8 @@
  * 
  * * */
  
-function ToolLine() {
-	ToolLine.baseConstructor.call(this, 4, 2);
+function ToolLine(uiObjects) {
+	ToolLine.baseConstructor.call(this, 4, 2, false, uiObjects);
 }
 Util.extend(ToolLine, Tool);
 
