@@ -309,7 +309,7 @@ UserInterface.prototype.initToolBar = function() {
 
 // If shapesAreSelected is true, enables appropriate clip board menu items,
 // otherwise disables them.
-UserInterface.prototype.updateClipBoardMenuItems = function(shapesAreSelected) {
+UserInterface.prototype.updateClippingMenuItems = function(shapesAreSelected) {
 	if (shapesAreSelected) {
 		this.editMenu.enableMenuItem("mi_cut");
 	} else {

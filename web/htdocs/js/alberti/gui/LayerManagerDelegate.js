@@ -77,5 +77,5 @@ LayerManagerDelegate.prototype.setLayerColorDelegate = function(targetLayer, new
 /* * * * * * * * * * Shape-selection delegate methods * * * * * * * * * * * */
 
 LayerManagerDelegate.prototype.shapeSelectionDelegate = function(shapes) {
-	this.ui.updateClipBoardMenuItems(this.getSelectedShapes().length > 0);
+	this.ui.updateClippingMenuItems(this.getSelectedShapes().length > 0);
 };
