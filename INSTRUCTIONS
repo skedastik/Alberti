@@ -35,6 +35,9 @@ right click after step 1 to immediately short-circuit the tool at step 2.
 
 You may revert to a previous step at any time by pressing the escape key.
 
+During step 2, the shift key may be held down to constrain to 45-degree 
+intervals.
+
 THE ARC TOOL
 
 Allows you to draw circular arcs:
@@ -48,6 +51,12 @@ finished with the tool.
 
 Again, you may revert to a previous step at any time by pressing the escape 
 key.
+
+During step 2, the shift key may be held down in order to match the last used 
+arc radius.
+
+During steps 3-4, the shift key may be held down in order to constrain to 
+quarter-degree angles.
 
 THE SELECTION TOOL
 
