@@ -1,14 +1,17 @@
 /*
  * LayerManagerDelegate.js
  * 
- * Propagates LayerManager mutations to LayerPanelController.
+ * Propagates LayerManager mutations to a LayerPanelController and 
+ * UserInterface object.
  * 
  * * */
 
-function LayerManagerDelegate(layerManager, lpController) {
+function LayerManagerDelegate(layerManager, lpController, ui) {
 	LayerManagerDelegate.baseConstructor.call(this, layerManager);
 	this.lpController = lpController;
+	this.ui = ui;
 	
+	// Layer-related delegation
 	this.mapMethod("insertLayer", "insertLayerPreDelegate", "insertLayerPostDelegate");
 	this.mapMethod("deleteLayer", null, "deleteLayerDelegate");
 	this.mapMethod("moveLayer", "moveLayerDelegate");
@@ -16,8 +19,14 @@ function LayerManagerDelegate(layerManager, lpController) {
 	this.mapMethod("setLayerVisibility", null, "setLayerVisibilityDelegate");
 	this.mapMethod("setLayerName", "setLayerNameDelegate");
 	this.mapMethod("setLayerColor", "setLayerColorDelegate");
+	
+	// Shape selection delegation
+	this.mapMethod("setSelection", null, "shapeSelectionDelegate");
+	this.mapMethod("xorSelection", null, "shapeSelectionDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
+
+/* * * * * * * * * * * Layer-related delegate methods * * * * * * * * * * * */
 
 LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLayer, before) {
 	refLayer = refLayer ? refLayer : this.currentLayer;
@@ -65,3 +74,8 @@ LayerManagerDelegate.prototype.setLayerColorDelegate = function(targetLayer, new
 	this.lpController.updateRowColor(targetLayer, newColor);
 };
 
+/* * * * * * * * * * Shape-selection delegate methods * * * * * * * * * * * */
+
+LayerManagerDelegate.prototype.shapeSelectionDelegate = function(shapes) {
+	this.ui.updateClipBoardMenuItems(this.getSelectedShapes().length > 0);
+};

@@ -116,6 +116,9 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	if (this.currentTool === null) {
 		this.setTool(UserInterface.defaultTool);
 	}
+	
+	// Update menus
+	this.editMenu.disableMenuItem("mi_cut");
 };
 
 UserInterface.prototype.setTool = function(toolName) {
@@ -301,6 +304,16 @@ UserInterface.prototype.initToolBar = function() {
 		49: this.selectToolBtn,         // '1'
 		50: this.lineToolBtn,           // '2'
 		51: this.arcToolBtn             // '3'
+	}
+};
+
+// If shapesAreSelected is true, enables appropriate clip board menu items,
+// otherwise disables them.
+UserInterface.prototype.updateClipBoardMenuItems = function(shapesAreSelected) {
+	if (shapesAreSelected) {
+		this.editMenu.enableMenuItem("mi_cut");
+	} else {
+		this.editMenu.disableMenuItem("mi_cut");
 	}
 };
 
