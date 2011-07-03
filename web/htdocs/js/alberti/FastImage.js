@@ -31,6 +31,13 @@ FastImage.prototype.setSource = function(url) {
 	this.imgNode.src = url;
 };
 
+// Set the src of the FastImage's img node to the given data URL
+FastImage.prototype.setSourceToDataUrl = function(dataUrl) {
+	Util.assert(dataUrl.match(/^data:/), "Invalid data URL passed to AlbertiDocument::setUnderlayImage");
+	
+	this.setSource(dataUrl);
+};
+
 FastImage.prototype.isHidden = function() {
 	return this.hidden;
 };
