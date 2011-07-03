@@ -1,11 +1,13 @@
 These instructions exist only for testing purposes and are liable to change 
 over time.
 
-Run the deployment script (see Alberti/web/bin/USAGE for instructions).
+Alberti will run as-is in Firefox 5 and Safari 5 w/ the latest WebKit Nightly. 
+However, for Chrome you will have to upload Alberti/web/htdocs to a web 
+server.
 
-When Alberti is first opened in a browser, you will see the Alberti workspace. 
-An 'X' marks the center of the workspace, which spans infinitely in all 
-directions.
+When Alberti/web/htdocs/working-base.xhtml is opened, you will see the Alberti 
+workspace. An 'X' marks the center of the workspace, which spans infinitely in 
+all directions.
 
 ZOOMING AND PANNING
 
