@@ -24,6 +24,14 @@ Array.prototype.clone = function() {
 	return this.slice(0);
 }
 
+// Returns true if every element strictly equals corresponding element in a.
+// Returns false if arrays are of unequal length.
+Array.prototype.equals = function(a) {
+	return this.length == a.length && this.every(function(value, index) {
+		return value === a[index];
+	});
+};
+
 // Miscellaneous utility functions
 var Util = {
 
