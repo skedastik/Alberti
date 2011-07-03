@@ -51,6 +51,13 @@ function AlbertiDocument(xml) {
 	var img = document.getElementById("underlayimg");
 }
 
+// Swap out internal LayerManager and UndoManager with respective Delegates
+AlbertiDocument.prototype.connectDelegates = function(lmDelegate, umDelegate) {
+	this.layerManager = lmDelegate;
+	this.layerManager.undoManager = umDelegate;
+	this.undoManager = umDelegate;
+};
+
 AlbertiDocument.prototype.createEmptyDocument = function() {
 	this.workspaceGroup = new Group().generate().set("id", "workspace");
 	this.undoManager = new UndoManager(Alberti.maxUndos);
@@ -99,14 +106,6 @@ AlbertiDocument.prototype.importFromXML = function(xml) {
 
 AlbertiDocument.prototype.setFilename = function(filename) {
 	this.filename = filename;
-};
-
-// Set the underlay image source to the given data URL
-AlbertiDocument.prototype.setUnderlayImageSrc = function(dataUrl) {
-	// Assert that a valid data URL is passed in
-	Util.assert(dataUrl.match(/^data:/), "Invalid data URL passed to AlbertiDocument::setUnderlayImage");
-	
-	this.underlayImage.setSource(dataUrl);
 };
 
 // Load layers and shape data
