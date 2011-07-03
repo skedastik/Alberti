@@ -287,21 +287,22 @@ GuiMenu.prototype.mousedown = function(evt) {
 GuiMenu.prototype.click = function(evt) {
 	evt.stopPropagation();
 	
+	if (evt.target !== this.triggerNode) {
+		// Close the menu only if the click occurred somewhere other than the 
+		// trigger node (reason being that the mousedown that triggered the 
+		// menu to open in the first place will always be followed by a click 
+		// event in the trigger node).
+		this.close();
+	}
+	
 	// If click occurred within menu, and selected menu item is not disabled,
 	// invoke the menu item action. Menu item action can return true in order
 	// to prevent menu from closing.
 	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
-		this.invokeAction(this.action, evt.target.id, evt);
-	}
-	
-	if (this.parentMenu || evt.target !== this.triggerNode) {
-		// Click occurred, so close this menu if it is a sub-menu. If it is 
-		// not a sub-menu, close the menu only if the click occurred anywhere 
-		// other than the trigger node [reason being that the mousedown that
-		// triggered the menu to open in the first place will always be 
-		// followed by a click event in the trigger node (if that didn't make
-		// sense, don't worry; it's an obscure and complex interaction)].
-		this.close();
+		// Invoke the action after the menu fade animation has completed
+		setTimeout(function() {
+			this.invokeAction(this.action, evt.target.id, evt);
+		}.bindTo(this), (GuiMenu.fadeLength + .05) * 1000);
 	}
 };
 
