@@ -116,14 +116,37 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 		default:
 			var l = this.getShape("radius_line");
 			var c = this.getShape("radius_circle");
+			var mouseCoord = new Coord2D(gx, gy);
+			var mouseAngle = Util.radToDeg(c.center.angleTo(mouseCoord));
+			
+			if (constrain) {
+				// Constrain to quarter degrees
+				mouseAngle = Util.roundToMultiple(mouseAngle, 0.25);
+				l.setAngleFromHorizontal(Util.degToRad(mouseAngle));
+				
+				mouseCoord.x = l.p2.x;
+				mouseCoord.y = l.p2.y;
+				
+				this.setConstrainCoords(l.p2);
+			} else {
+				l.p2.x = gx;
+				l.p2.y = gy;
+				l.setLength(c.radius);
+			}
+			
+			l.push();
 			
 			switch ((stepNum - 1) % 2) {
+				
+				case 0:
+					this.displayTip("Angle: "+Util.roundToDecimal(mouseAngle, 2)+"&#176;");
+					break;
 				
 				case 1:
 					var sa = this.getShape("start_angle_line"+(stepNum));
 					var ca = this.getShape("arc"+stepNum);
 					
-					var newDeltaAngle = c.center.angleToRelative(new Coord2D(gx, gy), sa.getAngleFromHorizontal());
+					var newDeltaAngle = c.center.angleToRelative(mouseCoord, sa.getAngleFromHorizontal());
 					this.updateClockDirection(newDeltaAngle);
 					
 					// Invert the delta angle applied to the circle arc if user is mousing counter-clockwise
@@ -131,14 +154,9 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 			
 					ca.push();
 			
-					this.displayTip("Angle: "+Util.roundToDecimal(Util.radToDeg(Math.abs(ca.deltaAngle)), 2));
-				
-				default:
-					l.p2.x = gx;
-					l.p2.y = gy;
-					l.setLength(c.radius);
-
-					l.push();
+					this.displayTip(
+						"Delta: "+Util.roundToDecimal(Util.radToDeg(Math.abs(ca.deltaAngle)), 2)+"&#176;"
+					);
 					break;
 			}
 			break;
