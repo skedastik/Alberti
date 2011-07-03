@@ -66,5 +66,5 @@ ToolSelection.prototype.complete = function(stepNum, constrain) {
 };
 
 ToolSelection.prototype.onDeactivate = function() {
-	this.layerManager.clearSelections();
+	this.layerManager.setSelection([]);
 };
