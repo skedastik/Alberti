@@ -25,6 +25,10 @@ Rapid workspace panning
    - Jump to next/previous vanishing point
    - Jump to last panned position
 
+Exporting
+   - Export to PNG
+   - Export frame w/ selectable aspect ratio, size, and origin
+
 FAR FUTURE
 
 As it is, Alberti is a capable drafting tool, but could be augmented with the
