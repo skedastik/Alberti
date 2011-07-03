@@ -158,7 +158,7 @@ GuiMenu.prototype.close = function(noFade) {
 		}
 		
 		if (this.openedSubMenu) {
-			this.closeSubMenu();
+			this.closeSubMenu(noFade);
 		}
 		
 		var resetMenu = function() {
@@ -227,11 +227,6 @@ GuiMenu.prototype.updatePosition = function() {
 	
 	this.htmlNode.style.left = (origin.x + (this.offsetX ? this.offsetX : 0))+"px";
 	this.htmlNode.style.top = (origin.y + (this.offsetY ? this.offsetY : 0))+"px";
-};
-
-GuiMenu.prototype.openSubMenu = function(subMenu) {
-	this.openedSubMenu = subMenu;
-	this.openedSubMenu.open();
 };
 
 // Close the currently opened sub-menu. Will produce an error if no sub-menu 
@@ -311,7 +306,9 @@ GuiMenu.prototype.click = function(evt) {
 };
 
 GuiMenu.prototype.mouseover = function(evt) {
-	this.open();
+	if (!this.parentMenu || this.parentMenu.opened) {
+		this.open();                                       // Only open self if parent is open        
+	}
 };
 
 GuiMenu.prototype.keydown = function(evt) {
