@@ -3,6 +3,7 @@ As of 7/2/2011, Alberti has only been tested in the following environments:
 OS X
 - Firefox 5
 - Safari 5.0.5 (WebKit Nightly r89772)
+- Chrome 12    (Can't do file://, Alberti must be uploaded to a web server)
 
 UNSUPPORTED ENVIRONMENTS
 
