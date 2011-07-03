@@ -45,6 +45,8 @@ function UserInterface(clipBoard, appController, newDocHandler, saveHandler, loa
 	this.saveHandler = saveHandler;
 	this.loadHandler = loadHandler;
 	
+	this.toolTip = new ToolTip(document.getElementById("tooltip"));
+	
 	// Initialization broken up into methods below; order is sensitive
 	this.initSvg();
 	this.initAutoScale();
@@ -53,8 +55,6 @@ function UserInterface(clipBoard, appController, newDocHandler, saveHandler, loa
 	this.initToolBar();
 	this.initToolSet();
 	this.initFileImporters();
-	
-	this.toolTip = new ToolTip(document.getElementById("tooltip"));
 	
 	// Set up listeners at the window level
 	this.registerListener("keydown", window, false);
@@ -77,12 +77,6 @@ Util.extend(UserInterface, EventHandler);
 // Prepares the interface for the given Alberti document
 UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	this.albertiDoc = albertiDoc;
-	
-	if (this.currentTool === null) {
-		this.setTool(UserInterface.defaultTool);
-	} else {
-		this.toolIndex[this.currentTool].tool.setManagers(this.albertiDoc.layerManager, this.albertiDoc.undoManager);
-	}
 	
 	if (!this.albertiDoc.underlayImage.isHidden()) {
 		this.hideHud();
@@ -108,11 +102,20 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	this.layerPanel.setController(this.lpController);
 	
 	// Create layer manager delegate and connect it to layer panel controller
-	this.lmDelegate = new LayerManagerDelegate(this.albertiDoc.layerManager, this.lpController);
+	this.lmDelegate = new LayerManagerDelegate(this.albertiDoc.layerManager, this.lpController, this);
 	this.lpController.setLayerManagerDelegate(this.lmDelegate);
 	
 	// Tell layer panel controller to populate layer panel with data
 	this.lpController.populateLayerPanel();
+	
+	// Update tools w/ new managers
+	for (var toolName in this.toolIndex) {
+		this.toolIndex[toolName].tool.setManagers(this.lmDelegate, this.albertiDoc.undoManager);
+	}
+	
+	if (this.currentTool === null) {
+		this.setTool(UserInterface.defaultTool);
+	}
 };
 
 UserInterface.prototype.setTool = function(toolName) {
@@ -122,16 +125,7 @@ UserInterface.prototype.setTool = function(toolName) {
 		}
 		
 		this.currentTool = toolName;
-		
-		this.toolIndex[this.currentTool].tool.activate(
-			this.masterGroup,
-			this.albertiDoc.layerManager,
-			this.albertiDoc.undoManager,
-			this.overlayGroup,
-			this.underlayGroup,
-			this.toolTip
-		);
-		
+		this.toolIndex[this.currentTool].tool.activate();
 		this.setCursorToCurrentTool();
 	}
 };
@@ -197,10 +191,17 @@ UserInterface.prototype.initSvg = function() {
 };
 
 UserInterface.prototype.initToolSet = function() {
+	var uiObjects = {
+		masterGroup:   this.masterGroup,
+		overlayGroup:  this.overlayGroup,
+		underlayGroup: this.underlayGroup,
+		toolTip:       this.toolTip
+	};
+	
 	this.toolIndex = {
-		selectionTool: {tool: new ToolSelection(), cursor: UserInterface.cursorDefault},
-		lineTool:      {tool: new ToolLine(),      cursor: UserInterface.cursorCrosshair },
-		arcTool:       {tool: new ToolCircleArc(), cursor: UserInterface.cursorCrosshair }
+		selectionTool: {tool: new ToolSelection(uiObjects), cursor: UserInterface.cursorDefault},
+		lineTool:      {tool: new ToolLine(uiObjects),      cursor: UserInterface.cursorCrosshair },
+		arcTool:       {tool: new ToolCircleArc(uiObjects), cursor: UserInterface.cursorCrosshair }
 	};
 	
 	this.currentTool = null;
