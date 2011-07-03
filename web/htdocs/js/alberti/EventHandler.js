@@ -88,6 +88,12 @@ EventHandler.prototype.handleEvent = function(evt) {
 				return;      // Do not respond to control and metakey combinations
 			}
 			break;
+		
+		case "click":
+			if (evt.detail == 0) {
+				return;      // If detail was 0, event was spoofed. Allow default to handle it.
+			}
+			break;
 	}
 	
 	this[evt.type](evt);
