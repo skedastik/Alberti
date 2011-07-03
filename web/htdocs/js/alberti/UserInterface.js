@@ -120,6 +120,8 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	
 	// Update menus
 	this.editMenu.disableMenuItem("mi_cut");
+	this.editMenu.disableMenuItem("mi_undo");
+	this.editMenu.disableMenuItem("mi_redo");
 	
 	// So that all changes to model are propagated to view...
 	albertiDoc.connectDelegates(this.lmDelegate, this.umDelegate);
@@ -309,6 +311,22 @@ UserInterface.prototype.initToolBar = function() {
 		49: this.selectToolBtn,         // '1'
 		50: this.lineToolBtn,           // '2'
 		51: this.arcToolBtn             // '3'
+	}
+};
+
+// If hasUndos is true, enables Undo menu item, otherwise disables it. 
+// Likewise for hasRedos.
+UserInterface.prototype.updateUndoMenuItems = function(hasUndos, hasRedos) {
+	if (hasUndos) {
+		this.editMenu.enableMenuItem("mi_undo");
+	} else {
+		this.editMenu.disableMenuItem("mi_undo");
+	}
+	
+	if (hasRedos) {
+		this.editMenu.enableMenuItem("mi_redo");
+	} else {
+		this.editMenu.disableMenuItem("mi_redo");
 	}
 };
 
