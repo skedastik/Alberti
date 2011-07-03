@@ -32,9 +32,7 @@ function FileImporter(inputElement, mimeType, importAsText, controller, importHa
 	
 	Util.assert(typeof FileReader !== "undefined", "Your browser does not support the required FileReader object.");
 	
-	// Create FileReader and listen for 'loadend' events.
-	this.fileReader = new FileReader();
-	this.registerListener("loadend", this.fileReader, false);
+	this.fileReader = null;
 	
 	// Set input element's 'accept' attribute to match MIME type passed in,
 	// and listen for file imports.
@@ -56,6 +54,10 @@ FileImporter.prototype.getFilename = function() {
 
 // Invoked every time the user imports a new file.
 FileImporter.prototype.change = function(evt) {
+	// Create new FileReader and listen for 'loadend' events.
+	this.fileReader = new FileReader();
+	this.registerListener("loadend", this.fileReader, false);
+	
 	if (this.importAsText) {
 		this.fileReader.readAsText(this.inputElement.files[0]);
 	} else {
@@ -70,6 +72,10 @@ FileImporter.prototype.loadend = function(evt) {
 		this.controller[this.importHandler](this.fileReader.result, this.getFilename());
 		this.regenerateInput();
 	}
+	
+	// Discard FileReader, because Chrome doesn't seem to like to reuse them
+	this.unregisterListener("loadend", this.fileReader, false);
+	this.fileReader = null;
 };
 
 // Re-create the input element so that the same file can be loaded repeatedly
