@@ -279,7 +279,7 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 		this.undoManager.recordStart();
 		
 		// Clear selections before hiding layer
-		this.clearSelections();
+		this.setSelection([]);
 		
 		// If current layer is being hidden, switch current layer to next
 		// highest visible layer, or next lowest if next highest does not 
@@ -411,12 +411,10 @@ LayerManager.prototype.deleteSelectedShapes = function() {
 	this.undoManager.recordStart();
 	
 	for (i = this.selectedShapes.length - 1; i >= 0; i--) {
-		var shape = this.selectedShapes[i];
-		
-		// Deselect each deleted shape prior to deletion
-		this.deselectShape(shape);
-		this.removeShape(shape, true);
+		this.removeShape(this.selectedShapes[i], true);
 	}
+	
+	this.setSelection([]);
 	
 	// Flush the Intersection object after bulk deletions
 	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
@@ -459,21 +457,15 @@ LayerManager.prototype.pickShapes = function(coord, radius, single) {
 	return shapes;
 };
 
-// Select the given shape. Undo-able.
+// Select the given shape
 LayerManager.prototype.selectShape = function(shape) {
 	if (this.selectedShapes.indexOf(shape) == -1) {
 		this.selectedShapes.push(shape);
 		shape.displaySelected();
 	}
-	
-	// Make it undo-able
-	this.undoManager.push("Select Shape", this,
-		this.selectShape, [shape],
-		this.deselectShape, [shape]
-	);
 };
 
-// Deselect the given shape. Undo-able.
+// Deselect the given shape
 LayerManager.prototype.deselectShape = function(shape) {
 	var index = this.selectedShapes.indexOf(shape);
 	
@@ -481,49 +473,42 @@ LayerManager.prototype.deselectShape = function(shape) {
 		this.selectedShapes.splice(index, 1);
 		shape.displayDeselected();
 	}
-	
-	// Make it undo-able
-	this.undoManager.push("Deselect Shape", this,
-		this.deselectShape, [shape],
-		this.selectShape, [shape]
-	);
-};
-
-// Clear current shape selections
-LayerManager.prototype.clearSelections = function() {
-	for (var i = this.selectedShapes.length - 1; i >= 0; i--) {
-		this.deselectShape(this.selectedShapes[i]);
-	}
 };
 
 // Sets the current selection to a single Shape, or an array of Shapes. Note 
 // that if an array is passed in, it will not be copied. Passing an empty
 // array or null will clear the current selection. Undo-able.
 LayerManager.prototype.setSelection = function(shapes) {
+	var originalSelection = this.getSelectedShapes();
 	shapes = Array.isArray(shapes) ? shapes : (shapes !== null ? [shapes] : []);
 	
-	this.undoManager.recordStart();
-	
-	this.clearSelections();
+	for (var i = this.selectedShapes.length - 1; i >= 0; i--) {
+		this.deselectShape(this.selectedShapes[i]);
+	}
 	
 	for (var i = 0, sLen = shapes.length; i < sLen; i++) {
 		this.selectShape(shapes[i]);
 	}
 	
-	this.undoManager.recordStop();
+	this.undoManager.push("Select Shapes", this,
+		this.setSelection, [this.getSelectedShapes()],
+		this.setSelection, [originalSelection]
+	);
 };
 
 // Invert the selected state of a single Shape, or an array of Shapes. Undo-able.
 LayerManager.prototype.xorSelection = function(shapes) {
+	var originalSelection = this.getSelectedShapes();
 	shapes = Array.isArray(shapes) ? shapes : (shapes !== null ? [shapes] : []);
-	
-	this.undoManager.recordStart();
 	
 	for (var i = 0, sLen = shapes.length; i < sLen; i++) {
 		this[(this.selectedShapes.indexOf(shapes[i]) == -1) ? "selectShape" : "deselectShape"](shapes[i]);
 	}
 	
-	this.undoManager.recordStop();
+	this.undoManager.push("Modify Selection", this,
+		this.setSelection, [this.getSelectedShapes()],
+		this.setSelection, [originalSelection]
+	);
 };
 
 // Returns an array of all visible user-created Shapes.
