@@ -67,3 +67,23 @@ constructions.
 UNDO AND REDO
 
 To undo, press 'u'; to redo, press 'r'.
+
+OPENING FILES
+
+Select File > Open from the Alberti menu. Some sample files are available in
+Alberti/samples.
+
+SAVING FILES
+
+Select File > Save. Assuming you do not have a popup-blocker enabled, a new 
+window will pop up containing the raw Alberti document (an SVG file). Using 
+your browser's menu, save this page and close the window.
+
+IMPORTING AN UNDERLAY IMAGE
+
+Click on the right-most icon in the Alberti menu (a pair of overlapping 
+rectangles). Select "Import Underlay..." and choose an image file. The 
+underlay's opacity can be adjusted with the slider to the right of the 
+underlay menu icon. Select "Remove Underlay" from the underlay menu to remove 
+the underlay. Depending on your browser and hardware, zooming and panning may 
+become sluggish while the underlay is displayed.
