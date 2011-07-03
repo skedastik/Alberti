@@ -490,10 +490,14 @@ LayerManager.prototype.setSelection = function(shapes) {
 		this.selectShape(shapes[i]);
 	}
 	
-	this.undoManager.push("Select Shapes", this,
-		this.setSelection, [this.getSelectedShapes()],
-		this.setSelection, [originalSelection]
-	);
+	var newSelection = this.getSelectedShapes();
+	
+	if (!newSelection.equals(originalSelection)) {
+		this.undoManager.push("Select Shapes", this,
+			this.setSelection, [newSelection],
+			this.setSelection, [originalSelection]
+		);
+	}
 };
 
 // Invert the selected state of a single Shape, or an array of Shapes. Undo-able.
@@ -505,10 +509,14 @@ LayerManager.prototype.xorSelection = function(shapes) {
 		this[(this.selectedShapes.indexOf(shapes[i]) == -1) ? "selectShape" : "deselectShape"](shapes[i]);
 	}
 	
-	this.undoManager.push("Modify Selection", this,
-		this.setSelection, [this.getSelectedShapes()],
-		this.setSelection, [originalSelection]
-	);
+	var newSelection = this.getSelectedShapes();
+	
+	if (!newSelection.equals(originalSelection)) {
+		this.undoManager.push("Modify Selection", this,
+			this.setSelection, [newSelection],
+			this.setSelection, [originalSelection]
+		);
+	}
 };
 
 // Returns an array of all visible user-created Shapes.
