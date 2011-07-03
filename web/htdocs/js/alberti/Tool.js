@@ -29,11 +29,13 @@
  * Likewise, minSteps represents the minimum number of steps before the user
  * can short-circuit the operation of the tool with the enter key. Pass -1 for
  * numSteps to create an unbounded tool (e.g. a path tool might allow any
- * number of points to be added to the path). The final parameter of is a
- * boolean flag indicating whether or not mouseup events should execute a
- * step (in other words, if it is true, the user must hold the mouse down in 
- * order to suppress execution of the next step; defaults to false). Classes 
- * must implement the following methods:
+ * number of points to be added to the path). 'mouseupFlag' is a boolean flag 
+ * indicating whether or not mouseup events should execute a step (in other 
+ * words, if it is true, the user must hold the mouse down in order to 
+ * suppress execution of the next step; defaults to false). 'uiObjects' is
+ * an object containing references to required UI objects. It should have the
+ * following properties: masterGroup, overlayGroup, underlayGroup, toolTip. 
+ * Classes must implement the following methods:
  * 
  * executeStep(stepNum, gx, gy)
  * 
@@ -111,11 +113,11 @@
  * 
  * * */
  
-function Tool(numSteps, minSteps, mouseupFlag) {
-	Tool.baseConstructor.call(this, null, null, null);
+function Tool(numSteps, minSteps, mouseupFlag, uiObjects) {
+	Tool.baseConstructor.call(this, uiObjects.masterGroup, null, uiObjects.overlayGroup);
 	this.undoManager =  null;
-	this.underlayGroup = null;
-	this.toolTip = null;
+	this.underlayGroup = uiObjects.underlayGroup;
+	this.toolTip = uiObjects.toolTip;
 	
 	this.numSteps = numSteps;
 	this.minSteps = arguments.length > 1 ? minSteps : numSteps;
@@ -139,16 +141,10 @@ Tool.prototype.setManagers = function(layerManager, undoManager) {
 	this.undoManager = undoManager;
 };
 
-Tool.prototype.activate = function(masterGroup, layerManager, undoManager, overlayGroup, underlayGroup, toolTip) {
+Tool.prototype.activate = function() {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
-		
-		this.masterGroup = masterGroup;
-		this.setManagers(layerManager, undoManager);
-		this.overlayGroup = overlayGroup;
-		this.underlayGroup = underlayGroup;
-		this.toolTip = toolTip;
 		
 		this.registerListener("mousedown", Alberti.svgRoot, false);
 		this.registerListener("mousemove", window, false);
@@ -178,13 +174,6 @@ Tool.prototype.deactivate = function() {
 		this.toolTip.clearText();
 		this.onDeactivate();
 		this.reset();
-		
-		this.masterGroup = null;
-		this.layerManager = null;
-		this.undoManager =  null;
-		this.overlayGroup = null;
-		this.underlayGroup = null;
-		this.toolTip = null;
 	}
 };
 
