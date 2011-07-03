@@ -26,11 +26,12 @@ Zap.zoomTransitionAccel = -1.0;           // transition animation acceleration
 Zap.maxWheelEvtPerSec = 30;
 Zap.wheelEvtRefreshMs = Math.round(1000 / Zap.maxWheelEvtPerSec);
 
-function Zap(masterGroup, autoScale, albertiDoc, toolTip) {
+function Zap(masterGroup, autoScale, layerManager, underlayImage, toolTip) {
 	Zap.baseConstructor.call(this);
 	this.masterGroup = masterGroup;
 	this.autoScale = autoScale;
-	this.albertiDoc = albertiDoc;
+	this.layerManager = layerManager;
+	this.underlayImage = underlayImage;
 	this.toolTip = toolTip;
 	
 	this.panningEnabled = false;
@@ -41,7 +42,7 @@ function Zap(masterGroup, autoScale, albertiDoc, toolTip) {
 	
 	// Update AutoScale and layer manager's Intersection object with the default zoom level
 	this.autoScale.update(Zap.zoomFactors[this.zoomLevel]);
-	this.albertiDoc.layerManager.intersections.setSearchRadiusScale(Zap.zoomFactors[this.zoomLevel]);
+	this.layerManager.intersections.setSearchRadiusScale(Zap.zoomFactors[this.zoomLevel]);
 	
 	this.masterGroup.scale = Zap.zoomFactors[this.zoomLevel];
 	this.masterGroup.push();
@@ -90,17 +91,17 @@ Zap.prototype.handleWheel = function(direction, evt) {
 					this.disableZoomPanOptimization();
 				}
 			}.bindTo(this),
-			!this.albertiDoc.underlayImage.isHidden() ?
+			!this.underlayImage.isHidden() ?
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
-					this.albertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
+					this.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
 					this.masterGroup.push();
-					this.albertiDoc.underlayImage.update();
+					this.underlayImage.update();
 				}.bindTo(this)
 				:
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
-					this.albertiDoc.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
+					this.layerManager.intersections.setSearchRadiusScale(this.masterGroup.scale);
 					this.masterGroup.push();
 				}.bindTo(this));
 		
@@ -108,10 +109,10 @@ Zap.prototype.handleWheel = function(direction, evt) {
 		this.zoomAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
 		this.zoomAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
 		
-		if (!this.albertiDoc.underlayImage.isHidden()) {
-			this.zoomAnimation.add(this.albertiDoc.underlayImage, "scale", this.albertiDoc.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
-			this.zoomAnimation.add(this.albertiDoc.underlayImage, "x", this.albertiDoc.underlayImage.x, panX, Zap.zoomTransitionAccel);
-			this.zoomAnimation.add(this.albertiDoc.underlayImage, "y", this.albertiDoc.underlayImage.y, panY, Zap.zoomTransitionAccel);
+		if (!this.underlayImage.isHidden()) {
+			this.zoomAnimation.add(this.underlayImage, "scale", this.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
+			this.zoomAnimation.add(this.underlayImage, "x", this.underlayImage.x, panX, Zap.zoomTransitionAccel);
+			this.zoomAnimation.add(this.underlayImage, "y", this.underlayImage.y, panY, Zap.zoomTransitionAccel);
 		}
 			
 		this.zoomAnimation.begin();
@@ -134,10 +135,10 @@ Zap.prototype.stopZoomTransition = function() {
 };
 
 Zap.prototype.updateUnderlayImage = function() {
-	this.albertiDoc.underlayImage.scale = Zap.zoomFactors[this.zoomLevel];
-	this.albertiDoc.underlayImage.x = this.masterGroup.position.x;
-	this.albertiDoc.underlayImage.y = this.masterGroup.position.y;
-	this.albertiDoc.underlayImage.update();
+	this.underlayImage.scale = Zap.zoomFactors[this.zoomLevel];
+	this.underlayImage.x = this.masterGroup.position.x;
+	this.underlayImage.y = this.masterGroup.position.y;
+	this.underlayImage.update();
 };
 
 Zap.prototype.updateMagnificationTooltip = function(scale) {
@@ -225,8 +226,8 @@ Zap.prototype.onDrag = function(dx, dy, evt) {
 	this.masterGroup.translateRelative(dx, dy);
 	this.masterGroup.push();
 	
-	if (!this.albertiDoc.underlayImage.isHidden()) {
-		this.albertiDoc.underlayImage.translateRelative(dx, dy);
-		this.albertiDoc.underlayImage.update();
+	if (!this.underlayImage.isHidden()) {
+		this.underlayImage.translateRelative(dx, dy);
+		this.underlayImage.update();
 	}
 };
