@@ -65,7 +65,7 @@ function UserInterface(clipBoard, appController, newDocHandler, saveHandler, loa
 	
 	// Warn user about unsaved data before leaving page
 	window.onbeforeunload = function(evt) {
-		if (!this.albertiDoc.undoManager.stateIsClean()) {
+		if (!this.umDelegate.stateIsClean()) {
 			var msg = "There are unsaved changes to this document.";
 			evt.returnValue = msg;
 			return msg;
@@ -76,9 +76,10 @@ Util.extend(UserInterface, EventHandler);
 
 // Prepares the interface for the given Alberti document
 UserInterface.prototype.prepareForDocument = function(albertiDoc) {
-	this.albertiDoc = albertiDoc;
+	this.underlayImage = albertiDoc.underlayImage;
+	this.umDelegate = new UndoManagerDelegate(albertiDoc.undoManager, this);
 	
-	if (!this.albertiDoc.underlayImage.isHidden()) {
+	if (!this.underlayImage.isHidden()) {
 		this.hideHud();
 		this.ulSlider.show();
 		this.ulMenu.enableMenuItem("mi_remove_ul");       // Enable "Remove Underlay" menu item
@@ -94,23 +95,23 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 		this.zap.killAllListeners();
 	}
 	
-	// Enable our own zooming and panning mechanism
-	this.zap = new Zap(this.masterGroup, this.autoScale, this.albertiDoc, this.toolTip);
-	
 	// Create controller for layer panel and connect it to layer panel
 	this.lpController = new LayerPanelController(this.layerPanel);
 	this.layerPanel.setController(this.lpController);
 	
 	// Create layer manager delegate and connect it to layer panel controller
-	this.lmDelegate = new LayerManagerDelegate(this.albertiDoc.layerManager, this.lpController, this);
+	this.lmDelegate = new LayerManagerDelegate(albertiDoc.layerManager, this.lpController, this);
 	this.lpController.setLayerManagerDelegate(this.lmDelegate);
 	
 	// Tell layer panel controller to populate layer panel with data
 	this.lpController.populateLayerPanel();
 	
+	// Enable our own zooming and panning mechanism
+	this.zap = new Zap(this.masterGroup, this.autoScale, this.lmDelegate, this.underlayImage, this.toolTip);
+	
 	// Update tools w/ new managers
 	for (var toolName in this.toolIndex) {
-		this.toolIndex[toolName].tool.setManagers(this.lmDelegate, this.albertiDoc.undoManager);
+		this.toolIndex[toolName].tool.setManagers(this.lmDelegate, this.umDelegate);
 	}
 	
 	if (this.currentTool === null) {
@@ -119,6 +120,9 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	
 	// Update menus
 	this.editMenu.disableMenuItem("mi_cut");
+	
+	// So that all changes to model are propagated to view...
+	albertiDoc.connectDelegates(this.lmDelegate, this.umDelegate);
 };
 
 UserInterface.prototype.setTool = function(toolName) {
@@ -322,7 +326,7 @@ UserInterface.prototype.updateClippingMenuItems = function(shapesAreSelected) {
 // prompting user if there are no unsaved changes, or if the user chooses to 
 // discard the unsaved changes. Otherwise returns false.
 UserInterface.prototype.discardUnsavedChanges = function() {
-	if (!this.albertiDoc.undoManager.stateIsClean()) {
+	if (!this.umDelegate.stateIsClean()) {
 		return confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and open another document?");
 	}
 	
@@ -330,10 +334,10 @@ UserInterface.prototype.discardUnsavedChanges = function() {
 };
 
 UserInterface.prototype.handleImportUlImage = function(imgDataUrl) {
-	this.albertiDoc.setUnderlayImageSrc(imgDataUrl);
-	this.albertiDoc.underlayImage.opacity = 1;          // Set underlay image to fully opaque on import
+	this.underlayImage.setSourceToDataUrl(imgDataUrl);
+	this.underlayImage.opacity = 1;                     // Set underlay image to fully opaque on import
 	this.zap.updateUnderlayImage();                     // Update underlay image to match current zoom & pan
-	this.albertiDoc.underlayImage.show();
+	this.underlayImage.show();
 
 	this.hideHud();                                     // Hide the HUD
 
@@ -350,7 +354,7 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			var createNewDoc = true;
 			
 			// Warn the user of unsaved changes before creating a new document
-			if (!this.albertiDoc.undoManager.stateIsClean()) {
+			if (!this.umDelegate.stateIsClean()) {
 				createNewDoc = confirm("There are unsaved changes to this document. Are you sure you want to discard these changes and create a new document?");
 			}
 			
@@ -372,11 +376,11 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			break;
 		
 		case "mi_undo":
-			this.albertiDoc.undoManager.undo();
+			this.umDelegate.undo();
 			break;
 			
 		case "mi_redo":
-			this.albertiDoc.undoManager.redo();
+			this.umDelegate.redo();
 			break;
 			
 		case "mi_cut":
@@ -392,9 +396,9 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			
 		case "mi_paste":
 			if (!this.clipBoard.isEmpty()) {
-				this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
+				this.umDelegate.recordStart();      // Buffer pasted-shape insertions into a single undo
 				this.clipBoard.paste(this.lmDelegate);
-				this.albertiDoc.undoManager.recordStop();
+				this.umDelegate.recordStop();
 			
 				// Pasting the same content multiple times makes no sense in 
 				// Alberti, so clear the clip board after a paste.
@@ -409,7 +413,7 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			break;
 		
 		case "mi_remove_ul":
-			this.albertiDoc.underlayImage.hide();
+			this.underlayImage.hide();
 			this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
 			this.ulSlider.hide();                             // Hide the underlay opacity slider
 			this.showHud();
@@ -441,12 +445,12 @@ UserInterface.prototype.handleToolBar = function(button) {
 
 UserInterface.prototype.handleUlSlider = function(ulSlider, value) {
 	if (value > 0) {
-		this.albertiDoc.underlayImage.show();
-		this.albertiDoc.underlayImage.opacity = value;
-		this.albertiDoc.underlayImage.update();
+		this.underlayImage.show();
+		this.underlayImage.opacity = value;
+		this.underlayImage.update();
 		this.hideHud();
 	} else {
-		this.albertiDoc.underlayImage.hide();
+		this.underlayImage.hide();
 		this.showHud();
 	}
 };
