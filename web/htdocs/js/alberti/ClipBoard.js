@@ -20,6 +20,11 @@ ClipBoard.prototype.copy = function(shapeArray) {
 	}
 };
 
+// Returns true if clip board is empty, false otherwise
+ClipBoard.prototype.isEmpty = function() {
+	return this.shapes.length == 0;
+};
+
 // Paste shapes from clip board into current layer of given LayerManager
 ClipBoard.prototype.paste = function(layerManager) {
 	for (var i = 0, len = this.shapes.length; i < len; i++) {
