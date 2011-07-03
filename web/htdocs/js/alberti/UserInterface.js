@@ -268,6 +268,7 @@ UserInterface.prototype.initMenuBar = function() {
 		document.getElementById("ul_menu_btn")
 	);
 	
+	this.editMenu.disableMenuItem("mi_paste");
 	this.ulMenu.disableMenuItem("mi_remove_ul");
 	
 	this.menuBar = new GuiMenuBar();
@@ -379,18 +380,28 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			break;
 			
 		case "mi_cut":
-			this.clipBoard.copy(this.lmDelegate.getSelectedShapes());
-			this.lmDelegate.deleteSelectedShapes();
+			var selectedShapes = this.lmDelegate.getSelectedShapes();
+			
+			if (selectedShapes.length > 0) {
+				this.clipBoard.copy(selectedShapes);
+				this.lmDelegate.deleteSelectedShapes();
+				
+				this.editMenu.enableMenuItem("mi_paste");
+			}
 			break;
 			
 		case "mi_paste":
-			this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
-			this.clipBoard.paste(this.lmDelegate);
-			this.albertiDoc.undoManager.recordStop();
+			if (!this.clipBoard.isEmpty()) {
+				this.albertiDoc.undoManager.recordStart();      // Buffer pasted-shape insertions into a single undo
+				this.clipBoard.paste(this.lmDelegate);
+				this.albertiDoc.undoManager.recordStop();
 			
-			// Pasting the same content multiple times makes no sense in 
-			// Alberti, so clear the clip board after a paste.
-			this.clipBoard.clear();
+				// Pasting the same content multiple times makes no sense in 
+				// Alberti, so clear the clip board after a paste.
+				this.clipBoard.clear();
+				
+				this.editMenu.disableMenuItem("mi_paste");
+			}
 			break;
 		
 		case "mi_import_ul":
