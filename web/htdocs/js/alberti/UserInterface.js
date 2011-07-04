@@ -278,6 +278,11 @@ UserInterface.prototype.initLayerPanel = function() {
 
 // Initialize the menu bar
 UserInterface.prototype.initMenuBar = function() {
+	this.helpMenu = new GuiMenu("help_menu",
+		document.getElementById("help_menu"), this, "handleMenu",
+		document.getElementById("help_menu_btn")
+	);
+	
 	this.fileMenu = new GuiMenu("file_menu",
 		document.getElementById("file_menu"), this, "handleMenu",
 		document.getElementById("file_menu_btn")
@@ -297,6 +302,7 @@ UserInterface.prototype.initMenuBar = function() {
 	this.ulMenu.disableMenuItem("mi_remove_ul");
 	
 	this.menuBar = new GuiMenuBar();
+	this.menuBar.addMenu(this.helpMenu);
 	this.menuBar.addMenu(this.fileMenu);
 	this.menuBar.addMenu(this.editMenu);
 	
