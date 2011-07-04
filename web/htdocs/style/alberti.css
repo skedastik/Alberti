@@ -46,7 +46,7 @@
 }
 
 text {
-	font-family: "Lucida Grande", Arial, sans-serif;
+	font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
 	font-size: 11px;
 }
 
@@ -63,7 +63,6 @@ body {
 body, div, img, ul {
 	-webkit-user-select: none;
 	-moz-user-select: -moz-none;
-	-khtml-user-select: none;
 	user-select: none;
 }
 
