@@ -1,6 +1,6 @@
 body {
 	color: #ddd;
-	font-family: "Lucida Grande", Arial, sans-serif;
+	font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;;
 	font-size: 14px;
 }
 
@@ -264,7 +264,7 @@ ul.menu {
 	
 	list-style-type: none;
 	cursor: default;
-	background-color: #000;
+	background-color: #383838;
 	
 	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
@@ -275,7 +275,7 @@ ul.menu li {
 }
 
 ul.menu li.guiMenuDisabled, ul.menu li.guiMenuDisabled:hover {
-	color: #666666;
+	color: #777777;
 	background: none;
 }
 
@@ -327,12 +327,18 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	background: #35d url('../images/layer_row_selected.png') bottom repeat-x;
 }
 
+#help_menu_btn {
+	padding-right: 8px;
+	padding-left: 9px;
+}
+
 #file_menu_btn {
-	padding-right: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
 }
 
 #edit_menu_btn {
-	padding-left: 10px;
+	padding-left: 8px;
 }
 
 #ul_menu_btn {
