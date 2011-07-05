@@ -61,8 +61,14 @@ CircleArc.prototype.push = function() {
 	var large = Math.abs(this.da) > Math.PI ? 1 : 0;
 	var sweep = this.da > 0 ? 1 : 0;
 	
-	this.set("d", "M"+m.x+","+m.y+" A"+this.radius+","+this.radius+", "
-		+this.sa+","+large+","+sweep+", "+n.x+", "+n.y);
+	var r = Util.roundToDecimal(this.radius, Alberti.precision);
+	
+	this.set("d",
+		"M"+Util.roundToDecimal(m.x, Alberti.precision)+","+Util.roundToDecimal(m.y, Alberti.precision)
+		+" A"+r+","+r+", 0, "
+		+large+","+sweep+", "
+		+Util.roundToDecimal(n.x, Alberti.precision)+", "+Util.roundToDecimal(n.y, Alberti.precision)
+	);
 	
 	this.set("berti:cx", this.center.x, Alberti.customns);
 	this.set("berti:cy", this.center.y, Alberti.customns);
