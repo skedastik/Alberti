@@ -74,6 +74,7 @@ function UserInterface(clipBoard, appController, newDocHandler, saveHandler, loa
 	this.initToolBar();
 	this.initToolSet();
 	this.initFileImporters();
+	this.initModals();
 	
 	// Set up listeners at the window level
 	this.registerListener("keydown", window, false);
@@ -355,6 +356,10 @@ UserInterface.prototype.updateUndoMenuItems = function(hasUndos, hasRedos) {
 	}
 };
 
+UserInterface.prototype.initModals = function() {
+	this.aboutBox = new Modal(document.getElementById("about_box"), document.getElementById("abt_cb"));
+};
+
 // If shapesAreSelected is true, enables appropriate clip board menu items,
 // otherwise disables them.
 UserInterface.prototype.updateClippingMenuItems = function(shapesAreSelected) {
@@ -460,6 +465,10 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			this.ulMenu.disableMenuItem("mi_remove_ul");      // Disable "Remove Underlay" menu item
 			this.ulSlider.hide();                             // Hide the underlay opacity slider
 			this.showHud();
+			break;
+		
+		case "mi_about":
+			this.aboutBox.show();
 			break;
 	}
 };
