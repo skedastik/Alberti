@@ -46,7 +46,7 @@ function Alberti() {
 	this.loadDocument(new AlbertiDocument());
 	
 	// Display version string in About box
-	document.getElementById("version").innerHTML = Alberti.version;
+	document.getElementById("version").innerHTML = "v"+Alberti.version;
 	
 	// Reveal the document body now that application setup is complete
 	document.getElementById("content").style.display = "";
