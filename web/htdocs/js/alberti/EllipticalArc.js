@@ -22,7 +22,7 @@
  * extends Shape
  * 
  * Elliptical arc shape, defined by a center point, x-radius, y-radius,
- * x-axis-rotation, start angle, and delta angle.
+ * x-axis-rotation, start angle, and delta angle (angles in radians).
  * 
  * * */
 
@@ -69,15 +69,17 @@ EllipticalArc.prototype.push = function() {
 		this.center.y + this.rx * cos(tn) * sin(this.xrot) + this.ry * sin(tn) * cos(this.xrot)
 	);
 	
-	Dbug.logCoords(Coord2D.roundForSafety(m));
-	Dbug.logCoords(Coord2D.roundForSafety(n));
-	
 	// Determine large-arc and sweep flag SVG path params based on delta angle
 	var large = Math.abs(this.da) > Math.PI ? 1 : 0;
 	var sweep = this.da > 0 ? 1 : 0;
 	
-	this.set("d", "M"+m.x+","+m.y+" A"+this.rx+","+this.ry+", "
-		+this.xrot+","+large+","+sweep+", "+n.x+", "+n.y);
+	this.set("d",
+		"M"+Util.roundToDecimal(m.x, Alberti.precision)+","+Util.roundToDecimal(m.y, Alberti.precision)
+		+" A"+Util.roundToDecimal(this.rx, Alberti.precision)+","+Util.roundToDecimal(this.ry, Alberti.precision)+", "
+		+Util.roundToDecimal(Util.radToDeg(this.xrot), Alberti.precision)+", "
+		+large+","+sweep+", "
+		+Util.roundToDecimal(n.x, Alberti.precision)+", "+Util.roundToDecimal(n.y, Alberti.precision)
+	);
 	
 	this.set("berti:cx", this.center.x, Alberti.customns);
 	this.set("berti:cy", this.center.y, Alberti.customns);
