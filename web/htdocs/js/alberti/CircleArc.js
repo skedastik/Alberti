@@ -39,43 +39,51 @@ Util.extend(CircleArc, Shape);
 CircleArc.prototype.initialize = function() {
 	this.center = new Coord2D(0, 0);
 	this.radius = 0;
-	this.startAngle = 0;
-	this.deltaAngle = 0;
+	this.sa = 0;                                // Start angle
+	this.da = 0;                                // Delta angle
 };
 
 CircleArc.prototype.push = function() {
-	// m and n are the "endpoints" of the arc, needed for SVG's arc path format
-	var m = new Coord2D(this.center.x + this.radius * Math.sin(this.startAngle + Util.halfPi),
-		this.center.y + this.radius * -Math.cos(this.startAngle + Util.halfPi));
-	var n = new Coord2D(this.center.x + this.radius * Math.sin(this.startAngle + this.deltaAngle + Util.halfPi),
-		this.center.y + this.radius * -Math.cos(this.startAngle + this.deltaAngle + Util.halfPi));
+	var extentAngle = this.sa + this.da;
 	
-	// Invert SVG's large-arc and sweep flags if delta angle is less than zero
-	var sweep = this.deltaAngle < 0 ? (this.deltaAngle >= -Math.PI ? "0,0" : "1,0") : (this.deltaAngle <= Math.PI ? "0,1" : "1,1");
+	// m and n are the "endpoints" of the arc, needed for SVG's arc path format
+	var m = new Coord2D(
+		this.center.x + this.radius * cos(this.sa),
+		this.center.y + this.radius * sin(this.sa)
+	);
+		
+	var n = new Coord2D(
+		this.center.x + this.radius * cos(extentAngle),
+		this.center.y + this.radius * sin(extentAngle)
+	);
+	
+	// Determine large-arc and sweep flag SVG path params based on delta angle
+	var large = Math.abs(this.da) > Math.PI ? 1 : 0;
+	var sweep = this.da > 0 ? 1 : 0;
 	
 	this.set("d", "M"+m.x+","+m.y+" A"+this.radius+","+this.radius+", "
-		+Util.degToRad(this.startAngle)+","+sweep+", "+n.x+", "+n.y);
+		+this.sa+","+large+","+sweep+", "+n.x+", "+n.y);
 	
 	this.set("berti:cx", this.center.x, Alberti.customns);
 	this.set("berti:cy", this.center.y, Alberti.customns);
 	this.set("berti:r", this.radius, Alberti.customns);
-	this.set("berti:sa", this.startAngle, Alberti.customns);
-	this.set("berti:da", this.deltaAngle, Alberti.customns);
+	this.set("berti:sa", this.sa, Alberti.customns);
+	this.set("berti:da", this.da, Alberti.customns);
 };
 
 CircleArc.prototype.pull = function() {
 	this.center = new Coord2D(this.get("cx", Alberti.customns), this.get("cy", Alberti.customns));
 	this.radius = this.get("r", Alberti.customns);
-	this.startAngle = this.get("sa", Alberti.customns);
-	this.deltaAngle = this.get("da", Alberti.customns);
+	this.sa = this.get("sa", Alberti.customns);
+	this.da = this.get("da", Alberti.customns);
 };
 
 CircleArc.prototype.clone = function() {
 	var ca = new CircleArc();
 	ca.center = this.center.clone();
 	ca.radius = this.radius;
-	ca.startAngle = this.startAngle;
-	ca.deltaAngle = this.deltaAngle;
+	ca.sa = this.sa;
+	ca.da = this.da;
 	
 	return ca;
 };
