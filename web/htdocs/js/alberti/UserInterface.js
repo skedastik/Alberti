@@ -420,7 +420,7 @@ UserInterface.prototype.handleMenu = function(itemId) {
 		
 		// Save document
 		case "mi_save_doc":
-			this.appController[this.saveHandler]();          // Invoke app controller's save document handler
+			this.appController[this.saveHandler](AlbertiDocument.exportTypeSvg);
 			break;
 		
 		case "mi_undo":
