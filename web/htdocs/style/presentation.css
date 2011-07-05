@@ -23,7 +23,6 @@ body, div, img, ul {
 
 a {
 	color: #46e;
-	text-decoration: none;
 }
 
 #striptop {
@@ -49,7 +48,7 @@ a {
 	opacity: 0;
 }
 
-/* Dialogs * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* Modals * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #js_required {
 	position: fixed;
@@ -74,23 +73,43 @@ a {
 	opacity: 0.5;
 }
 
-.dialog {
+.modal {
 	position: fixed;
 	top: 50%;
 	left: 50%;
+	margin-left: -270px;
+	width: 500px;
+	
 	font-family: 'Georgia', serif;
 }
 
-.dialog * {
+.modal * {
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	user-select: text;
 }
 
 #about_box {
-	margin-top: -45px;
-	margin-left: -270px;
-	width: 500px;
+	margin-top: -60px;
+}
+
+.cbox {
+	position: relative;
+	left: 500px;
+	width: 20px;
+	height: 20px;
+	
+	border-radius: 10px 10px 10px 0;
+	background: #333 url(../images/closebox.png) 5px 5px no-repeat;
+	
+	cursor: pointer;
+	
+	box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.25);
+}
+
+.cbox:hover {
+	background-color: red;
 }
 
 #about_top {
@@ -98,7 +117,6 @@ a {
 	height: 50px;
 	
 	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
 	
 	background: #333;
 	color: #fff;
@@ -152,7 +170,6 @@ a {
 .blurb {
 	margin-left: 8px;
 	color: #888;
-/*	font-size: 15px;*/
 }
 
 .subsidiary {
