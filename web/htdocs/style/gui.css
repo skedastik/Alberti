@@ -1,8 +1,9 @@
-body {
-	color: #ddd;
-	font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;;
-	font-size: 14px;
-}
+/* 
+ * gui.css
+ *
+ * GUI styling.
+ *
+ */
 
 /* Preload images */
 body:after {
@@ -16,29 +17,6 @@ body:after {
 	url('../images/lpcollapse_on.png');
 	
 	display: none;
-}
-
-#striptop {
-	position: fixed;
-	height: 5px;
-	width: 100%;
-	background-color: #000;
-}
-
-#tooltip {
-	position: fixed;
-	left: 9px;
-	bottom: 6px;
-	
-	font-size: 11px;
-	color: #f00;
-}
-
-#hidden_div {
-	position: fixed;
-	top: -1000px;
-	left: -1000px;
-	opacity: 0;
 }
 
 /* Layer panel * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -199,7 +177,7 @@ body:after {
 	
 	width: 153px;
 	
-	font-family: "Lucida Grande", Arial, sans-serif;
+	font-family: 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
 	font-size: 14px;
 }
 

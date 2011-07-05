@@ -4,6 +4,7 @@
 <head>
 	<title>Alberti Draw</title>
 	<link rel="stylesheet" href="style/alberti.css" type="text/css" />
+	<link rel="stylesheet" href="style/presentation.css" type="text/css" />
 	<link rel="stylesheet" href="style/gui.css" type="text/css" />
 	<script type="text/ecmascript" src="js/jscolor/jscolor.js"></script>
 	<script type="text/ecmascript" src="js/fryn-html5slider/html5slider.js"></script>
@@ -65,93 +66,124 @@
 	<script type="text/ecmascript" src="js/alberti/gui/UnderlaySlider.js"></script>
 	<script type="text/ecmascript" src="js/alberti/UserInterface.js"></script>
 </head>
-<body onload="main()" style="display:none">
-	<div id="hidden_div">
-		<input type="file" id="fi" />
-		<input type="file" id="uii" />
-	</div>
-	<img id="underlayimg" src="images/dummy.png" style="display:none" />
-	<svg id="svgroot" style="position: absolute; width:100%; height:100%"
-		xmlns="http://www.w3.org/2000/svg" version="1.1"
-		xmlns:xlink="http://www.w3.org/1999/xlink"
-		xmlns:berti="http://www.albertidraw.com/alberti">
-		<defs>
-			<marker id="marker_selected" refX="2" refY="2" markerWidth="4" markerHeight="4">
-				<rect x="0" y="0" width="4" height="4" />
-			</marker>
-			<g id="point_template" shape-rendering="auto">
-				<circle cx="0" cy="0" r="1" stroke="none" stroke-width="1" />
-				<circle cx="0" cy="0" r="3" stroke-width="1.5" fill="none" />
-			</g>
-		</defs>
-		<g id="static_underlay">
-		</g>
-		<g id="root">
-			<!-- This large rectangle is used to set the cursor -->
-			<rect id="background" x="-10000" y="-10000" width="20000" height="20000" pointer-events="all" />
-			<g id="master">
-				<g id="underlay"></g>
-				<g id="hud">
-					<line x1="-15" y1="-15"  x2="15" y2="15" stroke="#bbbbcc" stroke-width="1" />
-					<line  x1="15" y1="-15" x2="-15" y2="15" stroke="#bbbbcc" stroke-width="1" />
-				</g>
-				<g id="workspace"></g>
-				<g id="overlay"></g>
-			</g>
-		</g>
-		<g id="static_overlay">
-		</g>
-	</svg>
-	<div id="striptop"></div>
-	<div id="layer_panel">
-		<div id="layer_panel_dynamic"></div>
-		<div id="layer_panel_control_strip">
-			<div class="layer_panel_row"></div>
+<body onload="main()">
+	<noscript>
+		<div id="js_required">
+			Javascript must be enabled in order for Alberti to run.
 		</div>
-	</div>
-	<div id="toolbar">
-		<div id="select_tool_btn" class="side_btn"><div></div></div>
-		<div class="tb_hr"></div>
-		<div id="line_tool_btn" class="side_btn"><div></div></div>
-		<div id="arc_tool_btn" class="side_btn"><div></div></div>
-	</div>
-	<div id="menubar">
-		<div id="help_menu_btn" class="mb_btn">?</div>
-		<div id="file_menu_btn" class="mb_btn">File</div>
-		<div id="edit_menu_btn" class="mb_btn">Edit</div>
-		<div class="mb_vr"></div>
-		<div id="ul_menu_btn" class="mb_btn"></div>
-		<div id="ul_slider_cab">
-			<div class="btn_wrapper">
-				<div id="ul_slider_wrapper">
-					<label for="ul_opac_slider">Opacity:</label><input id="ul_opac_slider" type="range" min="0" max="1.0" value="1.0" step="0.01"/>
+	</noscript>
+	<div id="content" style="display:none">
+		<div id="hidden_div">
+			<input type="file" id="fi" />
+			<input type="file" id="uii" />
+		</div>
+		<img id="underlayimg" src="images/dummy.png" style="display:none" />
+		<svg id="svgroot" style="position: absolute; width:100%; height:100%"
+			xmlns="http://www.w3.org/2000/svg" version="1.1"
+			xmlns:xlink="http://www.w3.org/1999/xlink"
+			xmlns:berti="http://www.albertidraw.com/alberti">
+			<defs>
+				<marker id="marker_selected" refX="2" refY="2" markerWidth="4" markerHeight="4">
+					<rect x="0" y="0" width="4" height="4" />
+				</marker>
+				<g id="point_template" shape-rendering="auto">
+					<circle cx="0" cy="0" r="1" stroke="none" stroke-width="1" />
+					<circle cx="0" cy="0" r="3" stroke-width="1.5" fill="none" />
+				</g>
+			</defs>
+			<g id="static_underlay">
+			</g>
+			<g id="root">
+				<!-- This large rectangle is used to set the cursor -->
+				<rect id="background" x="-10000" y="-10000" width="20000" height="20000" pointer-events="all" />
+				<g id="master">
+					<g id="underlay"></g>
+					<g id="hud">
+						<line x1="-18" y1="-18" x2="-10" y2="-10" stroke="#bbbbcc" stroke-width="1" />
+						<line x1="-18"  y1="18" x2="-10"  y2="10" stroke="#bbbbcc" stroke-width="1" />
+						<line  x1="18" y1="-18"  x2="10" y2="-10" stroke="#bbbbcc" stroke-width="1" />
+						<line  x1="18"  y1="18"  x2="10"  y2="10" stroke="#bbbbcc" stroke-width="1" />
+						<line  x1="4"   y1="4"  x2="-4"  y2="-4" stroke="#bbbbcc" stroke-width="1" />
+						<line  x1="4"  y1="-4"  x2="-4"   y2="4" stroke="#bbbbcc" stroke-width="1" />
+					</g>
+					<g id="workspace"></g>
+					<g id="overlay"></g>
+				</g>
+			</g>
+			<g id="static_overlay">
+			</g>
+		</svg>
+		<div id="striptop"></div>
+		<div id="layer_panel">
+			<div id="layer_panel_dynamic"></div>
+			<div id="layer_panel_control_strip">
+				<div class="layer_panel_row"></div>
+			</div>
+		</div>
+		<div id="toolbar">
+			<div id="select_tool_btn" class="side_btn"><div></div></div>
+			<div class="tb_hr"></div>
+			<div id="line_tool_btn" class="side_btn"><div></div></div>
+			<div id="arc_tool_btn" class="side_btn"><div></div></div>
+		</div>
+		<div id="menubar">
+			<div id="help_menu_btn" class="mb_btn">?</div>
+			<div id="file_menu_btn" class="mb_btn">File</div>
+			<div id="edit_menu_btn" class="mb_btn">Edit</div>
+			<div class="mb_vr"></div>
+			<div id="ul_menu_btn" class="mb_btn"></div>
+			<div id="ul_slider_cab">
+				<div class="btn_wrapper">
+					<div id="ul_slider_wrapper">
+						<label for="ul_opac_slider">Opacity:</label><input id="ul_opac_slider" type="range" min="0" max="1.0" value="1.0" step="0.01"/>
+					</div>
 				</div>
 			</div>
 		</div>
+		<ul id="help_menu" class="menu">
+			<li id="mi_help"><span class="mi_name">Help</span><span class="mi_spacer">.</span></li>
+			<li id="mi_about"><span class="mi_name">About Alberti</span><span class="mi_spacer">.</span></li>
+		</ul>
+		<ul id="file_menu" class="menu">
+			<li id="mi_new_doc"><span class="mi_name">New</span><span class="mi_scut">&#x21e7;N</span></li>
+			<li id="mi_open_doc"><span class="mi_name">Open...</span><span class="mi_scut">&#x21e7;O</span></li>
+			<li class="mi_hr"><hr /></li>
+			<li id="mi_save_doc"><span class="mi_name">Save As...</span><span class="mi_scut">&#x21e7;S</span></li>
+		</ul>
+		<ul id="edit_menu" class="menu">
+			<li id="mi_undo"><span class="mi_name">Undo</span><span class="mi_scut">U</span></li>
+			<li id="mi_redo"><span class="mi_name">Redo</span><span class="mi_scut">R</span></li>
+			<li class="mi_hr"><hr /></li>
+			<li id="mi_cut"><span class="mi_name">Cut</span><span class="mi_scut">X</span></li>
+			<li id="mi_paste"><span class="mi_name">Paste</span><span class="mi_scut">V</span></li>
+		</ul>
+		<ul id="ul_menu" class="menu">
+			<li id="mi_import_ul">
+				<span class="mi_name">Import Underlay...</span><span class="mi_spacer">.</span>
+			</li>
+			<li id="mi_remove_ul"><span class="mi_name">Remove Underlay</span><span class="mi_spacer">.</span></li>
+		</ul>
+		<div id="tooltip"></div>
+		<div class="curtains"></div>
+		<div id="about_box" class="dialog">
+			<div id="about_top">
+				<div class="kickup">
+					<span class="masthead">Alberti</span>
+					<span class="blurb">Natural perspective drawing</span>
+				</div>
+			</div>
+			<div id="about_bot">
+				<div id="about_left">
+					<div>by Alaric Holloway</div>
+				</div>
+				<div id="about_right">
+					Alberti is free software. <a href="https://github.com/worminger/Alberti" target="_blank">Get the source code.</a>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<div id="version">
+			</div>
+		</div>
 	</div>
-	<ul id="help_menu" class="menu">
-		<li id="mi_help"><span class="mi_name">Help</span><span class="mi_spacer">.</span></li>
-		<li id="mi_about"><span class="mi_name">About Alberti</span><span class="mi_spacer">.</span></li>
-	</ul>
-	<ul id="file_menu" class="menu">
-		<li id="mi_new_doc"><span class="mi_name">New</span><span class="mi_scut">&#x21e7;N</span></li>
-		<li id="mi_open_doc"><span class="mi_name">Open...</span><span class="mi_scut">&#x21e7;O</span></li>
-		<li class="mi_hr"><hr /></li>
-		<li id="mi_save_doc"><span class="mi_name">Save As...</span><span class="mi_scut">&#x21e7;S</span></li>
-	</ul>
-	<ul id="edit_menu" class="menu">
-		<li id="mi_undo"><span class="mi_name">Undo</span><span class="mi_scut">U</span></li>
-		<li id="mi_redo"><span class="mi_name">Redo</span><span class="mi_scut">R</span></li>
-		<li class="mi_hr"><hr /></li>
-		<li id="mi_cut"><span class="mi_name">Cut</span><span class="mi_scut">X</span></li>
-		<li id="mi_paste"><span class="mi_name">Paste</span><span class="mi_scut">V</span></li>
-	</ul>
-	<ul id="ul_menu" class="menu">
-		<li id="mi_import_ul">
-			<span class="mi_name">Import Underlay...</span><span class="mi_spacer">.</span>
-		</li>
-		<li id="mi_remove_ul"><span class="mi_name">Remove Underlay</span><span class="mi_spacer">.</span></li>
-	</ul>
-	<div id="tooltip"></div>
 </body>
 </html>
