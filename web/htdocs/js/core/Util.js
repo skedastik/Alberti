@@ -51,6 +51,12 @@ Array.prototype.equals = function(a) {
 	});
 };
 
+// Math abbreviations
+var sin = Math.sin;
+var cos = Math.cos;
+var tan = Math.tan;
+var atan = Math.atan;
+
 // Miscellaneous utility functions
 var Util = {
 
