@@ -45,8 +45,11 @@ function Alberti() {
 	// Open with an empty document by default
 	this.loadDocument(new AlbertiDocument());
 	
+	// Display version string in About box
+	document.getElementById("version").innerHTML = Alberti.version;
+	
 	// Reveal the document body now that application setup is complete
-	document.body.style.display = "";
+	document.getElementById("content").style.display = "";
 }
 
 Alberti.prototype.handleNewDocument = function() {
