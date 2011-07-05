@@ -154,8 +154,8 @@ Line.prototype.getAngleFromHorizontal = function() {
 // self.
 Line.prototype.setAngleFromHorizontal = function(a) {
 	var r = this.getLength();
-	this.p2.x = this.p1.x + r * Math.cos(a);
-	this.p2.y = this.p1.y + r * Math.sin(a);
+	this.p2.x = this.p1.x + r * cos(a);
+	this.p2.y = this.p1.y + r * sin(a);
 	
 	return this;
 };
@@ -164,8 +164,8 @@ Line.prototype.setAngleFromHorizontal = function(a) {
 // p2 to match the new length. Returns self.
 Line.prototype.setLength = function(len) {
 	var a = this.getAngleFromHorizontal();
-	this.p2.x = this.p1.x + len * Math.cos(a);
-	this.p2.y = this.p1.y + len * Math.sin(a);
+	this.p2.x = this.p1.x + len * cos(a);
+	this.p2.y = this.p1.y + len * sin(a);
 	
 	return this;
 };

@@ -64,7 +64,7 @@ Coord2D.prototype.angleTo = function(p) {
 	
 	if (!Util.equals(dx, 0)) {
 		var m = (p.y - this.y) / dx;
-		a = Math.atan(m);
+		a = atan(m);
 	
 		if (p.x < this.x) {
 			a += Math.PI;

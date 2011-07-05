@@ -242,10 +242,10 @@ Intersection.carcline = function(arc, line) {
 		// Now that we have intersections of circle and line, we must 
 		// determine if they are on the arc.
 
-		var endAngle = arc.startAngle + arc.deltaAngle;
+		var endAngle = arc.sa + arc.da;
 		
 		for (var i = 0; i < 2; i++) {
-			if (points[i] && Util.angleIsBetweenAngles(arc.center.angleTo(points[i]), arc.startAngle, endAngle)) {
+			if (points[i] && Util.angleIsBetweenAngles(arc.center.angleTo(points[i]), arc.sa, endAngle)) {
 				intersections.push(points[i]);
 			}
 		}
@@ -308,12 +308,12 @@ Intersection.carccarc = function(arc1, arc2) {
 	// if they are on both circle's arcs.
 	
 	if (points.length > 0) {
-		var endAngle1 = arc1.startAngle + arc1.deltaAngle;
-		var endAngle2 = arc2.startAngle + arc2.deltaAngle;
+		var endAngle1 = arc1.sa + arc1.da;
+		var endAngle2 = arc2.sa + arc2.da;
 		
 		for (var i = 0, pLen = points.length; i < pLen; i++) {
-			if (Util.angleIsBetweenAngles(arc1.center.angleTo(points[i]), arc1.startAngle, endAngle1)
-				&& Util.angleIsBetweenAngles(arc2.center.angleTo(points[i]), arc2.startAngle, endAngle2)) {
+			if (Util.angleIsBetweenAngles(arc1.center.angleTo(points[i]), arc1.sa, endAngle1)
+				&& Util.angleIsBetweenAngles(arc2.center.angleTo(points[i]), arc2.sa, endAngle2)) {
 				intersections.push(points[i]);
 			}
 		}

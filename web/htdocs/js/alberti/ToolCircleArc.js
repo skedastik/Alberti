@@ -76,30 +76,30 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 			switch ((stepNum - 2) % 2) {
 				
 				case 0:
-					var start_angle_line = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
-					var start_angle_point = Point.fromCoord(start_angle_line.p2).generate();
+					var saLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
+					var saPoint = Point.fromCoord(saLine.p2).generate();
 					var arc = new CircleArc().generate();
 					
 					arc.center = centerCoord.clone();
 					arc.radius = radius;
-					arc.startAngle = arc.endAngle = start_angle_line.getAngleFromHorizontal();
+					arc.sa = arc.endAngle = saLine.getAngleFromHorizontal();
 					
 					// Default to clockwise
 					this.clockDirection = 1;
 					this.lastDeltaAngle = 0;
 					
-					this.registerShape(start_angle_point, "start_angle_point"+stepNum);
-					this.registerShape(start_angle_line, "start_angle_line"+stepNum, true);
+					this.registerShape(saPoint, "start_angle_point"+stepNum);
+					this.registerShape(saLine, "start_angle_line"+stepNum, true);
 					this.registerShape(arc, "arc"+stepNum);
 					break;
 					
 				case 1:
-					if (this.getShape("arc"+(stepNum - 1)).deltaAngle != 0) {
-						var deltaAngleLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
-						var deltaAnglePoint = Point.fromCoord(deltaAngleLine.p2).generate();
+					if (this.getShape("arc"+(stepNum - 1)).da != 0) {
+						var daLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
+						var daPoint = Point.fromCoord(daLine.p2).generate();
 					
-						this.registerShape(deltaAnglePoint, "delta_angle_point"+stepNum);
-						this.registerShape(deltaAngleLine, "delta_angle_line"+stepNum, true);
+						this.registerShape(daPoint, "delta_angle_point"+stepNum);
+						this.registerShape(daLine, "delta_angle_line"+stepNum, true);
 					
 						this.bakeShape("arc"+(stepNum - 1));
 					} else {
@@ -169,12 +169,12 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 					this.updateClockDirection(newDeltaAngle);
 					
 					// Invert the delta angle applied to the circle arc if user is mousing counter-clockwise
-					ca.deltaAngle = this.clockDirection > 0 ? newDeltaAngle : newDeltaAngle - Util.twoPi;
+					ca.da = this.clockDirection > 0 ? newDeltaAngle : newDeltaAngle - Util.twoPi;
 			
 					ca.push();
 			
 					this.displayTip(
-						"Delta: "+Util.roundToDecimal(Util.radToDeg(Math.abs(ca.deltaAngle)), 2)+"&#176;"
+						"Delta: "+Util.roundToDecimal(Util.radToDeg(Math.abs(ca.da)), 2)+"&#176;"
 					);
 					break;
 			}
