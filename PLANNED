@@ -2,8 +2,6 @@ A list of planned features:
 
 TOOLS
 
-Quadratic, or three-point Bezier Tool
-
 Parallel Line Tool
 Perpendicular Line Tool
 
@@ -32,7 +30,7 @@ Exporting
 FAR FUTURE
 
 As it is, Alberti is a capable drafting tool, but could be augmented with the
-following features to form a very powerful core tool set:
+following features to form a very powerful tool set:
 
 Duplicate About Point
 
@@ -42,3 +40,7 @@ point by specified degrees in real-time.
 Shape Labels
 
 Text labels attached to shapes.
+
+Bezier Curves
+
+Quadratic, or three-point Bezier Tool.
