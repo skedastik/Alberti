@@ -47,7 +47,7 @@ Coord2D.prototype.angleToRelative = function(p, a) {
 	var b = this.angleTo(p);
 	
 	if (b < a) {
-		b += Util.twoPi - a;
+		b += twoPi - a;
 	} else {
 		b -= a;
 	}
@@ -67,12 +67,12 @@ Coord2D.prototype.angleTo = function(p) {
 		a = atan(m);
 	
 		if (p.x < this.x) {
-			a += Math.PI;
+			a += pi;
 		} else if (p.y < this.y) {
-			a += Util.twoPi;
+			a += twoPi;
 		}
 	} else {
-		a = p.y > this.y ? Util.halfPi : Util.threeHalvesPi;
+		a = p.y > this.y ? halfPi : threeHalfPi;
 	}
 	
 	return a;
