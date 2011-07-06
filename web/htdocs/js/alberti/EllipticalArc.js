@@ -47,17 +47,16 @@ EllipticalArc.prototype.push = function() {
 	var ea = this.sa + this.da;
 	
 	// Use general parametric form of ellipse to calculate m and n, the 
-	// "endpoints" of the arc, needed for SVG's arc path format. But before we
+	// "endpoints" of the arc needed for SVG's arc path format. But before we
 	// do that, we need to define parameter t in terms of the start and delta
 	// angles, respectively, using:
 	//
 	//    t = arctan(a*tan(theta)/b)
 	//
-	
-	// var tm = atan((this.rx / this.ry) * tan(this.sa));
-	// var tn = atan((this.rx / this.ry) * tan(this.sa + this.da));
-	var tm = this.sa;
-	var tn = this.sa + this.da;
+	// The above works for the first quadrant and is adapted for others. See
+	// <http://mathforum.org/library/drmath/view/54922.html> for derivation.
+	var tm = atan((this.rx * tan(this.sa)) / this.ry) + ((this.sa > halfPi && this.sa <= threeHalfPi) ? pi : twoPi);
+	var tn = atan((this.rx * tan(ea)) / this.ry)  + ((ea > halfPi && ea <= threeHalfPi) ? pi : twoPi);
 	
 	var m = new Coord2D(
 		this.center.x + this.rx * cos(tm) * cos(this.xrot) - this.ry * sin(tm) * sin(this.xrot),
@@ -70,7 +69,7 @@ EllipticalArc.prototype.push = function() {
 	);
 	
 	// Determine large-arc and sweep flag SVG path params based on delta angle
-	var large = Math.abs(this.da) > Math.PI ? 1 : 0;
+	var large = Math.abs(this.da) > pi ? 1 : 0;
 	var sweep = this.da > 0 ? 1 : 0;
 	
 	this.set("d",
