@@ -51,11 +51,16 @@ Array.prototype.equals = function(a) {
 	});
 };
 
-// Math abbreviations
-var sin = Math.sin;
-var cos = Math.cos;
-var tan = Math.tan;
-var atan = Math.atan;
+// Trig abbreviations
+var sin =         Math.sin;
+var cos =         Math.cos;
+var tan =         Math.tan;
+var atan =        Math.atan;
+var quarterPi =   Math.PI / 4;
+var halfPi =      Math.PI / 2;
+var pi =          Math.PI;
+var threeHalfPi = Math.PI * 1.5;
+var twoPi =       Math.PI * 2;
 
 // Miscellaneous utility functions
 var Util = {
@@ -213,17 +218,12 @@ var Util = {
 		return Math.max(min, Math.min(max, x));
 	},
 	
-	quarterPi: Math.PI / 4,
-	halfPi: Math.PI / 2,
-	threeHalvesPi: Math.PI * 1.5,
-	twoPi: Math.PI * 2,
-	
 	radToDeg: function(a) {
-		return (a / Math.PI) * 180;
+		return (a / pi) * 180;
 	},
 	
 	degToRad: function(a) {
-		return (a / 180) * Math.PI;
+		return (a / 180) * pi;
 	},
 	
 	// Returns true if angle n (in radians) is between angles (i.e. between 
@@ -235,24 +235,24 @@ var Util = {
 			b = temp;
 		}
 		
-		n %= Util.twoPi;
-		a %= Util.twoPi;
-		b %= Util.twoPi;
+		n %= twoPi;
+		a %= twoPi;
+		b %= twoPi;
 		
 		if (a < 0) {
-			a += Util.twoPi;
-			b += Util.twoPi;
+			a += twoPi;
+			b += twoPi;
 		}
 		
 		if (b < a) {
-			b += Util.twoPi;
+			b += twoPi;
 		}
 		
 		if (n < 0) {
-			n += Util.twoPi;
+			n += twoPi;
 		}
 		
-		return Util.between(n, a, b) || Util.between(n + Util.twoPi, a, b);
+		return Util.between(n, a, b) || Util.between(n + twoPi, a, b);
 	},
 	
 	// Returns 0 is x is zero, 1 if x is positive, -1 if x is negative

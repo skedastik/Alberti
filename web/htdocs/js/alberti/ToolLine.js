@@ -96,7 +96,7 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
 			if (constrain) {
 				l.p2.x = gx;
 				l.p2.y = gy;
-				l.setAngleFromHorizontal(Util.roundToMultiple(l.getAngleFromHorizontal(), Util.quarterPi));
+				l.setAngleFromHorizontal(Util.roundToMultiple(l.getAngleFromHorizontal(), quarterPi));
 				l.p2 = l.getNearestCoincident(new Coord2D(gx, gy));
 				this.setConstrainCoords(l.p2);
 			} else {

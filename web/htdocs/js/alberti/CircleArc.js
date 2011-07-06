@@ -58,7 +58,7 @@ CircleArc.prototype.push = function() {
 	);
 	
 	// Determine large-arc and sweep flag SVG path params based on delta angle
-	var large = Math.abs(this.da) > Math.PI ? 1 : 0;
+	var large = Math.abs(this.da) > pi ? 1 : 0;
 	var sweep = this.da > 0 ? 1 : 0;
 	
 	var r = Util.roundToDecimal(this.radius, Alberti.precision);

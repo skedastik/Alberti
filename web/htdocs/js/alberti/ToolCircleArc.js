@@ -169,7 +169,7 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 					this.updateClockDirection(newDeltaAngle);
 					
 					// Invert the delta angle applied to the circle arc if user is mousing counter-clockwise
-					ca.da = this.clockDirection > 0 ? newDeltaAngle : newDeltaAngle - Util.twoPi;
+					ca.da = this.clockDirection > 0 ? newDeltaAngle : newDeltaAngle - twoPi;
 			
 					ca.push();
 			
