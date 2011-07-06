@@ -109,3 +109,86 @@ EllipticalArc.prototype.clone = function() {
 	
 	return ca;
 };
+
+// Returns a new, un-generate()'ed EllipticalArc inscribed in a convex 
+// quadrilateral defined by four Coord2D's (which must be provided in anti-
+// clockwise order), as described here:
+//
+//    <http://chrisjones.id.au/Ellipses/ellipse.html>
+//
+// With further equations from:
+// 
+//    http://mathworld.wolfram.com/Ellipse.html
+//
+EllipticalArc.inscribedInQuad = function(w, x, y, z) {
+	var earc = new EllipticalArc();
+	
+	var W0 = w.x, W1 = w.y;
+	var X0 = x.x, X1 = x.y;
+	var Y0 = y.x, Y1 = y.y;
+	var Z0 = z.x, Z1 = z.y;
+	
+	var A =  X0*Y0*Z1 - W0*Y0*Z1 - X0*Y1*Z0 + W0*Y1*Z0 - W0*X1*Z0 + W1*X0*Z0 + W0*X1*Y0 - W1*X0*Y0;
+	var B =  W0*Y0*Z1 - W0*X0*Z1 - X0*Y1*Z0 + X1*Y0*Z0 - W1*Y0*Z0 + W1*X0*Z0 + W0*X0*Y1 - W0*X1*Y0;
+	var C =  X0*Y0*Z1 - W0*X0*Z1 - W0*Y1*Z0 - X1*Y0*Z0 + W1*Y0*Z0 + W0*X1*Z0 + W0*X0*Y1 - W1*X0*Y0;
+	var D =  X1*Y0*Z1 - W1*Y0*Z1 - W0*X1*Z1 + W1*X0*Z1 - X1*Y1*Z0 + W1*Y1*Z0 + W0*X1*Y1 - W1*X0*Y1;
+	var E = -X0*Y1*Z1 + W0*Y1*Z1 + X1*Y0*Z1 - W0*X1*Z1 - W1*Y1*Z0 + W1*X1*Z0 + W1*X0*Y1 - W1*X1*Y0;
+	var F =  X0*Y1*Z1 - W0*Y1*Z1 + W1*Y0*Z1 - W1*X0*Z1 - X1*Y1*Z0 + W1*X1*Z0 + W0*X1*Y1 - W1*X1*Y0;
+	var G =  X0*Z1    - W0*Z1    - X1*Z0    + W1*Z0    - X0*Y1    + W0*Y1    + X1*Y0    - W1*Y0;
+	var H =  Y0*Z1    - X0*Z1    - Y1*Z0    + X1*Z0    + W0*Y1    - W1*Y0    - W0*X1    + W1*X0;
+	var I =  Y0*Z1    - W0*Z1    - Y1*Z0    + W1*Z0    + X0*Y1    - X1*Y0    + W0*X1    - W1*X0;
+	
+	var S = Matrix.create([
+		[A,B,C],
+		[D,E,F],
+		[G,H,I]
+	]);
+	
+	var T = S.inverse();
+		
+	var J = T.elements[0][0];
+	var K = T.elements[0][1];
+	var L = T.elements[0][2];
+	var M = T.elements[1][0];
+	var N = T.elements[1][1];
+	var O = T.elements[1][2];
+	var P = T.elements[2][0];
+	var Q = T.elements[2][1];
+	var R = T.elements[2][2];
+	
+	var a = J*J + M*M - P*P;
+	var b = J*K + M*N - P*Q;
+	var c = K*K + N*N - Q*Q;
+	var d = J*L + M*O - P*R;
+	var f = K*L + N*O - Q*R;
+	var g = L*L + O*O - R*R;
+	
+	var bSquaredMinusAC = (b*b - a*c);
+	
+	earc.center.x = (c*d - b*f) / bSquaredMinusAC;
+	earc.center.y = (a*f - b*d) / bSquaredMinusAC;
+	
+	var numerator = (2 * (a*f*f + c*d*d + g*b*b - 2*b*d*f - a*c*g));
+	var rootQuantity = Math.sqrt((a - c)*(a - c) + 4*b*b);
+	
+	earc.rx = Math.sqrt(numerator / (bSquaredMinusAC * (rootQuantity - (a+c))));
+	earc.ry = Math.sqrt(numerator / (bSquaredMinusAC * (-rootQuantity - (a+c))));
+	
+	if (b == 0) {
+		if (a < c) {
+			earc.xrot = 0;
+		} else {
+			earc.xrot = halfPi;
+		}
+	} else {
+		var cotanQuantity = 0.5 * atan((2*b) / (a - c));
+		
+		if (a < c) {
+			earc.xrot = cotanQuantity;
+		} else {
+			earc.xrot = halfPi + cotanQuantity;
+		}
+	}
+	
+	return earc;
+};
