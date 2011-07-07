@@ -53,9 +53,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 				// The radius has been selected, save it for future use
 				this.lastRadius = c.radius;
 
-				var l = new Line().generate();
-				l.p1.x = l.p2.x = c.center.x;
-				l.p1.y = l.p2.y = c.center.y;
+				var l = Line.fromPoints(c.center, c.center).generate();
 			
 				this.registerShape(l, "radius_line");
 				this.sendShapeToUnderlay("radius_circle");
@@ -80,8 +78,6 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					arc.center = centerCoord.clone();
 					arc.radius = radius;
 					arc.sa = arc.endAngle = saLine.getAngle();
-					
-					this.resetClockDirection();
 					
 					this.registerShape(saPoint, "start_angle_point"+stepNum);
 					this.registerShape(saLine, "start_angle_line"+stepNum, true);
