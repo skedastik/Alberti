@@ -227,10 +227,27 @@ UserInterface.prototype.initToolSet = function() {
 	};
 	
 	this.toolIndex = {
-		selectionTool: {tool: new ToolSelection(uiObjects), cursor: UserInterface.cursorDefault},
-		lineTool:      {tool: new ToolLine(uiObjects),      cursor: UserInterface.cursorCrosshair },
-		arcTool:       {tool: new ToolCircleArc(uiObjects), cursor: UserInterface.cursorCrosshair }
+		selectionTool:     {tool: new ToolSelection(uiObjects),     cursor: UserInterface.cursorDefault},
+		lineTool:          {tool: new ToolLine(uiObjects),          cursor: UserInterface.cursorCrosshair },
+		circularArcTool:   {tool: new ToolCircleArc(uiObjects),     cursor: UserInterface.cursorCrosshair },
+		ellipticalArcTool: {tool: new ToolEllipticalArc(uiObjects), cursor: UserInterface.cursorCrosshair }
 	};
+	
+	// Map tool button id strings to above tool indices
+	this.tbButtonMap = {
+		select_tool_btn:   "selectionTool",
+		line_tool_btn:     "lineTool",
+		carc_tool_btn:     "circularArcTool",
+		earc_tool_btn:     "ellipticalArcTool"
+	}
+	
+	// Map key codes to toolbar buttons
+	this.tbHotKeys = {
+		49: this.selectToolBtn,                     // '1'
+		50: this.lineToolBtn,                       // '2'
+		51: this.circularArcToolBtn,                // '3'
+		52: this.ellipticalArcToolBtn               // '4'
+	}
 	
 	this.currentTool = null;
 };
@@ -314,23 +331,21 @@ UserInterface.prototype.initToolBar = function() {
 		this, "handleToolBar", false, "Line Tool [2]", "", true
 	).enable();
 	
-	this.arcToolBtn = new GuiButton("arc_tool_btn", document.getElementById("arc_tool_btn"), 
-		this, "handleToolBar", false, "Arc Tool [3]", "", true
+	this.circularArcToolBtn = new GuiButton("carc_tool_btn", document.getElementById("carc_tool_btn"), 
+		this, "handleToolBar", false, "Circular Arc Tool [3]", "", true
+	).enable();
+	
+	this.ellipticalArcToolBtn = new GuiButton("earc_tool_btn", document.getElementById("earc_tool_btn"), 
+		this, "handleToolBar", false, "Inscribe Elliptical Arc Tool [3]", "", true
 	).enable();
 	
 	this.tbButtonFamily = new GuiButtonFamily();
 	this.tbButtonFamily.addButton(this.selectToolBtn);
 	this.tbButtonFamily.addButton(this.lineToolBtn);
-	this.tbButtonFamily.addButton(this.arcToolBtn);
+	this.tbButtonFamily.addButton(this.circularArcToolBtn);
+	this.tbButtonFamily.addButton(this.ellipticalArcToolBtn);
 	
 	this.tbButtonFamily.toggleButton(this.lineToolBtn);
-	
-	// Map key codes to toolbar buttons
-	this.tbHotKeys = {
-		49: this.selectToolBtn,         // '1'
-		50: this.lineToolBtn,           // '2'
-		51: this.arcToolBtn             // '3'
-	}
 };
 
 // If hasUndos is true, enables Undo menu item, otherwise disables it. 
@@ -459,20 +474,7 @@ UserInterface.prototype.handleMenu = function(itemId) {
 };
 
 UserInterface.prototype.handleToolBarItemId = function(btnId) {
-	switch (btnId) {
-		
-		case "select_tool_btn":
-			this.setTool("selectionTool");
-			break;
-		
-		case "line_tool_btn":
-			this.setTool("lineTool");
-			break;
-		
-		case "arc_tool_btn":
-			this.setTool("arcTool");
-			break;
-	}
+	this.setTool(this.tbButtonMap[btnId]);
 };
 
 UserInterface.prototype.handleToolBar = function(button) {
