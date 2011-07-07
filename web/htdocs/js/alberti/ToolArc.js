@@ -27,15 +27,10 @@
  
 function ToolArc(numSteps, minSteps, mouseupFlag, uiObjects) {
 	ToolArc.baseConstructor.call(this, numSteps, minSteps, mouseupFlag, uiObjects);
-	this.resetClockDirection();
-}
-Util.extend(ToolArc, Tool);
-
-// Reset clock direction to clockwise
-ToolArc.prototype.resetClockDirection = function() {
 	this.clockDirection = 1;
 	this.lastDeltaAngle = 0;
-};
+}
+Util.extend(ToolArc, Tool);
 
 // Updates the current clock direction w/ the given angle and returns 1 if 
 // clock direction is clockwise, -1 otherwise. A clock direction of -1 
