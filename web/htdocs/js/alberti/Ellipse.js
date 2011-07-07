@@ -31,22 +31,7 @@ Ellipse.shapeName = "ellipse";
 function Ellipse(svgNode) {
 	Ellipse.baseConstructor.call(this, svgNode ? svgNode : Ellipse.elementTag, Ellipse.shapeName);
 }
-Util.extend(Ellipse, Shape);
-
-Ellipse.prototype.initialize = function() {
-	this.center = new Coord2D(0, 0);
-	this.rx = 0;                                    // X-Radius
-	this.ry = 0;                                    // Y-Radius
-	this.xrot = 0;                                  // X-Axis Rotation
-};
-
-Ellipse.prototype.push = function() {
-	this.set("cx", this.center.x);
-	this.set("cy", this.center.y);
-	this.set("rx", this.rx);
-	this.set("ry", this.ry);
-	this.set("transform", "rotate("+Util.radToDeg(this.xrot)+" "+this.center.x+" "+this.center.y+")");
-};
+Util.extend(Ellipse, EllipticalShape);
 
 Ellipse.prototype.clone = function() {
 	var e = new Ellipse();
