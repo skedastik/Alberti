@@ -45,24 +45,25 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 			break;
 		
 		case 3:
-			var mouseCoord = new Coord2D(gx, gy);
-			var hull = Coord2D.convexHull([this.quadPoints[0], this.quadPoints[1], this.quadPoints[2], mouseCoord]);
+		 	this.quadPoints[3] = new Coord2D(gx, gy);
+			var hull = Coord2D.convexHull(this.quadPoints);
 			
 			if (hull.length == 4) {
-				var p = Point.fromCoord(mouseCoord).generate();
-				var ellipse = Ellipse.projectedToQuad(hull[0], hull[1], hull[2], hull[3]).generate();
+				var p = Point.fromCoord(this.quadPoints[3]).generate();
+				var e = Ellipse.projectedToQuad(hull[0], hull[1], hull[2], hull[3]).generate();
 				var l1 = Line.fromPoints(hull[0], hull[1]).generate();
 				var l2 = Line.fromPoints(hull[1], hull[2]).generate();
 				var l3 = Line.fromPoints(hull[2], hull[3]).generate();
 				var l4 = Line.fromPoints(hull[3], hull[0]).generate();
+				var lr = Line.fromPoints(e.center, e.center).generate();
 				
-				this.quadPoints[stepNum] = p.coord;
 				this.registerShape(p, "quad_point"+stepNum);
 				this.registerShape(l1, "quad_line1", true);
 				this.registerShape(l2, "quad_line2", true);
 				this.registerShape(l3, "quad_line3", true);
 				this.registerShape(l4, "quad_line4", true);
-				this.registerShape(ellipse, "ellipse_guide", true);
+				this.registerShape(e, "ellipse_guide", true);
+				this.registerShape(lr, "line_radius");
 			} else {
 				// Do not advance to the next step if the convex hull has 
 				// less than four points as this indicates the quadrilateral 
@@ -74,7 +75,29 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 };
 
 ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
-	switch (stepNum) {
+	if (stepNum > 2) {
+		var e = this.getShape("ellipse_guide");
+		var lr = this.getShape("line_radius");
+		var mouseCoord = new Coord2D(gx, gy);
+		var mouseAngle = e.center.angleTo(mouseCoord);
 		
+		if (constrain) {
+			// Constrain to quarter degrees
+			mouseAngle = Util.degToRad(Util.roundToMultiple(Util.radToDeg(mouseAngle), 0.25));
+		}
+		
+		var p = e.getPointGivenAngle(mouseAngle);
+		
+		this.setConstrainCoords(p);
+		
+		lr.p2.x = p.x;
+		lr.p2.y = p.y;
+		lr.push();
+		
+		switch ((stepNum - 3) % 2) {
+		
+			case 0:
+			case 1:
+		}
 	}
 };
