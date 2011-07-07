@@ -70,12 +70,8 @@ Line.prototype.clone = function() {
 	return l;
 };
 
-// Returns the point on this line nearest the given external point--in other
-// words, the intersection point of this line and an orthogonal line passing
-// through the external point. Note that, for the purposes of this function,
-// this line is considered to be infinite--the nearest coincident point will 
-// not be constrained between this line's endpoints. 
-Line.prototype.getNearestCoincident = function(p) {
+// Returns the projection of point 'p' onto this line
+Line.prototype.getProjectedPoint = function(p) {
 	var dx = this.p2.x - this.p1.x;
 	var dy = this.p2.y - this.p1.y;
 	var m1 = dy / dx;
@@ -137,22 +133,18 @@ Line.prototype.getMidpoint = function() {
 	return new Coord2D((this.p1.x + this.p2.x) / 2, (this.p1.y + this.p2.y) / 2);
 };
 
-// Returns the angle (0-2pi radians) of this line relative to angle 'a' (which 
-// is relative horizontal).
+// Returns angle (0-2pi radians) of this line relative to polar angle 'a'
 Line.prototype.getAngleRelative = function(a) {
 	return this.p1.angleToRelative(this.p2, a);
 };
 
-// Returns angle from horizontal in radians (0 radians pointing right, pi/2 
-// radians pointing down).
-Line.prototype.getAngleFromHorizontal = function() {
+// Returns polar angle of line (0 radians pointing right, pi/2 radians pointing down).
+Line.prototype.getAngle = function() {
 	return this.p1.angleTo(this.p2);
 };
 
-// Rotates the line about endpoint p1 to the given angle (in radians) from 
-// horizontal (0 radians pointing right, pi/2 radians pointing down). Returns
-// self.
-Line.prototype.setAngleFromHorizontal = function(a) {
+// Rotates line about endpoint p1 to the given polar angle (in radians)
+Line.prototype.setAngle = function(a) {
 	var r = this.getLength();
 	this.p2.x = this.p1.x + r * cos(a);
 	this.p2.y = this.p1.y + r * sin(a);
@@ -160,12 +152,12 @@ Line.prototype.setAngleFromHorizontal = function(a) {
 	return this;
 };
 
-// Set the length of the line segment, keeping p1 stationary and translating 
-// p2 to match the new length. Returns self.
+// Set the length of the line segment, keeping p1 stationary. Returns self.
 Line.prototype.setLength = function(len) {
-	var a = this.getAngleFromHorizontal();
-	this.p2.x = this.p1.x + len * cos(a);
-	this.p2.y = this.p1.y + len * sin(a);
+	var m = len / this.getLength();
+	
+	this.p2.x = this.p1.x + (this.p2.x - this.p1.x) * m;
+	this.p2.y = this.p1.y + (this.p2.y - this.p1.y) * m;
 	
 	return this;
 };
