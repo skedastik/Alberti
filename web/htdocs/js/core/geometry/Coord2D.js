@@ -83,6 +83,55 @@ Coord2D.prototype.distanceTo = function(p) {
 	return Math.sqrt(Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2));
 };
 
+// Calculate and return the convex hull of a set of Coord2D's as an array.
+// Uses Andrew's monotone chain convex hull algorithm:
+// <http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull>
+Coord2D.convexHull = function(coordArray) {
+	var P = coordArray.sort(function(a, b) {
+		return a.x < b.x ? -1 : (a.x > b.x ? 1 : (a.y < b.y ? -1 : 1));
+	});
+	
+	var U = [], L = [];
+	var n = P.length;
+	
+	for (var i = 0; i < n; i++) {
+		while (L.length >= 2 && Coord2D.threePointsClockDirection(L[L.length - 2], L[L.length - 1], P[i]) != -1) {
+			L.pop();
+		}
+		
+		L.push(P[i]);
+	}
+	
+	for (var i = n - 1; i >= 0; i--) {
+		while (U.length >= 2 && Coord2D.threePointsClockDirection(U[U.length - 2], U[U.length - 1], P[i]) != -1) {
+			U.pop();
+		}
+		
+		U.push(P[i]);
+	}
+	
+	L.pop();
+	U.pop();
+	
+	return L.concat(U);
+};
+
+// Given points P, Q, R, returns 1 if vectors PQ and QR constitute a right
+// (clockwise) turn, -1 if they constitute a left (counter-clockwise)
+// turn, and 0 if they are collinear.
+Coord2D.threePointsClockDirection = function(p, q, r) {
+	// From Wikipedia article on Graham Scan algorithm
+	// <http://en.wikipedia.org/wiki/Graham_scan>:
+	//
+	// For three points (x1,y1), (x2,y2) and (x3,y3), simply compute the 
+	// direction of the cross product of the two vectors defined by points 
+	// (x1,y1), (x2,y2) and (x1,y1), (x3,y3), characterized by the sign of the 
+	// expression (x2 − x1)(y3 − y1) − (y2 − y1)(x3 − x1). If the result is 0, 
+	// the points are collinear; if it is positive, the three points 
+	// constitute a "left turn", otherwise a "right turn".
+	return Util.sign((q.x - p.x)*(r.y - p.y) - (q.y - p.y)*(r.x - p.x));
+};
+
 // Clone the coord, round its components to a safe decimal place (for floating 
 // point precision reasons), then return it
 Coord2D.roundForSafety = function(coord) {
