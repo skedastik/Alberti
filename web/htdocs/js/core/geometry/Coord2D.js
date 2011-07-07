@@ -87,7 +87,7 @@ Coord2D.prototype.distanceTo = function(p) {
 // Uses Andrew's monotone chain convex hull algorithm:
 // <http://www.algorithmist.com/index.php/Monotone_Chain_Convex_Hull>
 Coord2D.convexHull = function(coordArray) {
-	var P = coordArray.sort(function(a, b) {
+	var P = coordArray.clone().sort(function(a, b) {
 		return a.x < b.x ? -1 : (a.x > b.x ? 1 : (a.y < b.y ? -1 : 1));
 	});
 	
