@@ -111,7 +111,8 @@ EllipticalArc.prototype.clone = function() {
 };
 
 // Returns a new, un-generate()'ed EllipticalArc inscribed in a convex 
-// quadrilateral defined by four Coord2D's, as described here:
+// quadrilateral defined by four Coord2D's (which must be passed in anti-
+// clockwise order), as described here:
 //
 //    <http://chrisjones.id.au/Ellipses/ellipse.html>
 //
@@ -120,17 +121,10 @@ EllipticalArc.prototype.clone = function() {
 //    http://mathworld.wolfram.com/Ellipse.html
 //
 EllipticalArc.inscribedInQuad = function(w, x, y, z) {
-	// The equations require that points be supplied anti-clockwise. By 
-	// sorting them lexicographically, it becomes trivial to choose them in
-	// anti-clockwise order.
-	var pts = [w, x, y, z].sort(function(a, b) {
-		return a.x < b.x ? -1 : (a.x > b.x ? 1 : a);
-	});
-	
-	var W0 = pts[3].x, W1 = pts[3].y;
-	var X0 = pts[1].x, X1 = pts[1].y;
-	var Y0 = pts[0].x, Y1 = pts[0].y;
-	var Z0 = pts[2].x, Z1 = pts[2].y;
+	var W0 = w.x, W1 = w.y;
+	var X0 = x.x, X1 = x.y;
+	var Y0 = y.x, Y1 = y.y;
+	var Z0 = z.x, Z1 = z.y;
 	
 	var A =  X0*Y0*Z1 - W0*Y0*Z1 - X0*Y1*Z0 + W0*Y1*Z0 - W0*X1*Z0 + W1*X0*Z0 + W0*X1*Y0 - W1*X0*Y0;
 	var B =  W0*Y0*Z1 - W0*X0*Z1 - X0*Y1*Z0 + X1*Y0*Z0 - W1*Y0*Z0 + W1*X0*Z0 + W0*X0*Y1 - W0*X1*Y0;
