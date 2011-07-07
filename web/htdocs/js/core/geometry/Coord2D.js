@@ -42,7 +42,7 @@ Coord2D.prototype.isEqual = function(coord) {
 };
 
 // Returns the angle (0-2pi radians) of the vector extending from this point
-// to point 'p', relative to angle 'a' (which is relative horizontal).
+// to point 'p', relative to polar angle 'a'.
 Coord2D.prototype.angleToRelative = function(p, a) {
 	var b = this.angleTo(p);
 	
@@ -55,9 +55,9 @@ Coord2D.prototype.angleToRelative = function(p, a) {
 	return b;
 };
 
-// Returns the angle (0-2pi radians) from horizontal of the vector extending 
-// from this point to point 'p'. 0 radians implies a vector pointing right, 
-// pi/2 radians implies a vector pointing down.
+// Returns the polar angle (0-2pi radians) of the vector extending from this 
+// point to point 'p'. 0 radians implies a vector pointing right, pi/2 radians
+// implies a vector pointing down.
 Coord2D.prototype.angleTo = function(p) {
 	var dx = p.x - this.x;
 	var a = 0;
