@@ -23,6 +23,13 @@
  * 
  * Abstract shape class. Each shape has a unique 'sid' identifier string.
  * 
+ * TODO
+ * 
+ * Some Shape objects push Alberti-specific attributes (such as "berti:sa" for
+ * a CircleArc). These attributes have no effect at runtime but serve to
+ * serialize Alberti-specific data. As such, they should only be pushed prior
+ * to serialization via a 'serialize' method.
+ * 
  * * */
 
 Shape.sidCounter = 1;                       // Used to generate unique Shape sid's
