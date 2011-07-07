@@ -19,7 +19,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * EllipticalArc.js
- * extends Shape
+ * extends Ellipse
  * 
  * Elliptical arc shape, defined by a center point, x-radius, y-radius,
  * x-axis-rotation, start angle, and delta angle (angles in radians).
@@ -30,43 +30,20 @@ EllipticalArc.elementTag = "path";
 EllipticalArc.shapeName = "earc";
  
 function EllipticalArc(svgNode) {
-	EllipticalArc.baseConstructor.call(this, svgNode ? svgNode : EllipticalArc.elementTag, EllipticalArc.shapeName);
+	EllipticalArc.baseConstructor.call(this, svgNode ? svgNode : null);
 }
-Util.extend(EllipticalArc, Shape);
+Util.extend(EllipticalArc, Ellipse);
 
 EllipticalArc.prototype.initialize = function() {
-	this.center = new Coord2D(0, 0);
-	this.rx = 0;                                    // X-Radius
-	this.ry = 0;                                    // Y-Radius
-	this.xrot = 0;                                  // X-Axis Rotation
+	EllipticalArc.superclass.initialize.call(this);
 	this.sa = 0;                                    // Start angle
 	this.da = 0;                                    // Delta angle
 };
 
 EllipticalArc.prototype.push = function() {
-	var ea = this.sa + this.da;
-	
-	// Use general parametric form of ellipse to calculate m and n, the 
-	// "endpoints" of the arc needed for SVG's arc path format. But before we
-	// do that, we need to define parameter t in terms of the start and delta
-	// angles, respectively, using:
-	//
-	//    t = arctan(a*tan(theta)/b)
-	//
-	// The above works for the first quadrant and is adapted for others. See
-	// <http://mathforum.org/library/drmath/view/54922.html> for derivation.
-	var tm = atan((this.rx * tan(this.sa)) / this.ry) + ((this.sa > halfPi && this.sa <= threeHalfPi) ? pi : twoPi);
-	var tn = atan((this.rx * tan(ea)) / this.ry)  + ((ea > halfPi && ea <= threeHalfPi) ? pi : twoPi);
-	
-	var m = new Coord2D(
-		this.center.x + this.rx * cos(tm) * cos(this.xrot) - this.ry * sin(tm) * sin(this.xrot),
-		this.center.y + this.rx * cos(tm) * sin(this.xrot) + this.ry * sin(tm) * cos(this.xrot)
-	);
-		
-	var n = new Coord2D(
-		this.center.x + this.rx * cos(tn) * cos(this.xrot) - this.ry * sin(tn) * sin(this.xrot),
-		this.center.y + this.rx * cos(tn) * sin(this.xrot) + this.ry * sin(tn) * cos(this.xrot)
-	);
+	// Calculate elliptical arc endpoint params needed by SVG's arc path format
+	var m = this.getPointGivenAngle(this.sa);
+	var n = this.getPointGivenAngle(this.sa + this.da);
 	
 	// Determine large-arc and sweep flag SVG path params based on delta angle
 	var large = Math.abs(this.da) > pi ? 1 : 0;
@@ -90,10 +67,7 @@ EllipticalArc.prototype.push = function() {
 };
 
 EllipticalArc.prototype.pull = function() {
-	this.center = new Coord2D(this.get("cx", Alberti.customns), this.get("cy", Alberti.customns));
-	this.rx = this.get("rx", Alberti.customns);
-	this.ry = this.get("ry", Alberti.customns);
-	this.xrot = this.get("xrot", Alberti.customns);
+	EllipticalArc.superclass.pull.call(this);
 	this.sa = this.get("sa", Alberti.customns);
 	this.da = this.get("da", Alberti.customns);
 };
