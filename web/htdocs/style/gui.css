@@ -462,6 +462,10 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	background: url('../images/line_tool_btn.png') center no-repeat;
 }
 
-#arc_tool_btn > div {
-	background: url('../images/arc_tool_btn.png') center no-repeat;
+#carc_tool_btn > div {
+	background: url('../images/carc_tool_btn.png') center no-repeat;
+}
+
+#earc_tool_btn > div {
+	background: gray;
 }
