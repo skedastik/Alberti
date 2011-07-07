@@ -19,7 +19,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * ToolCircleArc.js
- * extends Tool
+ * extends ToolArc
  * 
  * Tool for drawing circle arcs.
  * 
@@ -27,13 +27,10 @@
  
 function ToolCircleArc(uiObjects) {
 	ToolCircleArc.baseConstructor.call(this, -1, 4, false, uiObjects);
-	
-	this.clockDirection = 1;            // 1 if the user is mousing clockwise, -1 otherwise
-	this.lastDeltaAngle = 0;            // Helps determine mouse clock direction
 
 	this.lastRadius = 0;           // Last radius of a completed arc
 }
-Util.extend(ToolCircleArc, Tool);
+Util.extend(ToolCircleArc, ToolArc);
 
 ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 	switch (stepNum) {
@@ -84,9 +81,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					arc.radius = radius;
 					arc.sa = arc.endAngle = saLine.getAngleFromHorizontal();
 					
-					// Default to clockwise
-					this.clockDirection = 1;
-					this.lastDeltaAngle = 0;
+					this.resetClockDirection();
 					
 					this.registerShape(saPoint, "start_angle_point"+stepNum);
 					this.registerShape(saLine, "start_angle_line"+stepNum, true);
@@ -166,10 +161,9 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 					var ca = this.getShape("arc"+stepNum);
 					
 					var newDeltaAngle = c.center.angleToRelative(mouseCoord, sa.getAngleFromHorizontal());
-					this.updateClockDirection(newDeltaAngle);
 					
 					// Invert the delta angle applied to the circle arc if user is mousing counter-clockwise
-					ca.da = this.clockDirection > 0 ? newDeltaAngle : newDeltaAngle - twoPi;
+					ca.da = this.getClockDirection(newDeltaAngle) > 0 ? newDeltaAngle : newDeltaAngle - twoPi;
 			
 					ca.push();
 			
@@ -184,18 +178,4 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 
 ToolCircleArc.prototype.complete = function(stepNum, constrain) {
 	// Nothing to be done.
-};
-
-// Updates the current mouse clock direction.
-ToolCircleArc.prototype.updateClockDirection = function(newDeltaAngle) {
-	var diff = newDeltaAngle - this.lastDeltaAngle;
-	
-	// The clock direction has changed if the delta angle suddenly jumps by a
-	// 180 degrees (the mouse has crossed the zero angle), but only if the
-	// difference in delta angle has the same sign as the clock direction.
-	if (Math.abs(diff) > Util.degToRad(180) && Util.sign(diff) == this.clockDirection) {
-		this.clockDirection *= -1;
-	}
-	
-	this.lastDeltaAngle = newDeltaAngle;
 };
