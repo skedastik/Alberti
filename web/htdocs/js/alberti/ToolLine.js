@@ -96,8 +96,8 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
 			if (constrain) {
 				l.p2.x = gx;
 				l.p2.y = gy;
-				l.setAngleFromHorizontal(Util.roundToMultiple(l.getAngleFromHorizontal(), quarterPi));
-				l.p2 = l.getNearestCoincident(new Coord2D(gx, gy));
+				l.setAngle(Util.roundToMultiple(l.getAngle(), quarterPi));
+				l.p2 = l.getProjectedPoint(new Coord2D(gx, gy));
 				this.setConstrainCoords(l.p2);
 			} else {
 				l.p2.x = gx;
@@ -113,7 +113,7 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
 		// constrained to the guide line.
 		case 1:
 			var gl = this.getShape("line_guide");
-			var nearp = gl.getNearestCoincident(new Coord2D(gx, gy));
+			var nearp = gl.getProjectedPoint(new Coord2D(gx, gy));
 			var l = this.getShape("line");
 			var ep = this.getShape("endpoint1");
 			
@@ -130,7 +130,7 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
 		case 2:
 			var l = this.getShape("line");
 			var gl = this.getShape("line_guide");
-			var nearp = gl.getNearestCoincident(new Coord2D(gx, gy));
+			var nearp = gl.getProjectedPoint(new Coord2D(gx, gy));
 			var ep = this.getShape("endpoint2");
 			
 			l.p1.x = ep.coord.x = nearp.x;

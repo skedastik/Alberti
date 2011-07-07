@@ -79,7 +79,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					
 					arc.center = centerCoord.clone();
 					arc.radius = radius;
-					arc.sa = arc.endAngle = saLine.getAngleFromHorizontal();
+					arc.sa = arc.endAngle = saLine.getAngle();
 					
 					this.resetClockDirection();
 					
@@ -136,7 +136,7 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 			if (constrain) {
 				// Constrain to quarter degrees
 				mouseAngle = Util.roundToMultiple(mouseAngle, 0.25);
-				l.setAngleFromHorizontal(Util.degToRad(mouseAngle));
+				l.setAngle(Util.degToRad(mouseAngle));
 				
 				mouseCoord.x = l.p2.x;
 				mouseCoord.y = l.p2.y;
@@ -160,7 +160,7 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 					var sa = this.getShape("start_angle_line"+(stepNum));
 					var ca = this.getShape("arc"+stepNum);
 					
-					var newDeltaAngle = c.center.angleToRelative(mouseCoord, sa.getAngleFromHorizontal());
+					var newDeltaAngle = c.center.angleToRelative(mouseCoord, sa.getAngle());
 					
 					// Invert the delta angle applied to the circle arc if user is mousing counter-clockwise
 					ca.da = this.getClockDirection(newDeltaAngle) > 0 ? newDeltaAngle : newDeltaAngle - twoPi;
