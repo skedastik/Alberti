@@ -154,6 +154,7 @@ AlbertiDocument.prototype.loadLayers = function() {
 					break;
 				
 				case "path":
+					// TODO: Import elliptical arcs
 					shape = new CircleArc(curShapeNode);
 					break;
 				
