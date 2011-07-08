@@ -77,7 +77,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					
 					arc.center = centerCoord.clone();
 					arc.radius = radius;
-					arc.sa = arc.endAngle = saLine.getAngle();
+					arc.sa = saLine.getAngle();
 					
 					this.registerShape(saPoint, "start_angle_point"+stepNum);
 					this.registerShape(saLine, "start_angle_line"+stepNum, true);
@@ -85,7 +85,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					break;
 					
 				case 1:
-					if (this.getShape("arc"+(stepNum - 1)).da != 0) {
+					if (!Util.equals(this.getShape("arc"+(stepNum - 1)).da, 0)) {
 						var daLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
 						var daPoint = Point.fromCoord(daLine.p2).generate();
 					
