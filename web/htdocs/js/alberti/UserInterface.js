@@ -336,7 +336,7 @@ UserInterface.prototype.initToolBar = function() {
 	).enable();
 	
 	this.ellipticalArcToolBtn = new GuiButton("earc_tool_btn", document.getElementById("earc_tool_btn"), 
-		this, "handleToolBar", false, "Inscribe Elliptical Arc Tool [3]", "", true
+		this, "handleToolBar", false, "Project Elliptical Arc Tool [4]", "", true
 	).enable();
 	
 	this.tbButtonFamily = new GuiButtonFamily();
