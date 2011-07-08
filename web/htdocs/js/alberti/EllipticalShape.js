@@ -76,7 +76,8 @@ EllipticalShape.prototype.getPointGivenAngle = function(a) {
 	//
 	// The above works for the first quadrant and is adapted for others. See
 	// <http://mathforum.org/library/drmath/view/54922.html> for derivation.
-	var t = atan((this.rx * tan(a)) / this.ry) + ((a > halfPi && a <= threeHalfPi) ? pi : twoPi);
+	var aa = Math.abs(a);
+	var t = atan((this.rx * tan(a)) / this.ry) + ((aa > halfPi && aa <= threeHalfPi) ? pi : twoPi);
 	
 	return new Coord2D(
 		this.center.x + this.rx * cos(t) * cos(this.xrot) - this.ry * sin(t) * sin(this.xrot),
