@@ -104,7 +104,9 @@
  * constrain the mouse. This method locks Tool's internal mouse coordinates to 
  * the constrained position. This way, the locked mouse coordinates will be 
  * passed to the next executeStep invocation, rather than the unconstrained 
- * coordinates of the click.
+ * coordinates of the click. If convenient, setConstrainCoords can be called 
+ * even if the constrain parameter is false (for instance, if you need to pre-
+ * calculate values for the next step's executeStep call).
  * 
  * You may display tool tips by calling Tool::displayTip, which expects the
  * same arguments as ToolTip::setText.
@@ -340,7 +342,7 @@ Tool.prototype.onMouseDown = function(gx, gy, evt) {
 	// Absorb the event so underlying objects aren't activated
 	evt.stopPropagation();
 
-	if (this.constrainEnabled && this.constrainCoordX) {
+	if (this.constrainCoordX) {
 		gx = this.constrainCoordX;
 		gy = this.constrainCoordY;
 	}
