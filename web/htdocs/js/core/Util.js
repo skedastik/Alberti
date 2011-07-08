@@ -255,6 +255,11 @@ var Util = {
 		return Util.between(n, a, b) || Util.between(n + twoPi, a, b);
 	},
 	
+	// Returns polar angle a relative to polar angle b in radians
+	angleRelativeTo: function(a, b) {
+		return (a < b ? a + twoPi - b : a - b);
+	},
+	
 	// Returns 0 is x is zero, 1 if x is positive, -1 if x is negative
 	sign: function(x) {
 		return x > 0 ? 1 : (x < 0 ? -1 : 0);
