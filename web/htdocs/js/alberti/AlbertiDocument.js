@@ -154,8 +154,9 @@ AlbertiDocument.prototype.loadLayers = function() {
 					break;
 				
 				case "path":
-					// TODO: Import elliptical arcs
-					shape = new CircleArc(curShapeNode);
+					// A path indicates either an elliptical arc or circular arc shape
+					var isEllipticalArc = curShapeNode.getAttributeNS(Alberti.customns, "rx");
+					shape = (isEllipticalArc ? new EllipticalArc(curShapeNode) : new CircleArc(curShapeNode));
 					break;
 				
 				default:
