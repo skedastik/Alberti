@@ -44,13 +44,7 @@ Coord2D.prototype.isEqual = function(coord) {
 // Returns the angle (0-2pi radians) of the vector extending from this point
 // to point 'p', relative to polar angle 'a'.
 Coord2D.prototype.angleToRelative = function(p, a) {
-	var b = this.angleTo(p);
-	
-	if (b < a) {
-		b += twoPi - a;
-	} else {
-		b -= a;
-	}
+	var b = Util.angleRelativeTo(this.angleTo(p), a);
 	
 	return b;
 };
