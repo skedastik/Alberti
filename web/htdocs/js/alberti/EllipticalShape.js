@@ -67,7 +67,8 @@ EllipticalShape.prototype.pull = function() {
 
 // Returns the point on the ellipse at the given polar angle
 EllipticalShape.prototype.getPointGivenAngle = function(a) {
-	a -= this.xrot;
+	// Normalize the angle to a polar angle in the range [-2pi, 2pi]
+	a = (a - this.xrot) % twoPi;
 	
 	// Use general parametric form of ellipse to calculate tangent point. But 
 	// first define parameter 't' in terms of angle 'a':
