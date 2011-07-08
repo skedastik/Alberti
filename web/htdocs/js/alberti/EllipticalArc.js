@@ -19,7 +19,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * EllipticalArc.js
- * extends Ellipse
+ * extends EllipticalShape
  * 
  * Elliptical arc shape, defined by a center point, x-radius, y-radius,
  * x-axis-rotation, start angle, and delta angle (angles in radians).
@@ -30,9 +30,9 @@ EllipticalArc.elementTag = "path";
 EllipticalArc.shapeName = "earc";
  
 function EllipticalArc(svgNode) {
-	EllipticalArc.baseConstructor.call(this, svgNode ? svgNode : null);
+	EllipticalArc.baseConstructor.call(this, svgNode ? svgNode : EllipticalArc.elementTag, EllipticalArc.shapeName);
 }
-Util.extend(EllipticalArc, Ellipse);
+Util.extend(EllipticalArc, EllipticalShape);
 
 EllipticalArc.prototype.initialize = function() {
 	EllipticalArc.superclass.initialize.call(this);
