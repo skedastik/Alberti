@@ -81,5 +81,17 @@ EllipticalArc.prototype.clone = function() {
 	ea.sa = this.sa;
 	ea.da = this.da;
 	
-	return ca;
+	return ea;
 };
+
+// Returns a new, un-generate()'ed elliptical arc matching the properties of 
+// the given EllipticalShape, with start and delta angles set to 0.
+EllipticalArc.fromEllipse = function(e) {
+	var ea = new EllipticalArc();
+	ea.center = e.center.clone();
+	ea.rx = e.rx;
+	ea.ry = e.ry;
+	ea.xrot = e.xrot;
+	
+	return ea;
+}
