@@ -19,6 +19,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * 
  * Ellipse.js
+ * extends EllipticalShape
  * 
  * Ellipse shape, defined by a center point, x-radius, y-radius and
  * x-axis-rotation.
