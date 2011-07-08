@@ -54,7 +54,7 @@ EllipticalArc.prototype.push = function() {
 		+" A"+Util.roundToDecimal(this.rx, Alberti.precision)+","+Util.roundToDecimal(this.ry, Alberti.precision)+", "
 		+Util.roundToDecimal(Util.radToDeg(this.xrot), Alberti.precision)+", "
 		+large+","+sweep+", "
-		+Util.roundToDecimal(n.x, Alberti.precision)+", "+Util.roundToDecimal(n.y, Alberti.precision)
+		+Util.roundToDecimal(n.x, Alberti.precision)+","+Util.roundToDecimal(n.y, Alberti.precision)
 	);
 	
 	this.set("berti:cx", this.center.x, Alberti.customns);
