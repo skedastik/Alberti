@@ -26,9 +26,10 @@
  * * */
  
 function ToolEllipticalArc(uiObjects) {
-	ToolEllipticalArc.baseConstructor.call(this, -1, 4, false, uiObjects);
+	ToolEllipticalArc.baseConstructor.call(this, -1, 6, false, uiObjects);
 	
 	this.quadPoints = [];            // Contains points of quadrilateral
+	this.center = null;              // Center of elliptical arc
 }
 Util.extend(ToolEllipticalArc, ToolArc);
 
@@ -38,10 +39,17 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 		case 0:
 		case 1:
 		case 2:
-			var p = Point.fromCoord(new Coord2D(gx, gy)).generate();
+			var mouseCoord = new Coord2D(gx, gy);
 			
-			this.quadPoints[stepNum] = p.coord;
-			this.registerShape(p, "quad_point"+stepNum);
+			if (stepNum != 0 && mouseCoord.isEqual(this.quadPoints[stepNum - 1])) {
+				// Do not advance to next step if quad point is same as previous step's
+				this.decrementStep();
+			} else {
+				var p = Point.fromCoord(mouseCoord).generate();
+			
+				this.quadPoints[stepNum] = p.coord;
+				this.registerShape(p, "quad_point"+stepNum);
+			}
 			break;
 		
 		case 3:
@@ -49,15 +57,19 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 			var hull = Coord2D.convexHull(this.quadPoints);
 			
 			if (hull.length == 4) {
-				var p = Point.fromCoord(this.quadPoints[3]).generate();
+				var pq = Point.fromCoord(this.quadPoints[3]).generate();
 				var e = Ellipse.projectedToQuad(hull[0], hull[1], hull[2], hull[3]).generate();
+				var pc = Point.fromCoord(e.center).generate();
 				var l1 = Line.fromPoints(hull[0], hull[1]).generate();
 				var l2 = Line.fromPoints(hull[1], hull[2]).generate();
 				var l3 = Line.fromPoints(hull[2], hull[3]).generate();
 				var l4 = Line.fromPoints(hull[3], hull[0]).generate();
 				var lr = Line.fromPoints(e.center, e.center).generate();
 				
-				this.registerShape(p, "quad_point"+stepNum);
+				this.center = e.center;
+				
+				this.registerShape(pq, "quad_point"+stepNum);
+				this.registerShape(pc, "center_point");
 				this.registerShape(l1, "quad_line1", true);
 				this.registerShape(l2, "quad_line2", true);
 				this.registerShape(l3, "quad_line3", true);
@@ -69,6 +81,35 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				// less than four points as this indicates the quadrilateral 
 				// was not, in fact, convex.
 				this.decrementStep();
+			}
+			break;
+		
+		default:
+			var keyCoord = new Coord2D(gx, gy);
+			var p = Point.fromCoord(keyCoord).generate();
+			var l = Line.fromPoints(this.center, keyCoord).generate();
+			
+			switch ((stepNum - 3) % 2) {
+				
+				case 0:
+					if (!Util.equals(this.getShape("arc"+(stepNum - 1)).da, 0)) {
+						this.registerShape(l, "line_delta_angle"+stepNum, true);
+						this.registerShape(p, "point_delta_angle"+stepNum);
+						this.bakeShape("arc"+(stepNum - 1));
+					} else {
+						// Do not advance to next step if arc's delta angle is 0
+						this.decrementStep();
+					}
+					break;
+				
+				case 1:
+					var ea = EllipticalArc.fromEllipse(this.getShape("ellipse_guide")).generate();
+					ea.sa = l.getAngle();
+				
+					this.registerShape(ea, "arc"+stepNum);
+					this.registerShape(l, "line_start_angle"+stepNum, true);
+					this.registerShape(p, "point_start_angle"+stepNum);
+					break;
 			}
 			break;
 	}
@@ -88,16 +129,24 @@ ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, cons
 		
 		var p = e.getPointGivenAngle(mouseAngle);
 		
+		// Calculate point on ellipse for next step regardless of constrain
 		this.setConstrainCoords(p);
 		
 		lr.p2.x = p.x;
 		lr.p2.y = p.y;
 		lr.push();
 		
-		switch ((stepNum - 3) % 2) {
-		
-			case 0:
-			case 1:
+		if ((stepNum - 3) % 2 == 1) {
+			ea = this.getShape("arc"+stepNum);
+			
+			var newDeltaAngle = Util.angleRelativeTo(mouseAngle, ea.sa);
+			
+			ea.da = this.getClockDirection(newDeltaAngle) > 0 ? newDeltaAngle : newDeltaAngle - twoPi;
+			ea.push();
 		}
 	}
+};
+
+ToolEllipticalArc.prototype.complete = function(stepNum, constrain) {
+	// Nothing to be done
 };
