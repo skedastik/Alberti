@@ -189,6 +189,51 @@ Intersection.lineline = function(l1, l2) {
 	return intersections;
 };
 
+Intersection.earcline = function(arc, line) {
+	var intersections = [];
+	
+	if (arc.coeffs.length > 0) {
+		// Coefficients of conic equation describing ellipse
+		var a = arc.coeffs[0], b = arc.coeffs[1], c = arc.coeffs[2], d = arc.coeffs[3], f = arc.coeffs[4], g = arc.coeffs[5];
+		
+		// Coefficients of line equation ix + jy = k
+		var i = line.p2.y - line.p1.y;
+		var j = line.p1.x - line.p2.x;
+		var k = i * line.p1.x + j * line.p1.y;
+		
+		if (j == 0) {
+			
+		} else {
+			var m = -i / j;
+			k = k / j;
+			
+			var A = a + 2*b*m + c*m*m;
+			var B = 2*(b*k + c*m*k + d + f*m);
+			var C = c*k*k + 2*f*k + g;
+			
+			var discriminant = B*B - 4*A*C;
+			
+			if (discriminant == 0) {
+				var x = -B / (2*A);
+				var y = m*x + k;
+				
+				intersections[0] = new Coord2D(x, y);
+			} else if (discriminant > 0) {
+				var rootd = Math.sqrt(discriminant);
+				var x1 = (-B + rootd) / (2*A);
+				var x2 = (-B - rootd) / (2*A);
+				var y1 = m*x1 + k;
+				var y2 = m*x2 + k;
+				
+				intersections[0] = new Coord2D(x1, y1);
+				intersections[1] = new Coord2D(x2, y2);
+			}
+		}
+	}
+	
+	return intersections;
+};
+
 // http://stackoverflow.com/questions/1073336/circle-line-collision-detection
 Intersection.carcline = function(arc, line) {
 	// let D = direction vector of line from start to end
@@ -210,10 +255,10 @@ Intersection.carcline = function(arc, line) {
 	// 
 	//    t^2(D * D) + 2t(F * D) + (F * F - r^2) = 0
 	//
-	// Discriminant will be higher than 0 if there are intersections. Use
-	// quadratic formula to determine roots t1, t2. If both t1 and t2 are in 
-	// the range [0:1], there are two intersections; if not, there is only one
-	// intersection.
+	// Discriminant will be greater than or equal to 0 if there are 
+	// intersections. Use quadratic formula to determine roots t1, t2. If both
+	// t1 and t2 are in the range [0:1], there are two intersections; if not, 
+	// there is only one intersection.
 	//
 	var intersections = [];
 	
@@ -229,11 +274,11 @@ Intersection.carcline = function(arc, line) {
 	
 	var discriminant = b * b - 4 * a * c;
 	
-	if (discriminant > 0) {
-		discriminant = Math.sqrt(discriminant);
+	if (discriminant >= 0) {
+		var rootd = Math.sqrt(discriminant);
 		
-		var t1 = (-b + discriminant) / (2 * a);
-		var t2 = (-b - discriminant) / (2 * a);
+		var t1 = (-b + rootd) / (2 * a);
+		var t2 = (-b - rootd) / (2 * a);
 		
 		var points = [];
 		points[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1) : null;
@@ -244,7 +289,7 @@ Intersection.carcline = function(arc, line) {
 
 		var endAngle = arc.sa + arc.da;
 		
-		for (var i = 0; i < 2; i++) {
+		for (var i = 0; i < (discriminant > 0 ? 2 : 1); i++) {
 			if (points[i] && Util.angleIsBetweenAngles(arc.center.angleTo(points[i]), arc.sa, endAngle)) {
 				intersections.push(points[i]);
 			}
