@@ -190,43 +190,73 @@ Intersection.lineline = function(l1, l2) {
 };
 
 Intersection.earcline = function(arc, line) {
+	// Given conic equation describing ellipse:
+	//
+	//    a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0
+	//
+	// We plug in parameterized line equations:
+	//
+	//    x(t) = x1 + t * (x2 - x1)
+	//    y(t) = y1 + t * (y2 - y1)
+	//
+	// Yielding:
+	//
+	//    c*t^2*y2^2-2*c*t^2*y1*y2+2*c*t*y1*y2+2*b*t^2*x2*y2-2*b*t^2*x1*y2
+	//    +2*b*t*x1*y2+2*f*t*y2+c*t^2*y1^2-2*c*t*y1^2+c*y1^2-2*b*t^2*x2*y1
+	//    +2*b*t*x2*y1+2*b*t^2*x1*y1-4*b*t*x1*y1+2*b*x1*y1-2*f*t*y1+2*f*y1
+	//    +a*t^2*x2^2-2*a*t^2*x1*x2+2*a*t*x1*x2+2*d*t*x2+a*t^2*x1^2-2*a*t*x1^2
+	//    +a*x1^2-2*d*t*x1+2*d*x1+g
+	//
+	// From which we collect like terms under parameter t, yielding 
+	// coefficients A, B, and C used to calculate the discriminant and 
+	// determine roots.
+	//
 	var intersections = [];
 	
 	if (arc.coeffs.length > 0) {
-		// Coefficients of conic equation describing ellipse
+		var solutions = [];
+		
+		// Coefficients a, b, c, d, f, and g of conic equation describing ellipse
 		var a = arc.coeffs[0], b = arc.coeffs[1], c = arc.coeffs[2], d = arc.coeffs[3], f = arc.coeffs[4], g = arc.coeffs[5];
 		
-		// Coefficients of line equation ix + jy = k
-		var i = line.p2.y - line.p1.y;
-		var j = line.p1.x - line.p2.x;
-		var k = i * line.p1.x + j * line.p1.y;
+		var x1 = line.p1.x, y1 = line.p1.y;
+		var x2 = line.p2.x, y2 = line.p2.y;
 		
-		if (j == 0) {
+		var dx = x2 - x1;
+		var dy = y2 - y1;
+		
+		var A = c*y2*y2 - 2*c*y1*y2 + 2*b*x2*y2 - 2*b*x1*y2 + c*y1*y1 - 2*b*x2*y1 + 2*b*x1*y1 + a*x2*x2 - 2*a*x1*x2 + a*x1*x1;
+		var B = 2*c*y1*y2 + 2*b*x1*y2 + 2*f*y2 - 2*c*y1*y1 + 2*b*x2*y1 - 4*b*x1*y1 - 2*f*y1 + 2*a*x1*x2 + 2*d*x2 - 2*a*x1*x1 - 2*d*x1;
+		var C = c*y1*y1 + 2*b*x1*y1 + 2*f*y1 + a*x1*x1 + 2*d*x1 + g;
+		
+		var discriminant = B*B - 4*A*C;
+		
+		if (discriminant == 0) {
+			var t = -B / (2*A);			
 			
-		} else {
-			var m = -i / j;
-			k = k / j;
+			solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy) : null;
 			
-			var A = a + 2*b*m + c*m*m;
-			var B = 2*(b*k + c*m*k + d + f*m);
-			var C = c*k*k + 2*f*k + g;
+		} else if (discriminant > 0) {
+			var rootd = Math.sqrt(discriminant);
+			var t1 = (-B + rootd) / (2*A);
+			var t2 = (-B - rootd) / (2*A);
 			
-			var discriminant = B*B - 4*A*C;
+			solutions[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy) : null;
+			solutions[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy) : null;
+		}
+		
+		var len = solutions.length;
+
+		if (len > 0) {
+			// Now that we have intersections of ellipse and line, we must 
+			// determine if they are on the arc.
 			
-			if (discriminant == 0) {
-				var x = -B / (2*A);
-				var y = m*x + k;
-				
-				intersections[0] = new Coord2D(x, y);
-			} else if (discriminant > 0) {
-				var rootd = Math.sqrt(discriminant);
-				var x1 = (-B + rootd) / (2*A);
-				var x2 = (-B - rootd) / (2*A);
-				var y1 = m*x1 + k;
-				var y2 = m*x2 + k;
-				
-				intersections[0] = new Coord2D(x1, y1);
-				intersections[1] = new Coord2D(x2, y2);
+			var extent = arc.sa + arc.da;
+
+			for (var i = 0; i < len; i++) {
+				if (solutions[i] && Util.angleIsBetweenAngles(arc.center.angleTo(solutions[i]), arc.sa, extent)) {
+					intersections.push(solutions[i]);
+				}
 			}
 		}
 	}
@@ -261,6 +291,7 @@ Intersection.carcline = function(arc, line) {
 	// there is only one intersection.
 	//
 	var intersections = [];
+	var solutions = [];
 	
 	var dx1 = line.p2.x - line.p1.x;
 	var dy1 = line.p2.y - line.p1.y;
@@ -274,24 +305,31 @@ Intersection.carcline = function(arc, line) {
 	
 	var discriminant = b * b - 4 * a * c;
 	
-	if (discriminant >= 0) {
-		var rootd = Math.sqrt(discriminant);
+	if (discriminant == 0) {
+		var t = -b / (2 * a);
 		
+		solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1) : null;
+		
+	} else if (discriminant > 0) {
+		var rootd = Math.sqrt(discriminant);
 		var t1 = (-b + rootd) / (2 * a);
 		var t2 = (-b - rootd) / (2 * a);
 		
-		var points = [];
-		points[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1) : null;
-		points[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1) : null;
-
+		solutions[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1) : null;
+		solutions[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1) : null;
+	}
+	
+	var len = solutions.length;
+	
+	if (len > 0) {
 		// Now that we have intersections of circle and line, we must 
 		// determine if they are on the arc.
-
-		var endAngle = arc.sa + arc.da;
 		
-		for (var i = 0; i < (discriminant > 0 ? 2 : 1); i++) {
-			if (points[i] && Util.angleIsBetweenAngles(arc.center.angleTo(points[i]), arc.sa, endAngle)) {
-				intersections.push(points[i]);
+		var extent = arc.sa + arc.da;
+	
+		for (var i = 0; i < len; i++) {
+			if (solutions[i] && Util.angleIsBetweenAngles(arc.center.angleTo(solutions[i]), arc.sa, extent)) {
+				intersections.push(solutions[i]);
 			}
 		}
 	}
@@ -328,7 +366,7 @@ Intersection.carccarc = function(arc1, arc2) {
 	var dx = arc2.center.x - arc1.center.x;
 	var dy = arc2.center.y - arc1.center.y;
 	
-	var points = [];
+	var solutions = [];
 	
 	if (d < rsum && d > rdiff) {
 		var a = (r1Squared - r2Squared + d * d) / (2 * d);
@@ -341,25 +379,25 @@ Intersection.carccarc = function(arc1, arc2) {
 		var newdy = hratio * dy;
 	
 		var p2 = new Coord2D(arc1.center.x + aratio * dx, arc1.center.y + aratio * dy);
-		points[0] = new Coord2D(p2.x + newdy, p2.y - newdx);
-		points[1] = new Coord2D(p2.x - newdy, p2.y + newdx);
+		solutions[0] = new Coord2D(p2.x + newdy, p2.y - newdx);
+		solutions[1] = new Coord2D(p2.x - newdy, p2.y + newdx);
 			
 	} else if (d != 0 && (Util.equals(rsum, d) || (Util.equals(rdiff, d)))) {
 		var rratio = arc1.radius / d;
-		points[0] = new Coord2D(arc1.center.x + rratio * dx, arc1.center.y + rratio * dy);
+		solutions[0] = new Coord2D(arc1.center.x + rratio * dx, arc1.center.y + rratio * dy);
 	}
 	
 	// Now that we have intersections of circle and circle, we must determine 
 	// if they are on both circle's arcs.
 	
-	if (points.length > 0) {
-		var endAngle1 = arc1.sa + arc1.da;
-		var endAngle2 = arc2.sa + arc2.da;
+	if (solutions.length > 0) {
+		var extent1 = arc1.sa + arc1.da;
+		var extent2 = arc2.sa + arc2.da;
 		
-		for (var i = 0, pLen = points.length; i < pLen; i++) {
-			if (Util.angleIsBetweenAngles(arc1.center.angleTo(points[i]), arc1.sa, endAngle1)
-				&& Util.angleIsBetweenAngles(arc2.center.angleTo(points[i]), arc2.sa, endAngle2)) {
-				intersections.push(points[i]);
+		for (var i = 0, pLen = solutions.length; i < pLen; i++) {
+			if (Util.angleIsBetweenAngles(arc1.center.angleTo(solutions[i]), arc1.sa, extent1)
+				&& Util.angleIsBetweenAngles(arc2.center.angleTo(solutions[i]), arc2.sa, extent2)) {
+				intersections.push(solutions[i]);
 			}
 		}
 	}
