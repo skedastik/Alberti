@@ -61,7 +61,7 @@ function Zap(masterGroup, autoScale, layerManager, underlayImage, toolTip) {
 	
 	// Update AutoScale and layer manager's SnapPoints object with the default zoom level
 	this.autoScale.update(Zap.zoomFactors[this.zoomLevel]);
-	this.layerManager.snapPoints.setSearchRadiusScale(Zap.zoomFactors[this.zoomLevel]);
+	this.layerManager.snapPoints.setSnapRadiusScale(Zap.zoomFactors[this.zoomLevel]);
 	
 	this.masterGroup.scale = Zap.zoomFactors[this.zoomLevel];
 	this.masterGroup.push();
@@ -113,14 +113,14 @@ Zap.prototype.handleWheel = function(direction, evt) {
 			!this.underlayImage.isHidden() ?
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
-					this.layerManager.snapPoints.setSearchRadiusScale(this.masterGroup.scale);
+					this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
 					this.masterGroup.push();
 					this.underlayImage.update();
 				}.bindTo(this)
 				:
 				function() {
 					this.autoScale.update(this.masterGroup.scale);
-					this.layerManager.snapPoints.setSearchRadiusScale(this.masterGroup.scale);
+					this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
 					this.masterGroup.push();
 				}.bindTo(this));
 		

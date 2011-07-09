@@ -48,8 +48,6 @@
  * 
  * * */
 
-SnapPoints.searchRadius = 20;
-
 SnapPoints.insertFlag     = 0;
 SnapPoints.deleteFlag     = 1;
 SnapPoints.bulkDeleteFlag = 2;
@@ -59,13 +57,13 @@ function SnapPoints() {
 	// The Zap object adjusts the search radius scale depending on the current 
 	// zoom factor, so the spatial hash's bucket width should be large enough 
 	// to accomodate for the minimum zoom factor.
-	this.points = new SpatialHash((SnapPoints.searchRadius / Zap.zoomFactors[Zap.minZoomLevel]) * 2);
+	this.points = new SpatialHash((Alberti.snapRadius / Zap.zoomFactors[Zap.minZoomLevel]) * 2);
 	
 	// Array of points that are marked for deletion. These points will be
 	// removed from the above hash at the next call to SnapPoints::flush.
 	this.deletedPoints = [];
 
-	this.searchRadiusScale = 1.0;
+	this.snapRadiusScale = 1.0;
 }
 
 // Test newShape for intersections with all Shapes in shapeArray, and take
@@ -123,7 +121,7 @@ SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) 
 // Returns the closest intersection within a reasonable distance of the the 
 // Coord2D passed in, or null if none are within distance.
 SnapPoints.prototype.getNearestNeighbor = function(coord) {
-	var qradius = SnapPoints.searchRadius / this.searchRadiusScale;
+	var qradius = Alberti.snapRadius / this.snapRadiusScale;
 	var nearCoords = this.points.search(coord, qradius);
 	
 	var nearestCoord = null;
@@ -147,8 +145,8 @@ SnapPoints.prototype.flush = function() {
 };
 
 // Set the search radius scale. The search radius is divided by this number.
-SnapPoints.prototype.setSearchRadiusScale = function(scale) {
-	this.searchRadiusScale = scale;
+SnapPoints.prototype.setSnapRadiusScale = function(scale) {
+	this.snapRadiusScale = scale;
 };
 
 /* * * * * * * * * * * * * Intersection methods * * * * * * * * * * * * * * *
