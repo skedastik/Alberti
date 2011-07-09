@@ -204,7 +204,6 @@ Tool.prototype.enable = function() {
 		this.enabled = true;
 		this.registerListener("mousedown", Alberti.svgRoot, false);
 		this.registerListener("keydown", window, false);
-		this.registerListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
 			this.registerListener("mouseup", window, false);
@@ -218,7 +217,6 @@ Tool.prototype.disable = function() {
 		this.enabled = false;
 		this.unregisterListener("mousedown", Alberti.svgRoot, false);
 		this.unregisterListener("keydown", window, false);
-		this.unregisterListener("keyup", window, false);
 		
 		if (this.mouseupFlag) {
 			this.unregisterListener("mouseup", window, false);
