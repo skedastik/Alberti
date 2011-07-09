@@ -118,8 +118,7 @@ SvgObject.prototype.set = function(attr, value, namespace) {
 	if ((value === "" || value === null)) {
 		this.svgNode.removeAttributeNS(arguments.length > 2 ? namespace : null, attr);
 	} else {
-		this.svgNode.setAttributeNS(arguments.length > 2 ? namespace : null, attr,
-			typeof value == "number" ? Util.roundToDecimal(value, Alberti.precision) : value);
+		this.svgNode.setAttributeNS(arguments.length > 2 ? namespace : null, attr, value);
 	}
 	
 	return this;

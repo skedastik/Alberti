@@ -34,9 +34,6 @@ Alberti.maxUndos = 100;                                  // Maximum number of un
 // This value is used when checking equality between two floats (see Util.equals method).
 Alberti.tolerance = 3;
 
-// Number of digits to use when serializing floating point values
-Alberti.precision = 12;
-
 // useful constants for various calculations
 Alberti.halfOriginalWindowWidth = Math.round(window.innerWidth / 2);
 Alberti.halfOriginalWindowHeight = Math.round(window.innerHeight / 2);
