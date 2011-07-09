@@ -67,7 +67,6 @@ EllipticalShape.prototype.serialize = function() {
 	// projectedToQuad method. Otherwise coefficients will have to be 
 	// calculated on the fly.
 	if (this.coeffs.length > 0) {
-		Dbug.log(this.coeffs);
 		this.set("berti:a", this.coeffs[0], Alberti.customns);
 		this.set("berti:b", this.coeffs[1], Alberti.customns);
 		this.set("berti:c", this.coeffs[2], Alberti.customns);
