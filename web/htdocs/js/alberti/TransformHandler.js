@@ -104,8 +104,8 @@ TransformHandler.prototype.snap = function(coord) {
 		if (Date.now() - this.lastSnapUpdate >= TransformHandler.recalcms) {
 			this.lastSnapUpdate = Date.now();
 		
-			// Query the layer manager's Intersection object for nearby intersection points
-			var newCoord = this.layerManager.intersections.getNearbyIntersection(coord);
+			// Query the layer manager's SnapPoints object for nearby intersection points
+			var newCoord = this.layerManager.snapPoints.getNearestNeighbor(coord);
 			this.currentSnapPoint = newCoord;
 	
 			if (newCoord) {

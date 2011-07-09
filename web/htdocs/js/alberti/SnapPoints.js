@@ -18,51 +18,51 @@
  *  
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * Intersection.js
+ * SnapPoints.js
  * 
- * Calculates intersections between Shapes and performs nearest-neighbor 
- * queries on intersection points.
+ * Manages snap points.
  * 
  * USAGE
  * 
- * Create a new Intersection object and call testShape, passing a query shape, 
- * an array of shapes to test against, and an action flag. 'null' entries in
- * the shape array are safe and will simply be ignored. The action flag takes 
- * any of the following values:
+ * Intersections
  * 
- *    Intersection.insertFlag
- *    Intersection.deleteFlag
- *    Intersection.bulkDeleteFlag
- *    Intersection.nopFlag
+ * Call testIntersections, passing a query shape, an array of shapes to test 
+ * against, and an action flag. 'null' entries in the shape array are safe and
+ * will simply be ignored. The action flag takes any of the following values:
+ * 
+ *    SnapPoints.insertFlag
+ *    SnapPoints.deleteFlag
+ *    SnapPoints.bulkDeleteFlag
+ *    SnapPoints.nopFlag
  * 
  * If action is insertFlag, each intersection point found will be added to an
  * internal structure. If deleteFlag, points will be deleted. If 
  * bulkDeleteFlag, points will be marked for deletion and deleted at the next
- * call to Intersection::flush. If nopFlag, the internal set of intersection 
- * points will not be modified. testShape returns an array of shapes that 
+ * call to SnapPoints::flush. If nopFlag, the internal set of intersection 
+ * points will not be modified. testIntersections returns an array of shapes that 
  * intersect with the query shape (empty array if no intersections were 
  * found).
  * 
  * Nearest neighbor searches can be performed on the current set of 
- * intersection points with the getNearbyIntersection method.
+ * intersection points with the getNearestNeighbor method.
  * 
  * * */
 
-Intersection.searchRadius = 20;
+SnapPoints.searchRadius = 20;
 
-Intersection.insertFlag     = 0;
-Intersection.deleteFlag     = 1;
-Intersection.bulkDeleteFlag = 2;
-Intersection.nopFlag        = 3;
+SnapPoints.insertFlag     = 0;
+SnapPoints.deleteFlag     = 1;
+SnapPoints.bulkDeleteFlag = 2;
+SnapPoints.nopFlag        = 3;
 
-function Intersection() {
+function SnapPoints() {
 	// The Zap object adjusts the search radius scale depending on the current 
 	// zoom factor, so the spatial hash's bucket width should be large enough 
 	// to accomodate for the minimum zoom factor.
-	this.points = new SpatialHash((Intersection.searchRadius / Zap.zoomFactors[Zap.minZoomLevel]) * 2);
+	this.points = new SpatialHash((SnapPoints.searchRadius / Zap.zoomFactors[Zap.minZoomLevel]) * 2);
 	
 	// Array of points that are marked for deletion. These points will be
-	// removed from the above hash at the next call to Intersection::flush.
+	// removed from the above hash at the next call to SnapPoints::flush.
 	this.deletedPoints = [];
 
 	this.searchRadiusScale = 1.0;
@@ -70,7 +70,7 @@ function Intersection() {
 
 // Test newShape for intersections with all Shapes in shapeArray, and take
 // appropriate action depending on action flag.
-Intersection.prototype.testShape = function(newShape, shapeArray, action) {
+SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) {
 	var intersectors = [];
 	
 	for (var i = 0, saLen = shapeArray.length; i < saLen; i++) {
@@ -80,14 +80,14 @@ Intersection.prototype.testShape = function(newShape, shapeArray, action) {
 			var intersections = [];
 		
 			if (shape.shapeName < newShape.shapeName) {
-				var funcName = shape.shapeName + newShape.shapeName;
-				if (Intersection[funcName]) {
-					intersections = Intersection[funcName](shape, newShape);
+				var funcName = "isect_" + shape.shapeName + newShape.shapeName;
+				if (SnapPoints[funcName]) {
+					intersections = SnapPoints[funcName](shape, newShape);
 				}
 			} else {
-				var funcName = newShape.shapeName + shape.shapeName;
-				if (Intersection[funcName]) {
-					intersections = Intersection[funcName](newShape, shape);
+				var funcName = "isect_" + newShape.shapeName + shape.shapeName;
+				if (SnapPoints[funcName]) {
+					intersections = SnapPoints[funcName](newShape, shape);
 				}
 			}
 		
@@ -96,19 +96,19 @@ Intersection.prototype.testShape = function(newShape, shapeArray, action) {
 			}
 		
 			switch (action) {
-				case Intersection.insertFlag:
+				case SnapPoints.insertFlag:
 					for (var j = 0, iLen = intersections.length; j < iLen; j++) {
 						this.points.insert(intersections[j]);
 					}
 					break;
 			
-				case Intersection.deleteFlag:
+				case SnapPoints.deleteFlag:
 					for (var j = 0, iLen = intersections.length; j < iLen; j++) {
 						this.points.remove([intersections[j]]);
 					}
 					break;
 			
-				case Intersection.bulkDeleteFlag:
+				case SnapPoints.bulkDeleteFlag:
 					for (var j = 0, iLen = intersections.length; j < iLen; j++) {
 						this.deletedPoints.push(intersections[j]);
 					}
@@ -122,8 +122,8 @@ Intersection.prototype.testShape = function(newShape, shapeArray, action) {
 
 // Returns the closest intersection within a reasonable distance of the the 
 // Coord2D passed in, or null if none are within distance.
-Intersection.prototype.getNearbyIntersection = function(coord) {
-	var qradius = Intersection.searchRadius / this.searchRadiusScale;
+SnapPoints.prototype.getNearestNeighbor = function(coord) {
+	var qradius = SnapPoints.searchRadius / this.searchRadiusScale;
 	var nearCoords = this.points.search(coord, qradius);
 	
 	var nearestCoord = null;
@@ -141,13 +141,13 @@ Intersection.prototype.getNearbyIntersection = function(coord) {
 	return nearestCoord ? nearestCoord.clone() : null;
 };
 
-Intersection.prototype.flush = function() {
+SnapPoints.prototype.flush = function() {
 	this.points.remove(this.deletedPoints);
 	this.deletedPoints = [];
 };
 
 // Set the search radius scale. The search radius is divided by this number.
-Intersection.prototype.setSearchRadiusScale = function(scale) {
+SnapPoints.prototype.setSearchRadiusScale = function(scale) {
 	this.searchRadiusScale = scale;
 };
 
@@ -163,7 +163,7 @@ Intersection.prototype.setSearchRadiusScale = function(scale) {
 
 // Big thanks to: http://www.topcoder.com/tc?module=Static&d1=tutorials&d2=geometry2
 // Much faster than my crummy slope-intercept algorithm.
-Intersection.lineline = function(l1, l2) {
+SnapPoints.isect_lineline = function(l1, l2) {
 	var intersections = [];
 	
 	var a1 = l1.p2.y - l1.p1.y;
@@ -189,7 +189,7 @@ Intersection.lineline = function(l1, l2) {
 	return intersections;
 };
 
-Intersection.earcline = function(arc, line) {
+SnapPoints.isect_earcline = function(arc, line) {
 	// Given conic equation describing ellipse:
 	//
 	//    a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0
@@ -265,7 +265,7 @@ Intersection.earcline = function(arc, line) {
 };
 
 // http://stackoverflow.com/questions/1073336/circle-line-collision-detection
-Intersection.carcline = function(arc, line) {
+SnapPoints.isect_carcline = function(arc, line) {
 	// let D = direction vector of line from start to end
 	// let F = direction vector from center of arc to line start
 	//
@@ -338,7 +338,7 @@ Intersection.carcline = function(arc, line) {
 };
 
 // http://paulbourke.net/geometry/2circle/
-Intersection.carccarc = function(arc1, arc2) {
+SnapPoints.isect_carccarc = function(arc1, arc2) {
 	//
 	// let d = distance between arcs' centers
 	//
@@ -405,66 +405,66 @@ Intersection.carccarc = function(arc1, arc2) {
 	return intersections;
 };
 
-Intersection.linerect = function(line, rect) {
+SnapPoints.isect_linerect = function(line, rect) {
 	var intersections = [];
 	
-	intersections = intersections.concat(Intersection.lineline(line, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_lineline(line, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.top),
 		new Coord2D(rect.rect.right, rect.rect.top))));
 		
-	intersections = intersections.concat(Intersection.lineline(line, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_lineline(line, Line.fromPoints(
 		new Coord2D(rect.rect.right, rect.rect.top),
 		new Coord2D(rect.rect.right, rect.rect.bottom))));
 		
-	intersections = intersections.concat(Intersection.lineline(line, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_lineline(line, Line.fromPoints(
 		new Coord2D(rect.rect.right, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.bottom))));
 		
-	intersections = intersections.concat(Intersection.lineline(line, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_lineline(line, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.top))));
 	
 	return intersections;
 };
 
-Intersection.carcrect = function(carc, rect) {
+SnapPoints.isect_carcrect = function(carc, rect) {
 	var intersections = [];
 	
-	intersections = intersections.concat(Intersection.carcline(carc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_carcline(carc, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.top),
 		new Coord2D(rect.rect.right, rect.rect.top))));
 	
-	intersections = intersections.concat(Intersection.carcline(carc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_carcline(carc, Line.fromPoints(
 		new Coord2D(rect.rect.right, rect.rect.top),
 		new Coord2D(rect.rect.right, rect.rect.bottom))));
 	
-	intersections = intersections.concat(Intersection.carcline(carc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_carcline(carc, Line.fromPoints(
 		new Coord2D(rect.rect.right, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.bottom))));
 	
-	intersections = intersections.concat(Intersection.carcline(carc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_carcline(carc, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.top))));
 	
 	return intersections;
 };
 
-Intersection.earcrect = function(earc, rect) {
+SnapPoints.isect_earcrect = function(earc, rect) {
 	var intersections = [];
 	
-	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_earcline(earc, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.top),
 		new Coord2D(rect.rect.right, rect.rect.top))));
 	
-	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_earcline(earc, Line.fromPoints(
 		new Coord2D(rect.rect.right, rect.rect.top),
 		new Coord2D(rect.rect.right, rect.rect.bottom))));
 	
-	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_earcline(earc, Line.fromPoints(
 		new Coord2D(rect.rect.right, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.bottom))));
 	
-	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+	intersections = intersections.concat(SnapPoints.isect_earcline(earc, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.top))));
 	

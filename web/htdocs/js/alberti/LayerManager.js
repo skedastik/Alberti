@@ -45,8 +45,7 @@ function LayerManager(layerGroup, undoManager) {
 	// An array of currently selected shapes
 	this.selectedShapes = [];
 	
-	// Shape intersections used for auto-snapping
-	this.intersections = new Intersection();
+	this.snapPoints = new SnapPoints();
 }
 
 // Generate and insert a new layer, optionally providing its name. Returns the new layer.
@@ -115,8 +114,8 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	}
 	
 	// Flush the bulk deletion
-	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
-	this.intersections.flush();
+	this.undoManager.push("Flush Snap Points", this.snapPoints, this.snapPoints.flush, null);
+	this.snapPoints.flush();
 	
 	var targetIndex = this.layers.indexOf(targetLayer);
 	
@@ -249,7 +248,7 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 			// Add intersection points of all shapes in the layer
 			for (var i = 0, sLen = targetLayer.shapes.length; i < sLen; i++) {
 				var shape = targetLayer.shapes[i];
-				this.intersections.testShape(shape, visibleShapes, Intersection.insertFlag);
+				this.snapPoints.testIntersections(shape, visibleShapes, SnapPoints.insertFlag);
 				
 				// Each shape being tested is to be shown, so add it to the
 				// visible shapes array as it is tested.
@@ -285,7 +284,7 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 		// it's already happened at least once (as of 7/1/2011).
 		for (var i = targetLayer.shapes.length - 1; i >= 0; i--) {
 			var shape = targetLayer.shapes[i];
-			this.intersections.testShape(shape, visibleShapes, Intersection.bulkDeleteFlag);
+			this.snapPoints.testIntersections(shape, visibleShapes, SnapPoints.bulkDeleteFlag);
 			
 			// Each shape being tested is to be hidden, so remove it from the
 			// visible shapes array as it is tested.
@@ -374,7 +373,7 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	if (!targetLayer.isHidden()) {
 		// Calculate new intersection points before the shape is added to the 
 		// index, so that it is not tested against itself.
-		this.intersections.testShape(newShape, this.getVisibleShapes(), Intersection.insertFlag);
+		this.snapPoints.testIntersections(newShape, this.getVisibleShapes(), SnapPoints.insertFlag);
 	}
 	
 	// Create a new shape record
@@ -408,8 +407,8 @@ LayerManager.prototype.removeShape = function(shape, bulk) {
 	layer.removeShape(shape);
 	
 	// Delete its intersection points
-	this.intersections.testShape(shape, this.getVisibleShapes(),
-		bulk ? Intersection.bulkDeleteFlag : Intersection.deleteFlag);
+	this.snapPoints.testIntersections(shape, this.getVisibleShapes(),
+		bulk ? SnapPoints.bulkDeleteFlag : SnapPoints.deleteFlag);
 	
 	// Make it undo-able
 	this.undoManager.push("Delete Shape", this,
@@ -435,9 +434,9 @@ LayerManager.prototype.deleteSelectedShapes = function() {
 	
 	this.setSelection([]);
 	
-	// Flush the Intersection object after bulk deletions
-	this.undoManager.push("Flush Intersections", this.intersections, this.intersections.flush, null);
-	this.intersections.flush();
+	// Flush the SnapPoints object after bulk deletions
+	this.undoManager.push("Flush Snap Points", this.snapPoints, this.snapPoints.flush, null);
+	this.snapPoints.flush();
 	
 	this.undoManager.recordStop();
 };
@@ -457,7 +456,7 @@ LayerManager.prototype.getShapesInRect = function(rect) {
 	
 	// Return the array of intersecting shapes concatenated to the enclosure array
 	return enclosures.concat(
-		this.intersections.testShape(Rectangle.fromRect2D(rect), visibleShapes, Intersection.nopFlag));
+		this.snapPoints.testIntersections(Rectangle.fromRect2D(rect), visibleShapes, SnapPoints.nopFlag));
 };
 
 // "Pick" shapes near the given coord (max distance determined by radius) and 
