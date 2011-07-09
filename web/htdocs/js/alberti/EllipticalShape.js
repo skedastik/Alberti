@@ -54,7 +54,9 @@ EllipticalShape.prototype.push = function() {
 	this.set("rx", this.rx);
 	this.set("ry", this.ry);
 	this.set("transform", "rotate("+Util.radToDeg(this.xrot)+" "+this.center.x+" "+this.center.y+")");
-	
+};
+
+EllipticalShape.prototype.serialize = function() {
 	this.set("berti:cx", this.center.x, Alberti.customns);
 	this.set("berti:cy", this.center.y, Alberti.customns);
 	this.set("berti:rx", this.rx, Alberti.customns);
@@ -65,6 +67,7 @@ EllipticalShape.prototype.push = function() {
 	// projectedToQuad method. Otherwise coefficients will have to be 
 	// calculated on the fly.
 	if (this.coeffs.length > 0) {
+		Dbug.log(this.coeffs);
 		this.set("berti:a", this.coeffs[0], Alberti.customns);
 		this.set("berti:b", this.coeffs[1], Alberti.customns);
 		this.set("berti:c", this.coeffs[2], Alberti.customns);
@@ -79,11 +82,17 @@ EllipticalShape.prototype.pull = function() {
 	this.rx = this.get("rx", Alberti.customns);
 	this.ry = this.get("ry", Alberti.customns);
 	this.xrot = this.get("xrot", Alberti.customns);
+	this.coeffs = [];
 	
 	var a = this.get("a", Alberti.customns);
 	
-	if (a) {
-		
+	if (a !== "" && a !== null) {
+		this.coeffs[0] = a;
+		this.coeffs[1] = this.get("b", Alberti.customns);
+		this.coeffs[2] = this.get("c", Alberti.customns);
+		this.coeffs[3] = this.get("d", Alberti.customns);
+		this.coeffs[4] = this.get("f", Alberti.customns);
+		this.coeffs[5] = this.get("g", Alberti.customns);
 	}
 };
 

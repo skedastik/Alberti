@@ -50,18 +50,16 @@ EllipticalArc.prototype.push = function() {
 	var sweep = this.da > 0 ? 1 : 0;
 	
 	this.set("d",
-		"M"+Util.roundToDecimal(m.x, Alberti.precision)+","+Util.roundToDecimal(m.y, Alberti.precision)
-		+" A"+Util.roundToDecimal(this.rx, Alberti.precision)+","+Util.roundToDecimal(this.ry, Alberti.precision)+", "
-		+Util.roundToDecimal(Util.radToDeg(this.xrot), Alberti.precision)+", "
+		"M"+m.x+","+m.y
+		+" A"+this.rx+","+this.ry+", "
+		+Util.radToDeg(this.xrot)+", "
 		+large+","+sweep+", "
-		+Util.roundToDecimal(n.x, Alberti.precision)+","+Util.roundToDecimal(n.y, Alberti.precision)
+		+n.x+","+n.y
 	);
-	
-	this.set("berti:cx", this.center.x, Alberti.customns);
-	this.set("berti:cy", this.center.y, Alberti.customns);
-	this.set("berti:rx", this.rx, Alberti.customns);
-	this.set("berti:ry", this.ry, Alberti.customns);
-	this.set("berti:xrot", this.xrot, Alberti.customns);
+};
+
+EllipticalArc.prototype.serialize = function() {
+	EllipticalArc.superclass.serialize.call(this);
 	this.set("berti:sa", this.sa, Alberti.customns);
 	this.set("berti:da", this.da, Alberti.customns);
 };
@@ -92,6 +90,7 @@ EllipticalArc.fromEllipse = function(e) {
 	ea.rx = e.rx;
 	ea.ry = e.ry;
 	ea.xrot = e.xrot;
+	ea.coeffs = e.coeffs.clone();
 	
 	return ea;
 }
