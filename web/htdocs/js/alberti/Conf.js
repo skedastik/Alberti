@@ -28,7 +28,7 @@ Alberti.fpsMax    = Animation.fpsMax;
 Alberti.refreshms = Math.round(1000 / Alberti.fpsMax);      // limit redraw rate
 
 Alberti.showToolTips = true;                            // Show tool helper tips?
-
+Alberti.snapRadius = 20;                                 // Snapping takes effect within this radius (in pixels)
 Alberti.maxUndos = 100;                                  // Maximum number of undo actions
 
 // This value is used when checking equality between two floats (see Util.equals method).
