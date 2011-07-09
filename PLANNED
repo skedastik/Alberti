@@ -27,6 +27,9 @@ Exporting
    - Export to PNG
    - Export frame w/ selectable aspect ratio, size, and origin
 
+Grid
+   - Some sort of infinite grid that adjusts dynamically w/ zooming.
+
 FAR FUTURE
 
 As it is, Alberti is a capable drafting tool, but could be augmented with the
