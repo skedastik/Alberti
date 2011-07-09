@@ -29,7 +29,6 @@ function ToolEllipticalArc(uiObjects) {
 	ToolEllipticalArc.baseConstructor.call(this, -1, 6, false, uiObjects);
 	
 	this.quadPoints = [];            // Contains points of quadrilateral
-	this.center = null;              // Center of elliptical arc
 }
 Util.extend(ToolEllipticalArc, ToolArc);
 
@@ -66,8 +65,6 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				var l4 = Line.fromPoints(hull[3], hull[0]).generate();
 				var lr = Line.fromPoints(e.center, e.center).generate();
 				
-				this.center = e.center;
-				
 				this.registerShape(pq, "quad_point"+stepNum);
 				this.registerShape(pc, "center_point");
 				this.registerShape(l1, "quad_line1", true);
@@ -86,8 +83,9 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 		
 		default:
 			var keyCoord = new Coord2D(gx, gy);
+			var e = this.getShape("ellipse_guide");
 			var p = Point.fromCoord(keyCoord).generate();
-			var l = Line.fromPoints(this.center, keyCoord).generate();
+			var l = Line.fromPoints(e.center, keyCoord).generate();
 			
 			switch ((stepNum - 3) % 2) {
 				
@@ -105,6 +103,7 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				case 1:
 					var ea = EllipticalArc.fromEllipse(this.getShape("ellipse_guide")).generate();
 					ea.sa = l.getAngle();
+					ea.coeffs = e.coeffs;
 				
 					this.registerShape(ea, "arc"+stepNum);
 					this.registerShape(l, "line_start_angle"+stepNum, true);
