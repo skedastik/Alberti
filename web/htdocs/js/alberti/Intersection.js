@@ -448,3 +448,25 @@ Intersection.carcrect = function(carc, rect) {
 	
 	return intersections;
 };
+
+Intersection.earcrect = function(earc, rect) {
+	var intersections = [];
+	
+	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.top))));
+	
+	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.bottom))));
+	
+	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.bottom))));
+	
+	intersections = intersections.concat(Intersection.earcline(earc, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.top))));
+	
+	return intersections;
+};
