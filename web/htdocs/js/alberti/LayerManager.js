@@ -552,3 +552,10 @@ LayerManager.prototype.getVisibleShapes = function() {
 	
 	return shapes;
 };
+
+// Calls serialize() on all shapes
+LayerManager.prototype.serializeAll = function() {
+	for (var sid in this.shapeIndex) {
+		this.shapeIndex[sid].shape.serialize();
+	}
+};
