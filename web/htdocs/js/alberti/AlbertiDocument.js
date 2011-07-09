@@ -157,8 +157,6 @@ AlbertiDocument.prototype.loadLayers = function() {
 					// A path indicates either an elliptical arc or circular arc shape
 					var isEllipticalArc = curShapeNode.getAttributeNS(Alberti.customns, "rx");
 					shape = (isEllipticalArc ? new EllipticalArc(curShapeNode) : new CircleArc(curShapeNode));
-					
-					// TODO: Calculate coefficients of conic describing ellipse
 					break;
 				
 				default:
