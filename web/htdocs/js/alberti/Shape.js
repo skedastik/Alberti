@@ -41,6 +41,11 @@ function Shape(svgTagOrNode, shapeName) {
 }
 Util.extend(Shape, SvgObject);
 
+// This method may optionally be overridden if the inheriting class must 
+// set Alberti-specific attributes that are not set by its push method. It is
+// invoked prior to saving an Alberti document.
+Shape.prototype.serialize = function() {};
+
 // Returns a Rect2D bounding the shape. May need to override for some shapes,
 // as some SVG implementations do not return correct results for all shapes.
 Shape.prototype.getBoundingBox = function() {
