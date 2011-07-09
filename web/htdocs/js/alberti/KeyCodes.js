@@ -46,12 +46,12 @@ var KeyCode = {
 	number9: 57,
     
 	lpCollapse: 220,       // '\' - Collapse/reveal layer panel
-	snap:       70,        // 'f' - Activate snap-to-intersection
+	snap:       83,        // 's' - Activate snap-to-intersection
 	undo:       85,        // 'u'
 	redo:       82,        // 'r'
 	cut:        88,        // 'x'
 	paste:      86,        // 'v'
 	newDoc:     78,        // 'n' - Create a new document
-	save:       83,        // 's' - Save the document
+	save:       83,        // 's' - Save the document (w/ shift key)
 	load:       79,        // 'o' - Open a document
 };
