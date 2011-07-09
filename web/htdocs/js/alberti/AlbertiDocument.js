@@ -183,6 +183,8 @@ AlbertiDocument.prototype.loadLayers = function() {
 
 // Returns the Alberti document as SVG+XML
 AlbertiDocument.prototype.asXML = function() {
+	this.layerManager.serializeAll();
+	
 	var chunks = [];
 	
 	chunks[0]  = '<svg\n';
