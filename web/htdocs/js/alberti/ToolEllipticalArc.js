@@ -78,6 +78,7 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				// less than four points as this indicates the quadrilateral 
 				// was not, in fact, convex.
 				this.decrementStep();
+				this.displayTip("Invalid point. Quad must be convex.", true, true);
 			}
 			break;
 		
