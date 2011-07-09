@@ -40,6 +40,7 @@ Ellipse.prototype.clone = function() {
 	e.rx = this.rx;
 	e.ry = this.ry;
 	e.xrot = this.xrot;
+	e.coeffs = this.coeffs;
 	
 	return e;
 };

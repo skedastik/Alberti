@@ -78,6 +78,7 @@ EllipticalArc.prototype.clone = function() {
 	ea.xrot = this.xrot;
 	ea.sa = this.sa;
 	ea.da = this.da;
+	ea.coeffs = this.coeffs;
 	
 	return ea;
 };
