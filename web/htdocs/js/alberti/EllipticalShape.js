@@ -35,6 +35,10 @@ EllipticalShape.prototype.initialize = function() {
 	this.rx = 0;                                    // X-Radius
 	this.ry = 0;                                    // Y-Radius
 	this.xrot = 0;                                  // X-Axis Rotation
+	
+	// Coefficients of general conic equation describing ellipse. May or may
+	// not be set, depending on how ellipse was created.
+	this.coeffs = [];
 };
 
 EllipticalShape.prototype.initialize = function() {

@@ -123,5 +123,7 @@ Ellipse.projectedToQuad = function(w, x, y, z) {
 		}
 	}
 	
+	ellipse.coeffs = [a, b, c, d, f, g];
+	
 	return ellipse;
 };
