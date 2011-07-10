@@ -184,7 +184,7 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 	
 	if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
 		// TODO: Special case
-	} else {
+	} else if (discriminant > 0) {
 		var rootd = Math.sqrt(discriminant);
 		var x1 = (-B + rootd) / (2*A);
 		var x2 = (-B - rootd) / (2*A);
