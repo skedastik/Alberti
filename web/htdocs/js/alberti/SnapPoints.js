@@ -229,8 +229,8 @@ SnapPoints.isect_earcline = function(arc, line) {
 		
 		var discriminant = B*B - 4*A*C;
 		
-		if (discriminant == 0) {
-			var t = -B / (2*A);			
+		if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
+			var t = -B / (2*A);
 			
 			solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy) : null;
 			
@@ -303,7 +303,7 @@ SnapPoints.isect_carcline = function(arc, line) {
 	
 	var discriminant = b * b - 4 * a * c;
 	
-	if (discriminant == 0) {
+	if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
 		var t = -b / (2 * a);
 		
 		solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1) : null;
