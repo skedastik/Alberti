@@ -150,7 +150,7 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 	// Where:
 	//
 	//    A = a - (2*b*P) / Q + (c*P*P) / (Q*Q)
-	//    B = 2 * (d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q))
+	//    B = d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q)
 	//    C = g - (2*f*R) / Q + (c*R*R) / (Q*Q)
 	// 
 	// Eqn. [4] is solved w/ quadratic formula yielding X coordinates of 
@@ -175,7 +175,7 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 	Dbug.log("P = "+R+",   Q = "+Q+",   R = "+R)
 	
 	var A = a - (2*b*P) / Q + (c*P*P) / (Q*Q);
-	var B = 2 * (d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q));
+	var B = d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q);
 	var C = g - (2*f*R) / Q + (c*R*R) / (Q*Q);
 	Dbug.log("A = "+A+",   B = "+B+",   C = "+C);
 	
