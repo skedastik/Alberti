@@ -116,6 +116,88 @@ EllipticalShape.prototype.getPointGivenAngle = function(a) {
 	);
 };
 
+// Returns the point(s) of tangency of the lines passing through external 
+// point p as an array of Coord2D's, or an empty array if no tangents exist
+// (i.e. the point lies inside the ellipse).
+EllipticalShape.prototype.getTangentsThrough = function(p) {
+	// The general conic equation describing the ellipse is implicitly
+	// differentiated yielding the ellipse slope equation:
+	//
+	//           dy/dx = -(a*X + b*Y + d) / (b*X + c*Y + f)
+	//
+	// The above is equated with the slope of the line passing through 
+	// external point p(x0, y0) in order to form a system of equations that 
+	// must be solved for X and Y:
+	//
+	//    (Y - y0) / (X - x0) = -(a*X + b*Y + d) / (b*X + c*Y + f)         [1]
+	//
+	//        a*X^2 + 2*b*X*Y +c*Y^2 + 2*d*X + 2*f*Y + g = 0               [2]
+	//
+	// The result of cross-multiplying eqn. [1] is reduced to:
+	// 
+	//    Y = (P*X + R) / Q                                                [3]
+	//
+	// Where:
+	// 
+	//    P = a*x0 + b*y0 + d
+	//    Q = b*x0 + c*y0 + f      [if Q = 0, handle as special case #2]
+	//    R = d*x0 + f*y0 + g
+	//
+	// Eqn. [3] is substituted into eqn. [2] and reduced to:
+	//
+	//    A*X^2 + B*X + C = 0                                              [4]
+	// 
+	// Where:
+	//
+	//    A = a - (2*b*P) / Q + (c*P*P) / (Q*Q)
+	//    B = 2 * (d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q))
+	//    C = g - (2*f*R) / Q + (c*R*R) / (Q*Q)
+	// 
+	// Eqn. [4] is solved w/ quadratic formula yielding X coordinates of 
+	// tangent points. Substitute these into [3] for corresponding Y.
+	// 
+	// Special case #1: If the discriminant of [4] is negative, the point is
+	// not external. It lies inside the ellipse.
+	// 
+	// Special case #2: If the discriminant of [4] is 0, we have a special 
+	// case where the X coordinates of both points of tangency are equal.
+	
+	var tangents = [];
+	
+	var a = this.coeffs[0], b = this.coeffs[1], c = this.coeffs[2], d = this.coeffs[3], f = this.coeffs[4], g = this.coeffs[5];
+	var x0 = p.x, y0 = p.y;
+	
+	Dbug.log("Coefficients:   "+this.coeffs);
+	
+	var P = a*x0 + b*y0 + d;
+	var Q = b*x0 + c*y0 + f;                    // TODO: Special case when Q == 0 (same as when discriminant == 0)
+	var R = d*x0 + f*y0 + g;
+	Dbug.log("P = "+R+",   Q = "+Q+",   R = "+R)
+	
+	var A = a - (2*b*P) / Q + (c*P*P) / (Q*Q);
+	var B = 2 * (d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q));
+	var C = g - (2*f*R) / Q + (c*R*R) / (Q*Q);
+	Dbug.log("A = "+A+",   B = "+B+",   C = "+C);
+	
+	var discriminant = B*B - 4*A*C;
+	Dbug.log("Discriminant = "+discriminant+", ~0? "+Util.equals(discriminant, 0, Alberti.hiTolerance));
+	
+	if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
+		// TODO: Special case
+	} else {
+		var rootd = Math.sqrt(discriminant);
+		var x1 = (-B + rootd) / (2*A);
+		var x2 = (-B - rootd) / (2*A);
+		var y1 = -(P*x1 + R) / Q;
+		var y2 = -(P*x2 + R) / Q;
+		
+		tangents[0] = new Coord2D(x1, y1);
+		tangents[1] = new Coord2D(x2, y2);
+	}
+	
+	return tangents;
+};
+
 // Returns elliptical shape 'e' inscribed in a convex quadrilateral defined by
 // four Coord2D's (which must be passed in anti-clockwise order), as described
 // here:
