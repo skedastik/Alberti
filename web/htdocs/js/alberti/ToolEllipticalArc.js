@@ -57,7 +57,7 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 			
 			if (hull.length == 4) {
 				var pq = Point.fromCoord(this.quadPoints[3]).generate();
-				var e = EllipticalShape.projectedToQuad(new Ellipse(), hull[0], hull[1], hull[2], hull[3]).generate();
+				var e = EllipticalShape.projectToQuad(new Ellipse(), hull[0], hull[1], hull[2], hull[3]).generate();
 				var pc = Point.fromCoord(e.center).generate();
 				var l1 = Line.fromPoints(hull[0], hull[1]).generate();
 				var l2 = Line.fromPoints(hull[1], hull[2]).generate();

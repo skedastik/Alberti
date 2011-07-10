@@ -64,7 +64,7 @@ EllipticalShape.prototype.serialize = function() {
 	this.set("berti:xrot", this.xrot, Alberti.customns);
 	
 	// This will work so long as all elliptical shapes are generated via the
-	// projectedToQuad method. Otherwise coefficients will have to be 
+	// projectToQuad method. Otherwise coefficients will have to be 
 	// calculated on the fly.
 	if (this.coeffs.length > 0) {
 		this.set("berti:a", this.coeffs[0], Alberti.customns);
@@ -128,7 +128,7 @@ EllipticalShape.prototype.getPointGivenAngle = function(a) {
 //
 // Returns 'e'.
 //
-EllipticalShape.projectedToQuad = function(e, w, x, y, z) {
+EllipticalShape.projectToQuad = function(e, w, x, y, z) {
 	var W0 = w.x, W1 = w.y;
 	var X0 = x.x, X1 = x.y;
 	var Y0 = y.x, Y1 = y.y;
