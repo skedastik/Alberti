@@ -31,8 +31,9 @@ Alberti.showToolTips = true;                            // Show tool helper tips
 Alberti.snapRadius = 20;                                 // Snapping takes effect within this radius (in pixels)
 Alberti.maxUndos = 100;                                  // Maximum number of undo actions
 
-// This value is used when checking equality between two floats (see Util.equals method).
+// These values are used when checking equality between two floats (see Util.equals method).
 Alberti.tolerance = 3;
+Alberti.hiTolerance = 35;
 
 // useful constants for various calculations
 Alberti.halfOriginalWindowWidth = Math.round(window.innerWidth / 2);
