@@ -292,7 +292,7 @@ LayerManager.prototype.setLayerVisibility = function(targetLayer, makeVisible) {
 		}
 		
 		// Flush bulk deletions
-		this.intersections.flush();
+		this.snapPoints.flush();
 		
 		this.undoManager.recordStart();
 		
