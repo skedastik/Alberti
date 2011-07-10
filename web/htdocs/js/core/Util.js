@@ -265,15 +265,15 @@ var Util = {
 		return x > 0 ? 1 : (x < 0 ? -1 : 0);
 	},
 	
-	// Checks the equality of x and y rounded to predefined decimal place.
+	// Checks the equality of x and y rounded to a predefined decimal place, 
+	// or to the decimal place defined by tolerance.
 	//
-	// A useful function for checking delta values, particularly if you are
-	// going to be performing divisions, or trigonometric operations using 
-	// that delta value and need to be sure it is nonzero. Also useful for
-	// checking the equality of floats, allowing for epsilon uncertainties.
-	equals: function(x, y) {
-		return Util.roundToDecimal(x, Alberti.tolerance)
-			== Util.roundToDecimal(y, Alberti.tolerance);
+	// A useful function for checking delta values, discriminants, etc.
+	equals: function(x, y, tolerance) {
+		tolerance = tolerance || Alberti.tolerance;
+		
+		return Util.roundToDecimal(x, tolerance)
+			== Util.roundToDecimal(y, tolerance);
 	},
 	
 	// Returns true if x is between numbers u and v, inclusive, and allowing
