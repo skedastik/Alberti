@@ -224,16 +224,20 @@ Delegate.prototype.mapMethod = function(objectMethodName, preDelegateMethodName,
 	// Override internal method
 	this[objectMethodName] = function() {
 		// If delegation is enabled, invoke pre-delegate method if provided
-		if (this.delegationEnabled && preDelegateMethodName) {
-			this[preDelegateMethodName].apply(this, arguments);
-		}
+		if (this.delegationEnabled) {
+			if (preDelegateMethodName) {
+				this[preDelegateMethodName].apply(this, arguments);
+			}
 		
-		// Invoke delegated object's method
-		var returnVal = this.delegatedObject[objectMethodName].apply(this, arguments);
+			// Invoke delegated object's method
+			var returnVal = this.delegatedObject[objectMethodName].apply(this, arguments);
 		
-		// If delegation is enabled, invoke post-delegate method if provided
-		if (this.delegationEnabled && postDelegateMethodName) {
-			this[postDelegateMethodName].apply(this, arguments);
+			// If delegation is enabled, invoke post-delegate method if provided
+			if (postDelegateMethodName) {
+				this[postDelegateMethodName].apply(this, arguments);
+			}
+		} else {
+			var returnVal = this.delegatedObject[objectMethodName].apply(this, arguments);
 		}
 		
 		return returnVal;
