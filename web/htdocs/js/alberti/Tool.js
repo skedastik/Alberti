@@ -386,30 +386,28 @@ Tool.prototype.onMouseMove = function(gx, gy, evt) {
 };
 
 Tool.prototype.keydown = function(evt) {
-	switch (evt.keyCode) {
-		case KeyCode.esc:
-			this.decrementStep();
-			break;
-		case KeyCode.enter:
-			if (this.currentStep >= this.minSteps - 1) {
-				this.completeTool();
-			}
-			break;
-		case KeyCode.snap:
-			this.enableSnapping();
-			break;
-	}
-	
-	if (evt.keyCode != KeyCode.shift) {
+	if (!evt.shiftKey) {
 		this.constrainEnabled = false;
-	} else {
-		if (!evt.altKey && !evt.ctrlKey && !evt.metaKey) {
-			this.constrainEnabled = true;
 		
-			// Spoof a mousemove so shapes will update to constrained position
-			p = this.getLastMousePosition();
-			this.invokeMouseMove(p.x, p.y);
+		switch (evt.keyCode) {
+			case KeyCode.esc:
+				this.decrementStep();
+				break;
+			case KeyCode.enter:
+				if (this.currentStep >= this.minSteps - 1) {
+					this.completeTool();
+				}
+				break;
+			case KeyCode.snap:
+				this.enableSnapping();
+				break;
 		}
+	} else if (!evt.altKey && !evt.ctrlKey && !evt.metaKey) {
+		this.constrainEnabled = true;
+	
+		// Spoof a mousemove so shapes will update to constrained position
+		p = this.getLastMousePosition();
+		this.invokeMouseMove(p.x, p.y);
 	}
 };
 
