@@ -126,16 +126,6 @@ Coord2D.threePointsClockDirection = function(p, q, r) {
 	return Util.sign((q.x - p.x)*(r.y - p.y) - (q.y - p.y)*(r.x - p.x));
 };
 
-// Clone the coord, round its components to a safe decimal place (for floating 
-// point precision reasons), then return it
-Coord2D.roundForSafety = function(coord) {
-	var coordRounded = coord.clone();
-	coordRounded.x = Util.roundToDecimal(coordRounded.x, Alberti.tolerance);
-	coordRounded.y = Util.roundToDecimal(coordRounded.y, Alberti.tolerance);
-	
-	return coordRounded;
-}
-
 Coord2D.prototype.toString = function() {
 	return this.x+","+this.y;
 };
