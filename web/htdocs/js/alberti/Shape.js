@@ -51,11 +51,7 @@ Shape.prototype.serialize = function() {};
 Shape.prototype.getBoundingBox = function() {
 	var svgRect = this.svgNode.getBBox();
 	
-	return new Rect2D(
-		Util.roundToDecimal(svgRect.x, Alberti.tolerance),
-		Util.roundToDecimal(svgRect.y, Alberti.tolerance),
-		Util.roundToDecimal(svgRect.x + svgRect.width, Alberti.tolerance),
-		Util.roundToDecimal(svgRect.y + svgRect.height, Alberti.tolerance));
+	return new Rect2D(svgRect.x, svgRect.y, svgRect.x + svgRect.width, svgRect.y + svgRect.height);
 };
 
 // Display the shape as selected
