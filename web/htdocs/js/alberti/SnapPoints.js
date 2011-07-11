@@ -174,7 +174,7 @@ SnapPoints.isect_lineline = function(l1, l2) {
 	
 	var det = a1 * b2 - a2 * b1;
 	
-	if (det != 0) {
+	if (!Util.equals(det, 0)) {
 		var x0 = (b2 * c1 - b1 * c2) / det;
 		var y0 = (a1 * c2 - a2 * c1) / det;
 		
@@ -229,7 +229,7 @@ SnapPoints.isect_earcline = function(arc, line) {
 		
 		var discriminant = B*B - 4*A*C;
 		
-		if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
+		if (Util.equals(discriminant, 0, 1e-25)) {
 			var t = -B / (2*A);
 			
 			solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy) : null;
@@ -303,7 +303,7 @@ SnapPoints.isect_carcline = function(arc, line) {
 	
 	var discriminant = b * b - 4 * a * c;
 	
-	if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
+	if (Util.equals(discriminant, 0, 1e-25)) {
 		var t = -b / (2 * a);
 		
 		solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1) : null;
@@ -354,9 +354,10 @@ SnapPoints.isect_carccarc = function(arc1, arc2) {
 	//
 	var intersections = [];
 	
-	var d = arc1.center.distanceTo(arc2.center);
-	var rsum = arc1.radius + arc2.radius;
-	var rdiff = Math.abs(arc1.radius - arc2.radius);
+	// Use floored values as distanceTo will always return a truncated float
+	var d = Util.floorToDecimal(arc1.center.distanceTo(arc2.center), 6);
+	var rsum = Util.floorToDecimal(arc1.radius + arc2.radius, 6);
+	var rdiff = Util.floorToDecimal(Math.abs(arc1.radius - arc2.radius), 6);
 	
 	var r1Squared = arc1.radius * arc1.radius;
 	var r2Squared = arc2.radius * arc2.radius;
