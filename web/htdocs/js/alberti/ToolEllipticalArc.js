@@ -40,6 +40,8 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 		case 2:
 			var mouseCoord = new Coord2D(gx, gy);
 			
+			this.excludeSnapPoint = null;
+			
 			if (stepNum != 0 && mouseCoord.isEqual(this.quadPoints[stepNum - 1])) {
 				// Do not advance to next step if quad point is same as previous step's
 				this.decrementStep();
@@ -64,6 +66,8 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				var l3 = Line.fromPoints(hull[2], hull[3]).generate();
 				var l4 = Line.fromPoints(hull[3], hull[0]).generate();
 				var lr = Line.fromPoints(e.center, e.center).generate();
+				
+				this.excludeSnapPoint = e.center;            // Do not snap to point at center of elliptical arc
 				
 				this.registerShape(pq, "quad_point"+stepNum);
 				this.registerShape(pc, "center_point");
