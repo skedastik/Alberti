@@ -71,10 +71,11 @@ function TransformHandler(masterGroup, layerManager, overlayGroup) {
 	this.layerManager = layerManager;
 	this.overlayGroup = overlayGroup;
 	
-	this.currentSnapPoint = null;
-	this.lastSnapUpdate = 0;
+	this.currentSnapPoint = null;            // Current snap point defined by a Coord2D
+	this.excludeSnapPoint = null;            // TransformHandler will not snap to this point
+	this.lastSnapUpdate = 0;                 // When was the snap point last recalculated?
 	this.snappingEnabled = false;
-	this.snapGuide = null;
+	this.snapGuide = null;                   // Point object marking current snap point
 	
 	this.lastMouseX = null;
 	this.lastMouseY = null;
@@ -104,12 +105,12 @@ TransformHandler.prototype.snap = function(coord) {
 		if (Date.now() - this.lastSnapUpdate >= TransformHandler.recalcms) {
 			this.lastSnapUpdate = Date.now();
 		
-			// Query the layer manager's SnapPoints object for nearby intersection points
-			var newCoord = this.layerManager.snapPoints.getNearestNeighbor(coord);
+			// Query the layer manager's SnapPoints object for nearby snap points, possibly excluding a point
+			newCoord = this.layerManager.snapPoints.getNearestNeighbor(coord, this.excludeSnapPoint);
 			this.currentSnapPoint = newCoord;
 	
 			if (newCoord) {
-				// There is a nearby intersection. Display the snap guide.
+				// There is a nearby snap point. Display the snap guide.
 				coord.x = newCoord.x;
 				coord.y = newCoord.y;
 		

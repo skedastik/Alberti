@@ -132,6 +132,14 @@
  * This method may be overridden optionally. It is invoked when the tool is
  * deactivated (i.e. the user has selected a different tool).
  * 
+ * Excluding Snap Points
+ * 
+ * At any time, a tool may disallow snapping to a given point (for instance, 
+ * with an arc tool, it makes no sense to allow point snapping to occur at the
+ * center of the arc). To do so, simply set this.excludeSnapPoint to a valid
+ * Coord2D. Until this.excludeSnapPoint is set to null, snapping will now 
+ * longer occur at that point.
+ * 
  * * */
  
 function Tool(numSteps, minSteps, mouseupFlag, uiObjects) {
@@ -166,6 +174,9 @@ Tool.prototype.activate = function() {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
+		
+		// No points should be excluded from snapping when a tool is first activated
+		this.excludeSnapPoint = null;
 		
 		this.registerListener("mousedown", Alberti.svgRoot, false);
 		this.registerListener("mousemove", window, false);
