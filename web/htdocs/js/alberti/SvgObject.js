@@ -24,12 +24,6 @@
  * Base abstraction for SVG elements. Each instance holds a reference to a
  * corresponding SVG node.
  * 
- * NOTES
- * 
- * When setting attributes, SvgObject rounds to the decimal place specified by
- * Alberti.tolerance so as to leave an adequate number of significant 
- * digits for large numerical attributes.
- * 
  * USAGE
  * 
  * Constructor
