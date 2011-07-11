@@ -175,11 +175,14 @@ Zap.prototype.mousewheel = function(evt) {
 };
 
 Zap.prototype.DOMMouseScroll = function(evt) {
-	evt.preventDefault();
+	if (Date.now() - this.lastWheelEvent >= Zap.wheelEvtRefreshMs) {
+		this.lastWheelEvent = Date.now();
+		evt.preventDefault();
 	
-	if (typeof evt.axis === undefined || evt.VERTICAL_AXIS) {
-		// normalize to +-1, and negate because mousewheel-up means increase zoom
-		this.handleWheel(-Util.minMax(evt.detail, -1, 1), evt);
+		if (typeof evt.axis === undefined || evt.VERTICAL_AXIS) {
+			// normalize to +-1, and negate because mousewheel-up means increase zoom
+			this.handleWheel(-Util.minMax(evt.detail, -1, 1), evt);
+		}
 	}
 };
 
