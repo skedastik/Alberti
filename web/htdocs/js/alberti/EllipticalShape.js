@@ -140,7 +140,7 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 	// Where:
 	// 
 	//    P = a*x0 + b*y0 + d
-	//    Q = b*x0 + c*y0 + f      [if Q = 0, handle as special case #2]
+	//    Q = b*x0 + c*y0 + f      [if Q = 0, handle as special case #3]
 	//    R = d*x0 + f*y0 + g
 	//
 	// Eqn. [3] is substituted into eqn. [2] and reduced to:
@@ -156,11 +156,14 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 	// Eqn. [4] is solved w/ quadratic formula yielding X coordinates of 
 	// tangent points. Substitute these into [3] for corresponding Y.
 	// 
-	// Special case #1: If the discriminant of [4] is negative, the point is
-	// not external. It lies inside the ellipse.
+	// Special case #1: If the discriminant of [4] is negative, point p is not
+	// external. It lies inside the ellipse and no tangents exist.
 	// 
-	// Special case #2: If the discriminant of [4] is 0, we have a special 
-	// case where the X coordinates of both points of tangency are equal.
+	// Special case #2: If the discriminant of [4] is 0, point p lies on the
+	// ellipse and there is only one point of tangency: point p.
+	// 
+	// Special case #3: If Q is 0, we have a special case where the X
+	// coordinates of both points of tangency are equal.
 	
 	var tangents = [];
 	
@@ -169,31 +172,36 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 	
 	Dbug.log("Coefficients:   "+this.coeffs);
 	
-	var P = a*x0 + b*y0 + d;
-	var Q = b*x0 + c*y0 + f;                    // TODO: Special case when Q == 0 (same as when discriminant == 0)
-	var R = d*x0 + f*y0 + g;
-	Dbug.log("P = "+R+",   Q = "+Q+",   R = "+R)
+	var Q = b*x0 + c*y0 + f;
 	
-	var A = a - (2*b*P) / Q + (c*P*P) / (Q*Q);
-	var B = d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q);
-	var C = g - (2*f*R) / Q + (c*R*R) / (Q*Q);
-	Dbug.log("A = "+A+",   B = "+B+",   C = "+C);
+	// if (Q == 0) {
+		// TODO: Special case when Q == 0 (same as when discriminant == 0)
+	// } else {
+		var P = a*x0 + b*y0 + d;
+		var R = d*x0 + f*y0 + g;
+		Dbug.log("P = "+R+",   Q = "+Q+",   R = "+R)
 	
-	var discriminant = B*B - 4*A*C;
-	Dbug.log("Discriminant = "+discriminant+", ~0? "+Util.equals(discriminant, 0, Alberti.hiTolerance));
+		var A = a - (2*b*P) / Q + (c*P*P) / (Q*Q);
+		var B = d - (b*R + f*P) / Q + (2*c*P*R) / (Q*Q);
+		var C = g - (2*f*R) / Q + (c*R*R) / (Q*Q);
+		Dbug.log("A = "+A+",   B = "+B+",   C = "+C);
 	
-	if (Util.equals(discriminant, 0, Alberti.hiTolerance)) {
-		// TODO: Special case
-	} else if (discriminant > 0) {
-		var rootd = Math.sqrt(discriminant);
-		var x1 = (-B + rootd) / (2*A);
-		var x2 = (-B - rootd) / (2*A);
-		var y1 = -(P*x1 + R) / Q;
-		var y2 = -(P*x2 + R) / Q;
+		var discriminant = B*B - 4*A*C;
+		Dbug.log("Discriminant = "+discriminant+", ~0? "+Util.equals(discriminant, 0, 1e-25));
+	
+		if (Util.equals(discriminant, 0, 1e-25)) {
+			tangents[0] = new Coord2D(p.x, p.y);
+		} else if (discriminant > 0) {
+			var rootd = Math.sqrt(discriminant);
+			var x1 = (-B + rootd) / (2*A);
+			var x2 = (-B - rootd) / (2*A);
+			var y1 = -(P*x1 + R) / Q;
+			var y2 = -(P*x2 + R) / Q;
 		
-		tangents[0] = new Coord2D(x1, y1);
-		tangents[1] = new Coord2D(x2, y2);
-	}
+			tangents[0] = new Coord2D(x1, y1);
+			tangents[1] = new Coord2D(x2, y2);
+		}
+	// }
 	
 	return tangents;
 };
