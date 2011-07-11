@@ -74,7 +74,10 @@ Coord2D.prototype.angleTo = function(p) {
 
 // Returns the distance to the specified Coord2D
 Coord2D.prototype.distanceTo = function(p) {
-	return Math.sqrt(Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2));
+	var x = p.x - this.x;
+	var y = p.y - this.y;
+	
+	return Math.sqrt(x*x + y*y);
 };
 
 // Calculate and return the convex hull of a set of Coord2D's as an array.
