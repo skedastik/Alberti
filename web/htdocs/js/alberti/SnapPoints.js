@@ -119,8 +119,9 @@ SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) 
 };
 
 // Returns the closest intersection within a reasonable distance of the the 
-// Coord2D passed in, or null if none are within distance.
-SnapPoints.prototype.getNearestNeighbor = function(coord) {
+// Coord2D passed in, optionally excluding a specified coord. Returns null if 
+// none are within distance.
+SnapPoints.prototype.getNearestNeighbor = function(coord, excludeCoord) {
 	var qradius = Alberti.snapRadius / this.snapRadiusScale;
 	var nearCoords = this.points.search(coord, qradius);
 	
@@ -128,11 +129,13 @@ SnapPoints.prototype.getNearestNeighbor = function(coord) {
 	var bestDistance = Infinity;
 	
 	for (i = 0, ncLen = nearCoords.length; i < ncLen; i++) {
-		var dist = coord.distanceTo(nearCoords[i]);
+		if (!excludeCoord || !nearCoords[i].isEqual(excludeCoord)) {
+			var dist = coord.distanceTo(nearCoords[i]);
 		
-		if (dist < bestDistance) {
-			nearestCoord = nearCoords[i];
-			bestDistance = dist;
+			if (dist < bestDistance) {
+				nearestCoord = nearCoords[i];
+				bestDistance = dist;
+			}
 		}
 	}
 	
