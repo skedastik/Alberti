@@ -229,5 +229,5 @@ SpatialHash.prototype.getBucketIndex = function(coord) {
 
 // Get the fast lookup index for the given Coord2D
 SpatialHash.prototype.getLookupIndex = function(coord) {
-	return Coord2D.roundForSafety(coord).toString();
+	return Util.roundToDecimal(coord.x, 3)+","+Util.roundToDecimal(coord.y, 3);
 };
