@@ -91,7 +91,7 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 			switch ((stepNum - 3) % 2) {
 				
 				case 0:
-					if (!Util.equals(this.getShape("arc"+(stepNum - 1)).da, 0)) {
+					if (!Util.equals(this.getShape("arc"+(stepNum - 1)).da, 1e-4)) {
 						this.registerShape(l, "line_delta_angle"+stepNum, true);
 						this.registerShape(p, "point_delta_angle"+stepNum);
 						this.bakeShape("arc"+(stepNum - 1));

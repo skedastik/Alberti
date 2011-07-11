@@ -85,7 +85,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 					break;
 					
 				case 1:
-					if (!Util.equals(this.getShape("arc"+(stepNum - 1)).da, 0)) {
+					if (!Util.equals(this.getShape("arc"+(stepNum - 1)).da, 0, 1e-4)) {
 						var daLine = Line.fromPoints(centerCoord, angleCoord).generate().setLength(radius);
 						var daPoint = Point.fromCoord(daLine.p2).generate();
 					
