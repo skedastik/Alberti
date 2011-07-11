@@ -495,74 +495,74 @@ UserInterface.prototype.handleUlSlider = function(ulSlider, value) {
 };
 
 UserInterface.prototype.keydown = function(evt) {
-	switch (evt.keyCode) {
+	if (!evt.shiftKey) {
+		switch (evt.keyCode) {
 		
-		// Activate panning
-		case KeyCode.alt:
-			// Enable panning while the alt-key and no other keys are pressed
-			this.zap.enablePanning();
-			this.setCursor(UserInterface.cursorZoomAndPan);
+			// Activate panning
+			case KeyCode.alt:
+				// Enable panning while the alt-key and no other keys are pressed
+				this.zap.enablePanning();
+				this.setCursor(UserInterface.cursorZoomAndPan);
 			
-			// Disable tool while panning is enabled
-			this.toolIndex[this.currentTool].tool.disable();
-			break;
+				// Disable tool while panning is enabled
+				this.toolIndex[this.currentTool].tool.disable();
+				break;
 		
-		// Delete shape(s)
-		case KeyCode.del:
-		case KeyCode.backspace:
-			this.lmDelegate.deleteSelectedShapes();
+			// Delete shape(s)
+			case KeyCode.del:
+			case KeyCode.backspace:
+				this.lmDelegate.deleteSelectedShapes();
 			
-			// Attempt to suppress backspace-key navigation.
-			evt.preventDefault();
-			break;
+				// Attempt to suppress backspace-key navigation.
+				evt.preventDefault();
+				break;
 			
-		// Undo
-		case KeyCode.undo:
-			this.handleMenu("mi_undo");
-			break;
+			// Undo
+			case KeyCode.undo:
+				this.handleMenu("mi_undo");
+				break;
 		
-		// Redo
-		case KeyCode.redo:
-			this.handleMenu("mi_redo");
-			break;
+			// Redo
+			case KeyCode.redo:
+				this.handleMenu("mi_redo");
+				break;
 		
-		// Cut shape(s)
-		case KeyCode.cut:
-			this.handleMenu("mi_cut");
-			break;
+			// Cut shape(s)
+			case KeyCode.cut:
+				this.handleMenu("mi_cut");
+				break;
 		
-		// Paste shape(s)
-		case KeyCode.paste:
-			this.handleMenu("mi_paste");
-			break;
+			// Paste shape(s)
+			case KeyCode.paste:
+				this.handleMenu("mi_paste");
+				break;
 		
-		// Collapse/reveal layer panel
-		case KeyCode.lpCollapse:
-			this.layerPanel.toggleCollapse();
-			break;
+			// Collapse/reveal layer panel
+			case KeyCode.lpCollapse:
+				this.layerPanel.toggleCollapse();
+				break;
 		
-		// Select next highest visible layer
-		case KeyCode.arrowUp:
-			this.lmDelegate.switchToVisibleLayerAboveCurrentLayer();
-			this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
-			break;
+			// Select next highest visible layer
+			case KeyCode.arrowUp:
+				this.lmDelegate.switchToVisibleLayerAboveCurrentLayer();
+				this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
+				break;
 		
-		// Select next lowest visible layer
-		case KeyCode.arrowDown:
-			this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
-			this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
-			break;
+			// Select next lowest visible layer
+			case KeyCode.arrowDown:
+				this.lmDelegate.switchToVisibleLayerBelowCurrentLayer();
+				this.toolTip.setText("Select layer: "+this.lmDelegate.getCurrentLayer().name, true);
+				break;
 		
-		default:
-			// If toolbar hotkey was pressed, click corresponding toolbar button
-			var tbButton = this.tbHotKeys[evt.keyCode.toString()];
-			if (tbButton) {
-				tbButton.click();
-			}
-			break;
-	}
-	
-	if (evt.shiftKey) {
+			default:
+				// If toolbar hotkey was pressed, click corresponding toolbar button
+				var tbButton = this.tbHotKeys[evt.keyCode.toString()];
+				if (tbButton) {
+					tbButton.click();
+				}
+				break;
+		}
+	} else {
 		switch (evt.keyCode) {
 			
 			// Create a new document
