@@ -130,7 +130,7 @@ SpatialHash.prototype.search = function(queryCoord, radius) {
 				var node = bucket.nodes[j];
 				
 				if (Math.abs(node.x - queryCoord.x) <= radius && Math.abs(node.y - queryCoord.y) <= radius) {
-					nearNodes.push(node);
+					nearNodes.push(node.clone());
 				}
 			}
 		}
