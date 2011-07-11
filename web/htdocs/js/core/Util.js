@@ -265,25 +265,20 @@ var Util = {
 		return x > 0 ? 1 : (x < 0 ? -1 : 0);
 	},
 	
-	// Checks the equality of x and y rounded to a predefined decimal place, 
-	// or to the decimal place defined by tolerance.
-	//
-	// A useful function for checking delta values, discriminants, etc.
+	// Checks the equality of x and y allowing for floating point error within
+	// +/- a predfined tolerance, or the value specified by tolerance. A 
+	// useful function for checking delta values, discriminants, etc.
 	equals: function(x, y, tolerance) {
-		tolerance = tolerance || Alberti.tolerance;
-		
-		return Util.roundToDecimal(x, tolerance)
-			== Util.roundToDecimal(y, tolerance);
+		tolerance = tolerance !== undefined ? tolerance : Alberti.tolerance;
+		return x >= y - tolerance && x <= y + tolerance;
 	},
 	
-	// Returns true if x is between numbers u and v, inclusive, and allowing
-	// for floating point error.
-	between: function(x, u, v) {
-		x = Util.roundToDecimal(x, Alberti.tolerance);
-		u = Util.roundToDecimal(u, Alberti.tolerance);
-		v = Util.roundToDecimal(v, Alberti.tolerance);
-		
-		return x <= Math.max(u, v) && x >= Math.min(u, v);
+	// Returns true if x is between numbers u and v, inclusive, allowing for
+	// floating point error within +/- a predifined tolerance, or the value 
+	// specified by tolerance.
+	between: function(x, u, v, tolerance) {
+		tolerance = tolerance !== undefined ? tolerance : Alberti.tolerance;
+		return (x <= Math.max(u, v) + tolerance) && (x >= Math.min(u, v) - tolerance);
 	}
 	
 };
