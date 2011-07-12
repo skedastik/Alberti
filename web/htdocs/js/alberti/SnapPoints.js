@@ -191,7 +191,7 @@ SnapPoints.isect_lineline = function(l1, l2) {
 	return intersections;
 };
 
-SnapPoints.isect_earcline = function(arc, line) {
+SnapPoints.isect_ellipseline = function(arc, line) {
 	// Given conic equation describing ellipse:
 	//
 	//    a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0
@@ -216,8 +216,6 @@ SnapPoints.isect_earcline = function(arc, line) {
 	var intersections = [];
 	
 	if (arc.coeffs.length > 0) {
-		var solutions = [];
-		
 		// Coefficients a, b, c, d, f, and g of conic equation describing ellipse
 		var a = arc.coeffs[0], b = arc.coeffs[1], c = arc.coeffs[2], d = arc.coeffs[3], f = arc.coeffs[4], g = arc.coeffs[5];
 		
@@ -236,29 +234,36 @@ SnapPoints.isect_earcline = function(arc, line) {
 		if (Util.equals(discriminant, 0, 1e-25)) {
 			var t = -B / (2*A);
 			
-			solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy) : null;
+			intersections[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy) : null;
 			
 		} else if (discriminant > 0) {
 			var rootd = Math.sqrt(discriminant);
 			var t1 = (-B + rootd) / (2*A);
 			var t2 = (-B - rootd) / (2*A);
 			
-			solutions[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy) : null;
-			solutions[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy) : null;
+			intersections[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy) : null;
+			intersections[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy) : null;
 		}
+	}
+	
+	return intersections;
+};
+
+SnapPoints.isect_earcline = function(arc, line) {
+	var intersections = [];
+	var solutions = SnapPoints.isect_ellipseline(arc, line);
+	
+	var len = solutions.length;
+
+	if (len > 0) {
+		// Now that we have intersections of ellipse and line, we must 
+		// determine if they are on the arc.
 		
-		var len = solutions.length;
+		var extent = arc.sa + arc.da;
 
-		if (len > 0) {
-			// Now that we have intersections of ellipse and line, we must 
-			// determine if they are on the arc.
-			
-			var extent = arc.sa + arc.da;
-
-			for (var i = 0; i < len; i++) {
-				if (solutions[i] && Util.angleIsBetweenAngles(arc.center.angleTo(solutions[i]), arc.sa, extent)) {
-					intersections.push(solutions[i]);
-				}
+		for (var i = 0; i < len; i++) {
+			if (solutions[i] && Util.angleIsBetweenAngles(arc.center.angleTo(solutions[i]), arc.sa, extent)) {
+				intersections.push(solutions[i]);
 			}
 		}
 	}
@@ -267,7 +272,7 @@ SnapPoints.isect_earcline = function(arc, line) {
 };
 
 // http://stackoverflow.com/questions/1073336/circle-line-collision-detection
-SnapPoints.isect_carcline = function(arc, line) {
+SnapPoints.isect_circleline = function(arc, line) {
 	// let D = direction vector of line from start to end
 	// let F = direction vector from center of arc to line start
 	//
@@ -293,7 +298,6 @@ SnapPoints.isect_carcline = function(arc, line) {
 	// there is only one intersection.
 	//
 	var intersections = [];
-	var solutions = [];
 	
 	var dx1 = line.p2.x - line.p1.x;
 	var dy1 = line.p2.y - line.p1.y;
@@ -310,16 +314,23 @@ SnapPoints.isect_carcline = function(arc, line) {
 	if (Util.equals(discriminant, 0, 1e-25)) {
 		var t = -b / (2 * a);
 		
-		solutions[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1) : null;
+		intersections[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1) : null;
 		
 	} else if (discriminant > 0) {
 		var rootd = Math.sqrt(discriminant);
 		var t1 = (-b + rootd) / (2 * a);
 		var t2 = (-b - rootd) / (2 * a);
 		
-		solutions[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1) : null;
-		solutions[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1) : null;
+		intersections[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1) : null;
+		intersections[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1) : null;
 	}
+	
+	return intersections;
+};
+
+SnapPoints.isect_carcline = function(arc, line) {
+	var intersections = [];
+	var solutions = SnapPoints.isect_circleline(arc, line);
 	
 	var len = solutions.length;
 	
