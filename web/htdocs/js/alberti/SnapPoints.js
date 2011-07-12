@@ -39,9 +39,10 @@
  * internal structure. If deleteFlag, points will be deleted. If 
  * bulkDeleteFlag, points will be marked for deletion and deleted at the next
  * call to SnapPoints::flush. If nopFlag, the internal set of intersection 
- * points will not be modified. testIntersections returns an array of shapes that 
- * intersect with the query shape (empty array if no intersections were 
- * found).
+ * points will not be modified. testIntersections returns an array containing
+ * two arrays: the first being an array of shapes that intersect with the 
+ * query shape, the second, an array of all intersection points. These arrays 
+ * will be empty if no intersections were found.
  * 
  * Nearest neighbor searches can be performed on the current set of 
  * intersection points with the getNearestNeighbor method.
@@ -115,7 +116,7 @@ SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) 
 		}
 	}
 	
-	return intersectors;
+	return [intersectors, intersections];
 };
 
 // Returns the closest intersection within a reasonable distance of the the 
