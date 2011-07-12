@@ -485,6 +485,8 @@ Tool.prototype.bake = function() {
 };
 
 Tool.prototype.completeTool = function() {
+	this.excludeSnapPoint = null;
+	
 	this.complete(this.currentStep, this.constrainEnabled);
 	this.bake();
 	this.reset();
