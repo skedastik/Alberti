@@ -29,6 +29,7 @@ Alberti.refreshms = Math.round(1000 / Alberti.fpsMax);      // limit redraw rate
 
 Alberti.showToolTips = true;                            // Show tool helper tips?
 Alberti.snapRadius = 20;                                 // Snapping takes effect within this radius (in pixels)
+Alberti.selectionPickRadius = 2.5;                       // Radius of selection rect when "picking" shapes w/ single mouse click
 Alberti.maxUndos = 100;                                  // Maximum number of undo actions
 
 // This values is used as the default tolerance when comparing floating point
