@@ -26,7 +26,7 @@
  * * */
  
 function ToolEllipticalArc(uiObjects) {
-	ToolEllipticalArc.baseConstructor.call(this, -1, 6, false, uiObjects);
+	ToolEllipticalArc.baseConstructor.call(this, -1, 4, false, uiObjects);
 	
 	this.quadPoints = [];            // Contains points of quadrilateral
 }
@@ -154,5 +154,8 @@ ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, cons
 };
 
 ToolEllipticalArc.prototype.complete = function(stepNum, constrain) {
-	// Nothing to be done
+	// Create an ellipse rather than an arc if user completed shape at step 4 or 5
+	if (stepNum < 5) {
+		this.bakeShape("ellipse_guide");
+	}
 };
