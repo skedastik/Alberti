@@ -29,6 +29,7 @@
 function LayerPanelController(layerPanel) {
 	this.layerPanel = layerPanel;
 	this.rowLayerMap = {};            // Maps layer panel row ID strings to Layer objects
+	this.lmDelegate = null;
 }
 
 LayerPanelController.prototype.setLayerManagerDelegate = function(lmDelegate) {
@@ -58,7 +59,7 @@ LayerPanelController.prototype.populateLayerPanel = function() {
 	
 	// Iterate through layers adding layer panel rows
 	var layers = this.lmDelegate.layers;
-	for (var i = 0, len = layers.length; i < len; i++) {
+	for (var i = 1, len = layers.length; i < len; i++) {
 		this.insertNewRow(layers[i]);
 	}
 	
@@ -135,7 +136,7 @@ LayerPanelController.prototype.updateButtons = function() {
 	var enableOther = numLayersVisible > 1 ? "enable" : "disable";
 	
 	// Disable/enable each row button if corresponding layer is hidden/shown
-	for (var i = 0, len = this.lmDelegate.layers.length; i < len; i++) {
+	for (var i = 1, len = this.lmDelegate.layers.length; i < len; i++) {
 		var layer = this.lmDelegate.layers[i];
 		var row = this.getRowForLayer(layer);
 		var enableRow = layer.isHidden() ? "disable" : "enable";

@@ -68,8 +68,8 @@
  * the workspace (such as a line for a line tool).
  * 
  * These shapes are added with the Tool::registerShape method, which takes up 
- * to four arguments: a Shape object, a name by which to refer to the 
- * Shape in future steps via Tool::getShape, and an optional flag indicating
+ * to three arguments: a Shape object, a name by which to refer to the 
+ * Shape in future steps via Tool::getShape, an optional flag indicating 
  * whether to draw the shape in the underlay or overlay.
  * 
  * In many cases you will use Tool::getShape to query the properties of a
@@ -240,8 +240,9 @@ Tool.prototype.disable = function() {
 // Register shape with the current step and display it in the overlay group. 
 // Automatically invokes SvgObject::push on that shape. If renderBelow is set
 // to true, the registered shape will be rendered below other shapes in the
-// underlay group.
-Tool.prototype.registerShape = function(shape, name, renderBelow) {
+// underlay group. If generateSnapPoints is true, the shape will generate snap
+// points w/ existing shapes (intersections, tangents, etc.).
+Tool.prototype.registerShape = function(shape, name, renderBelow, generateSnapPoints) {
 	Util.assert(typeof name == "string" && name !== "", "Invalid name passed to Tool::registerShape.");
 	Util.assert(!this.getShape(name), "Duplicate name passed to Tool::registerShape.");
 	
@@ -264,6 +265,26 @@ Tool.prototype.bakeShape = function(name) {
 	
 	var shape = shapes[name].shape;
 	shapes[name].bakeFlag = true;
+	
+	return shape;
+};
+
+// Generate snap points (e.g. intersections w/ existing user-created shapes)
+// for the shape with the given name. Returns the shape.
+Tool.prototype.generateSnapPoints = function(name) {
+	var shapes = this.getShapeArrayContaining(name);
+	
+	Util.assert(shapes, "Tool::generateSnapPoints could not find shape with name '"+name+"'");
+	
+	var shape = shapes[name].shape;
+	
+	if (shapes[name].snapPoints == true) {
+		this.layerManager.removeShape(shape);
+	}
+	
+	this.layerManager.insertShape(shape, this.layerManager.layers[0]);
+	
+	shapes[name].snapPoints = true;
 	
 	return shape;
 };
@@ -547,6 +568,10 @@ function ToolStep(x, y) {
 	this.shapes = {};                     // associative array of shapes registered during this step
 }
 
-ToolStep.prototype.addShape = function(shape, name, bakeFlag) {
-	this.shapes[name] = {"shape":shape, "bakeFlag":bakeFlag};
+ToolStep.prototype.addShape = function(shape, name, bakeFlag, snapPointsFlag) {
+	this.shapes[name] = {
+		"shape": shape,
+		"bakeFlag": bakeFlag || false,
+		"snapPoints": snapPointsFlag || false
+	};
 };

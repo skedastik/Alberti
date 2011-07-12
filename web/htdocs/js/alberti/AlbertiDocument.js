@@ -82,8 +82,9 @@ AlbertiDocument.prototype.createEmptyDocument = function() {
 	this.undoManager = new UndoManager(Alberti.maxUndos);
 	this.layerManager = new LayerManager(this.workspaceGroup, this.undoManager);
 
-	// Create base layer, then enable undo manager
-	this.layerManager.newLayer();
+	this.layerManager.newLayer("0");             // Layer "0" (used internally)
+	this.layerManager.newLayer();                // Base layer
+	
 	this.undoManager.enable();
 };
 
@@ -119,6 +120,7 @@ AlbertiDocument.prototype.importFromXML = function(xml) {
 	this.undoManager = new UndoManager(Alberti.maxUndos);
 	this.layerManager = new LayerManager(this.workspaceGroup, this.undoManager);
 	
+	this.layerManager.newLayer("0");    // Create layer "0" (used internally)
 	this.loadLayers();                  // Load layers and shape data
 	this.undoManager.enable();          // Enable undo manager
 };

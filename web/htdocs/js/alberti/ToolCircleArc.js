@@ -56,6 +56,8 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 				
 				// The radius has been selected, save it for future use
 				this.lastRadius = c.radius;
+				
+				this.generateSnapPoints("radius_circle");
 
 				var l = Line.fromPoints(c.center, c.center).generate();
 			

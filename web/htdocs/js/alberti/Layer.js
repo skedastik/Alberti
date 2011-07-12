@@ -29,7 +29,7 @@
  * 
  * * */
 
-Layer.counter = 0;                        // For generating unique layer names
+Layer.counter = -1;                       // For generating unique layer names
 Layer.defaultLayerColor = "#7788ff";
 
 function Layer(svgNode) {
@@ -111,5 +111,5 @@ Layer.prototype.pull = function() {
 
 // Reset the layer counter global
 Layer.resetCounter = function() {
-	Layer.counter = 0;
+	Layer.counter = -1;
 }

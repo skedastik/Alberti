@@ -20,7 +20,8 @@
  *
  * LayerManager.js
  * 
- * Keeps track of and manages access to data in user-created layers.
+ * Keeps track of and manages access to layer data. Layer 0 (the scratch
+ * layer) is reserved for internal use.
  * 
  * * */
  
@@ -59,11 +60,9 @@ LayerManager.prototype.newLayer = function(name) {
 
 // Inserts Layer object 'newLayer' above current layer by default. You may
 // optionally supply a reference Layer object. The new layer will be inserted 
-// after this layer. Finally, you may optionally pass 'true' for 'before' in 
-// order to insert before the reference layer rather than after. Automatically 
-// sets current layer to inserted layer. Layer insertions are automatically 
-// registered with the undo manager.
-LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
+// after this layer. Automatically sets current layer to inserted layer. Layer
+// insertions are automatically registered with the undo manager.
+LayerManager.prototype.insertLayer = function(newLayer, refLayer) {
 	// Increment the hidden layer counter if new layer is hidden
 	if (newLayer.isHidden()) {
 		this.numHiddenLayers++;
@@ -71,37 +70,37 @@ LayerManager.prototype.insertLayer = function(newLayer, refLayer, before) {
 	
 	refLayer = refLayer ? refLayer : this.currentLayer;
 	
+	// Only append user-created layers to the SVG tree
 	if (this.layers.length > 0) {
-		if (before) {
-			this.layerGroup.attachChildBefore(newLayer, refLayer);
+		if (this.layers.length == 1) {
+			this.layerGroup.attachChild(newLayer);
 		} else {
 			this.layerGroup.attachChildAfter(newLayer, refLayer);
 		}
-	} else {
-		this.layerGroup.attachChild(newLayer);
+		
+		// Register undo action for insertion
+		this.undoManager.push("Insert Layer", this,
+			this.insertLayer, [newLayer, refLayer],
+			this.deleteLayer, [newLayer, true]                       // Invert deleteLayer method's switch-direction on undo
+		);
 	}
 	
-	var insertIndex = this.layers.indexOf(refLayer);
-	insertIndex = before ? insertIndex : insertIndex + 1;	
+	var insertIndex = this.layers.indexOf(refLayer) + 1;
 	this.layers.splice(insertIndex, 0, newLayer);
-	
-	// Register undo action for insertion
-	this.undoManager.push("Insert Layer", this,
-		this.insertLayer, [newLayer, refLayer, before],
-		this.deleteLayer, [newLayer, true]                    // invert deleteLayer method's switch-direction on undo
-	);
 	
 	// Layer-switch undo will cascade automatically
 	this.switchToLayer(newLayer);
 };
 
-// Delete the layer with the given index. If only one layer exists, an 
-// exception is thrown. Current layer becomes the next visible layer above the 
-// specified layer, or, if there is nothing above, the next visible layer 
-// below. You may invert this behavior by passing 'true' for 'invertSwitch'. 
-// Layer deletions are automatically registered with the undo manager.
+// Delete the layer with the given index. If only one user-created layer 
+// exists, an exception is thrown. Current layer becomes the next visible 
+// layer above the specified layer, or, if there is nothing above, the next 
+// visible layer below. You may invert this behavior by passing 'true' for 
+// 'invertSwitch'. Layer deletions are automatically registered with the undo 
+// manager.
 LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
-	Util.assert(this.layers.length > 1, "LayerManager::deleteLayer attempted to delete only remaining layer.");
+	Util.assert(this.layers.length > 2, "LayerManager::deleteLayer attempted to delete only remaining layer.");
+	Util.assert(this.layers.indexOf(targetLayer) > 0, "Invalid layer passed to LayerManager::deleteLayer.");
 	
 	// Remove the layer from the SVG tree
 	targetLayer.detach();
@@ -123,7 +122,7 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 		// Current layer is being deleted; determine which layer to switch to
 		var nextLowest = this.getNextLowestVisibleLayer(targetLayer);
 		var nextHighest = this.getNextHighestVisibleLayer(targetLayer);
-		var fallback = invertSwitch ? (targetIndex > 0 ? (nextLowest ? nextLowest : nextHighest) : nextHighest)
+		var fallback = invertSwitch ? (targetIndex > 1 ? (nextLowest ? nextLowest : nextHighest) : nextHighest)
 			: (targetIndex < this.layers.length - 1 ? (nextHighest ? nextHighest : nextLowest) : nextLowest);
 		
 		// Switch to fallback layer _before_ deleting current layer, otherwise 
@@ -137,7 +136,7 @@ LayerManager.prototype.deleteLayer = function(targetLayer, invertSwitch) {
 	// after.
 	this.undoManager.push("Delete Current Layer", this,
 		this.deleteLayer, [targetLayer],
-		this.insertLayer, [targetLayer, targetIndex == 0 ? this.layers[1] : this.layers[targetIndex - 1], targetIndex == 0]
+		this.insertLayer, [targetLayer, this.layers[targetIndex - 1]]
 	);
 	
 	this.layers.splice(targetIndex, 1);
@@ -177,12 +176,14 @@ LayerManager.prototype.moveLayer = function(targetLayer, beforeLayer) {
 LayerManager.prototype.switchToLayer = function(targetLayer) {
 	Util.assert(this.layers.indexOf(targetLayer) >= 0, "Invalid layer passed to LayerManager::switchToLayer.");
 	
-	// Register the layer switch with the undo manager. This is a cascading undo.
-	this.undoManager.push("Change Current Layer", this,
-		this.switchToLayer, [targetLayer],
-		this.switchToLayer, [this.currentLayer],
-		true
-	);
+	// Only register the layer switches to user-created layers. This is a cascading undo.
+	if (this.layers.indexOf(targetLayer) > 0) {
+		this.undoManager.push("Change Current Layer", this,
+			this.switchToLayer, [targetLayer],
+			this.switchToLayer, [this.currentLayer],
+			true
+		);
+	}
 	
 	this.currentLayer = targetLayer;
 };
@@ -347,7 +348,7 @@ LayerManager.prototype.getNextHighestVisibleLayer = function(fromLayer) {
 LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayer) {
 	var fromIndex = fromLayer ? this.layers.indexOf(fromLayer) : this.layers.length;
 	
-	for (var i = fromIndex - 1; i >= 0; i--) {
+	for (var i = fromIndex - 1; i >= 1; i--) {
 		if (!this.layers[i].isHidden()) {
 			return this.layers[i];
 		}
@@ -357,7 +358,8 @@ LayerManager.prototype.getNextLowestVisibleLayer = function(fromLayer) {
 };
 
 LayerManager.prototype.getNumberOfVisibleLayers = function() {
-	return this.layers.length - this.numHiddenLayers;
+	return this.layers.length - this.numHiddenLayers - 1;           // Do not count layer 0 as a visible layer
+	// 
 };
 
 // Append the given Shape, optionally providing a target layer object 
@@ -380,23 +382,26 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
 	this.shapeCount++;
 	
-	// Make it undo-able
-	this.undoManager.push("Insert Shape", this,
-		this.insertShape, [newShape, targetLayer],
-		this.removeShape, [newShape]
-	);
+	// Make it undo-able if targetLayer is a user-created layer
+	if (this.layers.indexOf(targetLayer) > 0) {
+		this.undoManager.push("Insert Shape", this,
+			this.insertShape, [newShape, targetLayer],
+			this.removeShape, [newShape]
+		);
+	}
 	
 	return sid;
 };
 
 // Delete the given Shape. Pass true for bulk if you are deleting shapes in 
 // bulk (keeping in mind that you must later call the "flush" method of 
-// LayerManager's "intersections" ivar). Returns the Shape object.  Undo-able.
+// LayerManager's "intersections" ivar). Returns the Shape object. Undo-able.
 LayerManager.prototype.removeShape = function(shape, bulk) {
 	var sid = shape.sid;
-	var layer = this.shapeIndex[sid].layer;
 	
 	Util.assert(this.shapeIndex[sid], "Shape with unrecognized sid passed to LayerManager::removeShape.");
+	
+	var layer = this.shapeIndex[sid].layer;
 	
 	// Remove the shape from the index before checking for intersections, 
 	// so that it does not get tested against itself.
@@ -411,11 +416,13 @@ LayerManager.prototype.removeShape = function(shape, bulk) {
 		shape, this.getVisibleShapes(), bulk ? SnapPoints.bulkDeleteFlag : SnapPoints.deleteFlag
 	);
 	
-	// Make it undo-able
-	this.undoManager.push("Delete Shape", this,
-		this.removeShape, [shape, bulk],
-		this.insertShape, [shape, layer]
-	);
+	// Make it undo-able if shape belongs to a user-created layer
+	if (this.layers.indexOf(layer) > 0) {
+		this.undoManager.push("Delete Shape", this,
+			this.removeShape, [shape, bulk],
+			this.insertShape, [shape, layer]
+		);
+	}
 	
 	return shape;
 };
@@ -427,13 +434,16 @@ LayerManager.prototype.getSelectedShapes = function() {
 
 // Delete currently selected Shapes
 LayerManager.prototype.deleteSelectedShapes = function() {
+	var selection = this.selectedShapes.clone();
+	
 	this.undoManager.recordStart();
 	
-	for (i = this.selectedShapes.length - 1; i >= 0; i--) {
-		this.removeShape(this.selectedShapes[i], true);
-	}
-	
+	// Clear selection prior to removing shapes so that undo re-applies selection correctly.
 	this.setSelection([]);
+	
+	for (i = selection.length - 1; i >= 0; i--) {
+		this.removeShape(selection[i], true);
+	}
 	
 	// Flush the SnapPoints object after bulk deletions
 	this.undoManager.push("Flush Snap Points", this.snapPoints, this.snapPoints.flush, null);
@@ -479,9 +489,12 @@ LayerManager.prototype.pickShapes = function(coord, radius, single) {
 
 // Select the given shape
 LayerManager.prototype.selectShape = function(shape) {
-	if (this.selectedShapes.indexOf(shape) == -1) {
-		this.selectedShapes.push(shape);
-		shape.displaySelected();
+	// Only select shapes belonging to user-created layers
+	if (this.layers.indexOf(this.shapeIndex[shape.sid].layer) > 0) {
+		if (this.selectedShapes.indexOf(shape) == -1) {
+			this.selectedShapes.push(shape);
+			shape.displaySelected();
+		}
 	}
 };
 

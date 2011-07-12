@@ -47,24 +47,19 @@ Util.extend(LayerManagerDelegate, Delegate);
 
 /* * * * * * * * * * * Layer-related delegate methods * * * * * * * * * * * */
 
-LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLayer, before) {
+LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLayer) {
 	refLayer = refLayer ? refLayer : this.currentLayer;
 	
-	if (before) {
-		// Layer is being inserted before reference layer, so use reference layer as 'beforeRow' arg
-		this.lpController.insertNewRow(newLayer, refLayer);
+	if (newLayer == this.getTopmostLayer()) {
+		// Layer is being inserted above topmost layer, so 'beforeRow' arg is not needed
+		this.lpController.insertNewRow(newLayer);
 	} else {
-		if (newLayer == this.getTopmostLayer()) {
-			// Layer is being inserted above topmost layer, so 'beforeRow' arg is not needed
-			this.lpController.insertNewRow(newLayer);
-		} else {
-			// Layer is being inserted above non-topmost layer, so use layer above reference layer as 'beforeLayer' arg
-			this.lpController.insertNewRow(newLayer, this.layers[this.layers.indexOf(refLayer) + 1]);
-		}
+		// Layer is being inserted above non-topmost layer, so use layer above reference layer as 'beforeLayer' arg
+		this.lpController.insertNewRow(newLayer, this.layers[this.layers.indexOf(refLayer) + 1]);
 	}
 };
 
-LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, refLayer, before) {
+LayerManagerDelegate.prototype.insertLayerPostDelegate = function(newLayer, refLayer) {
 	this.lpController.updateButtons();
 };
 
