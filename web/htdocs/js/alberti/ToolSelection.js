@@ -69,7 +69,7 @@ ToolSelection.prototype.complete = function(stepNum, constrain) {
 		var center = this.getKeyCoordFromStep(0);
 		
 		// If a snap point exists, reduce the pick radius so that only intersecting lines are selected
-		var radius = this.currentSnapPoint ? 0.1 / this.masterGroup.scale : 2.5 / this.masterGroup.scale;
+		var radius = this.currentSnapPoint ? 0.1 / this.masterGroup.scale : Alberti.selectionPickRadius / this.masterGroup.scale;
 		
 		// Select all intersecting shapes if a snap point exists, otherwise select a single shape
 		shapes = this.layerManager.pickShapes(center, radius, this.currentSnapPoint === null);
