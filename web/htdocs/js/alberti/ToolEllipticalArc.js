@@ -41,6 +41,7 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 			var mouseCoord = new Coord2D(gx, gy);
 			
 			this.excludeSnapPoint = null;
+			this.clearSnapPoints();
 			
 			if (stepNum != 0 && mouseCoord.isEqual(this.quadPoints[stepNum - 1])) {
 				// Do not advance to next step if quad point is same as previous step's
@@ -67,8 +68,6 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				var l4 = Line.fromPoints(hull[3], hull[0]).generate();
 				var lr = Line.fromPoints(e.center, e.center).generate();
 				
-				this.excludeSnapPoint = e.center;            // Do not snap to point at center of elliptical arc
-				
 				this.registerShape(pq, "quad_point"+stepNum);
 				this.registerShape(pc, "center_point");
 				this.registerShape(l1, "quad_line1", true);
@@ -77,6 +76,9 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				this.registerShape(l4, "quad_line4", true);
 				this.registerShape(e, "ellipse_guide", true);
 				this.registerShape(lr, "line_radius");
+				
+				this.excludeSnapPoint = e.center;            // Do not snap to point at center of elliptical arc
+				this.generateSnapPoints("ellipse_guide");
 			} else {
 				// Do not advance to the next step if the convex hull has 
 				// less than four points as this indicates the quadrilateral 

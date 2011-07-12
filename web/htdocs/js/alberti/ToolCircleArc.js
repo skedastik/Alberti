@@ -37,6 +37,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 		
 		case 0:
 			this.excludeSnapPoint = null;
+			this.clearSnapPoints();
 			
 			var p = Point.fromCoord(new Coord2D(gx, gy)).generate();
 			var c = new Circle().generate();
@@ -53,6 +54,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 			
 			if (c.radius > 0) {
 				this.excludeSnapPoint = c.center;            // Do not snap to point at center of circle arc
+				this.generateSnapPoints("radius_circle");
 				
 				// The radius has been selected, save it for future use
 				this.lastRadius = c.radius;
