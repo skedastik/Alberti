@@ -71,6 +71,7 @@ function SnapPoints() {
 // appropriate action depending on action flag.
 SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) {
 	var intersectors = [];
+	var allPoints = [];
 	
 	for (var i = 0, saLen = shapeArray.length; i < saLen; i++) {
 		var shape = shapeArray[i];
@@ -92,6 +93,7 @@ SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) 
 		
 			if (intersections.length > 0) {
 				intersectors.push(shape);
+				allPoints = allPoints.concat(intersections);
 			}
 		
 			switch (action) {
@@ -116,7 +118,7 @@ SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) 
 		}
 	}
 	
-	return [intersectors, intersections];
+	return [intersectors, allPoints];
 };
 
 // Returns the closest intersection within a reasonable distance of the the 
@@ -234,15 +236,22 @@ SnapPoints.isect_ellipseline = function(arc, line) {
 		if (Util.equals(discriminant, 0, 1e-25)) {
 			var t = -B / (2*A);
 			
-			intersections[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy) : null;
+			if (t >= 0 && t <= 1) {
+				intersections[0] = new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy);
+			}
 			
 		} else if (discriminant > 0) {
 			var rootd = Math.sqrt(discriminant);
 			var t1 = (-B + rootd) / (2*A);
 			var t2 = (-B - rootd) / (2*A);
 			
-			intersections[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy) : null;
-			intersections[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy) : null;
+			if (t1 >= 0 && t1 <= 1) {
+				intersections[0] =  new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy);
+			}
+			
+			if (t2 >= 0 && t2 <= 1) {
+				intersections[1] = new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy);
+			}
 		}
 	}
 	
@@ -314,15 +323,22 @@ SnapPoints.isect_circleline = function(arc, line) {
 	if (Util.equals(discriminant, 0, 1e-25)) {
 		var t = -b / (2 * a);
 		
-		intersections[0] = (t >= 0 && t <= 1) ? new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1) : null;
+		if (t >= 0 && t <= 1) {
+			intersections[0] = new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1);
+		}
 		
 	} else if (discriminant > 0) {
 		var rootd = Math.sqrt(discriminant);
 		var t1 = (-b + rootd) / (2 * a);
 		var t2 = (-b - rootd) / (2 * a);
 		
-		intersections[0] = (t1 >= 0 && t1 <= 1) ? new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1) : null;
-		intersections[1] = (t2 >= 0 && t2 <= 1) ? new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1) : null;
+		if (t1 >= 0 && t1 <= 1) {
+			intersections[0] = new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1);
+		}
+		
+		if (t2 >= 0 && t2 <= 1) {
+			intersections[1] = new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1);
+		}
 	}
 	
 	return intersections;
