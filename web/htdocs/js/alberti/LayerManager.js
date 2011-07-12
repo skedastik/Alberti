@@ -407,8 +407,9 @@ LayerManager.prototype.removeShape = function(shape, bulk) {
 	layer.removeShape(shape);
 	
 	// Delete its intersection points
-	this.snapPoints.testIntersections(shape, this.getVisibleShapes(),
-		bulk ? SnapPoints.bulkDeleteFlag : SnapPoints.deleteFlag);
+	this.snapPoints.testIntersections(
+		shape, this.getVisibleShapes(), bulk ? SnapPoints.bulkDeleteFlag : SnapPoints.deleteFlag
+	);
 	
 	// Make it undo-able
 	this.undoManager.push("Delete Shape", this,
@@ -456,7 +457,8 @@ LayerManager.prototype.getShapesInRect = function(rect) {
 	
 	// Return the array of intersecting shapes concatenated to the enclosure array
 	return enclosures.concat(
-		this.snapPoints.testIntersections(Rectangle.fromRect2D(rect), visibleShapes, SnapPoints.nopFlag));
+		this.snapPoints.testIntersections(Rectangle.fromRect2D(rect), visibleShapes, SnapPoints.nopFlag)[0]
+	);
 };
 
 // "Pick" shapes near the given coord (max distance determined by radius) and 
