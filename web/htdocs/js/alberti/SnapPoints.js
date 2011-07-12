@@ -238,7 +238,7 @@ SnapPoints.isect_ellipseline = function(ellipse, line) {
 		
 		var discriminant = B*B - 4*A*C;
 		
-		if (Util.equals(discriminant, 0, 1e-30)) {
+		if (Util.equals(discriminant, 0, 1e-28)) {
 			var t = -B / (2*A);
 			
 			if (t >= 0 && t <= 1) {
