@@ -158,6 +158,8 @@ function Tool(numSteps, minSteps, mouseupFlag, uiObjects) {
 	this.enabled = false;
 	this.active = false;
 	
+	this.auxiliarySnapPoints = [];         // Snap points generated on the fly
+	
 	this.constrainEnabled = false;
 	
 	this.constrainCoordX = null;
@@ -305,6 +307,26 @@ Tool.prototype.getShapeArrayContaining = function(name) {
 	}
 	
 	return null;
+};
+
+// Generate snap points (from intersections w/ user-created shapes) for the given shape
+Tool.prototype.generateSnapPoints = function(name) {
+	this.clearSnapPoints();
+	
+	this.auxiliarySnapPoints = this.layerManager.snapPoints.testIntersections(
+		this.getShape(name),
+		this.layerManager.getVisibleShapes(),
+		SnapPoints.insertFlag
+	)[1];
+};
+
+// Remove auxiliary snap points
+Tool.prototype.clearSnapPoints = function() {
+	if (this.auxiliarySnapPoints.length > 0) {
+		this.layerManager.snapPoints.points.remove(this.auxiliarySnapPoints);
+	}
+	
+	this.auxiliarySnapPoints = [];
 };
 
 // Move a shape from the overlay to the underlay
@@ -485,8 +507,6 @@ Tool.prototype.bake = function() {
 };
 
 Tool.prototype.completeTool = function() {
-	this.excludeSnapPoint = null;
-	
 	this.complete(this.currentStep, this.constrainEnabled);
 	this.bake();
 	this.reset();
@@ -516,6 +536,10 @@ Tool.prototype.reset = function() {
 	
 	// Clear any tooltips
 	this.toolTip.clearText();
+	
+	// Stop excluding snap points, and clear auxiliary snap points
+	this.excludeSnapPoint = null;
+	this.clearSnapPoints();
 };
 
 // Abstract function. Executes the given step. Must be overridden!
