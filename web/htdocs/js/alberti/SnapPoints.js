@@ -193,7 +193,7 @@ SnapPoints.isect_lineline = function(l1, l2) {
 	return intersections;
 };
 
-SnapPoints.isect_ellipseline = function(arc, line) {
+SnapPoints.isect_ellipseline = function(ellipse, line) {
 	// Given conic equation describing ellipse:
 	//
 	//    a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0
@@ -217,9 +217,14 @@ SnapPoints.isect_ellipseline = function(arc, line) {
 	//
 	var intersections = [];
 	
-	if (arc.coeffs.length > 0) {
+	if (ellipse.coeffs.length > 0) {
 		// Coefficients a, b, c, d, f, and g of conic equation describing ellipse
-		var a = arc.coeffs[0], b = arc.coeffs[1], c = arc.coeffs[2], d = arc.coeffs[3], f = arc.coeffs[4], g = arc.coeffs[5];
+		var a = ellipse.coeffs[0];
+		var b = ellipse.coeffs[1];
+		var c = ellipse.coeffs[2];
+		var d = ellipse.coeffs[3];
+		var f = ellipse.coeffs[4];
+		var g = ellipse.coeffs[5];
 		
 		var x1 = line.p1.x, y1 = line.p1.y;
 		var x2 = line.p2.x, y2 = line.p2.y;
@@ -233,7 +238,7 @@ SnapPoints.isect_ellipseline = function(arc, line) {
 		
 		var discriminant = B*B - 4*A*C;
 		
-		if (Util.equals(discriminant, 0, 1e-25)) {
+		if (Util.equals(discriminant, 0, 1e-30)) {
 			var t = -B / (2*A);
 			
 			if (t >= 0 && t <= 1) {
@@ -246,11 +251,11 @@ SnapPoints.isect_ellipseline = function(arc, line) {
 			var t2 = (-B - rootd) / (2*A);
 			
 			if (t1 >= 0 && t1 <= 1) {
-				intersections[0] =  new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy);
+				intersections.push(new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy));
 			}
 			
 			if (t2 >= 0 && t2 <= 1) {
-				intersections[1] = new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy);
+				intersections.push(new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy));
 			}
 		}
 	}
@@ -281,7 +286,7 @@ SnapPoints.isect_earcline = function(arc, line) {
 };
 
 // http://stackoverflow.com/questions/1073336/circle-line-collision-detection
-SnapPoints.isect_circleline = function(arc, line) {
+SnapPoints.isect_circleline = function(circle, line) {
 	// let D = direction vector of line from start to end
 	// let F = direction vector from center of arc to line start
 	//
@@ -311,12 +316,12 @@ SnapPoints.isect_circleline = function(arc, line) {
 	var dx1 = line.p2.x - line.p1.x;
 	var dy1 = line.p2.y - line.p1.y;
 	
-	var dx2 = line.p1.x - arc.center.x;
-	var dy2 = line.p1.y - arc.center.y;
+	var dx2 = line.p1.x - circle.center.x;
+	var dy2 = line.p1.y - circle.center.y;
 	
 	var a = dx1 * dx1 + dy1 * dy1;
 	var b = 2 * (dx2 * dx1 + dy2 * dy1);
-	var c = (dx2 * dx2 + dy2 * dy2) - arc.radius * arc.radius;
+	var c = (dx2 * dx2 + dy2 * dy2) - circle.radius * circle.radius;
 	
 	var discriminant = b * b - 4 * a * c;
 	
@@ -326,18 +331,17 @@ SnapPoints.isect_circleline = function(arc, line) {
 		if (t >= 0 && t <= 1) {
 			intersections[0] = new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1);
 		}
-		
 	} else if (discriminant > 0) {
 		var rootd = Math.sqrt(discriminant);
 		var t1 = (-b + rootd) / (2 * a);
 		var t2 = (-b - rootd) / (2 * a);
 		
 		if (t1 >= 0 && t1 <= 1) {
-			intersections[0] = new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1);
+			intersections.push(new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1));
 		}
 		
 		if (t2 >= 0 && t2 <= 1) {
-			intersections[1] = new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1);
+			intersections.push(new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1));
 		}
 	}
 	
@@ -495,6 +499,28 @@ SnapPoints.isect_earcrect = function(earc, rect) {
 		new Coord2D(rect.rect.left, rect.rect.bottom))));
 	
 	intersections = intersections.concat(SnapPoints.isect_earcline(earc, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.top))));
+	
+	return intersections;
+};
+
+SnapPoints.isect_ellipserect = function(ellipse, rect) {
+	var intersections = [];
+	
+	intersections = intersections.concat(SnapPoints.isect_ellipseline(ellipse, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.top))));
+	
+	intersections = intersections.concat(SnapPoints.isect_ellipseline(ellipse, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.bottom))));
+	
+	intersections = intersections.concat(SnapPoints.isect_ellipseline(ellipse, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.bottom))));
+	
+	intersections = intersections.concat(SnapPoints.isect_ellipseline(ellipse, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.top))));
 	
