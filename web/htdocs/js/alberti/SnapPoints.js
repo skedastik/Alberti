@@ -238,13 +238,24 @@ SnapPoints.isect_ellipseline = function(ellipse, line) {
 		
 		var discriminant = B*B - 4*A*C;
 		
-		if (Util.equals(discriminant, 0, 1e-28)) {
+		// The above calculations (and the original perspective projection of
+		// ellipse calculations) introduce significant floating point error in
+		// the discriminant. In order to accurately detect tangencies (i.e.
+		// discriminants of 0) it is necessary to adjust the tolerance value
+		// on-the-fly. The error size is logarithmically correlated with the 
+		// area of the ellipse. Tolerance is adjusted accordingly.
+		
+		var alpha = 2.19e35;
+		var beta = -5.673
+		var area = ellipse.rx * ellipse.ry;
+		var tolerance = (alpha * Math.pow(area, beta)) / 10e40;
+		
+		if (Util.equals(discriminant, 0, tolerance)) {
 			var t = -B / (2*A);
 			
 			if (t >= 0 && t <= 1) {
 				intersections[0] = new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy);
 			}
-			
 		} else if (discriminant > 0) {
 			var rootd = Math.sqrt(discriminant);
 			var t1 = (-B + rootd) / (2*A);
