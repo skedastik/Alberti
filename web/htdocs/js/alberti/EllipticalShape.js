@@ -212,7 +212,7 @@ EllipticalShape.prototype.getTangentsThrough = function(p) {
 //
 //    <http://chrisjones.id.au/Ellipses/ellipse.html>
 //
-// With further equations from:
+// With further equations (19-23) from:
 // 
 //    http://mathworld.wolfram.com/Ellipse.html
 //
