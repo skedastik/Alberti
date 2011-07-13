@@ -159,6 +159,10 @@ AlbertiDocument.prototype.loadLayers = function() {
 					shape = (isEllipticalArc ? new EllipticalArc(curShapeNode) : new CircleArc(curShapeNode));
 					break;
 				
+				case "ellipse":
+					shape = new Ellipse(curShapeNode);
+					break;
+				
 				default:
 					throw "AlbertiDocument::loadLayers encountered unrecognized shape node of type '"+curShapeNode.nodeName+"'.";
 					break;
