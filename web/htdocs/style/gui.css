@@ -467,5 +467,5 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 }
 
 #earc_tool_btn > div {
-	background: gray;
+	background: url('../images/persp_arc_tool_btn.png') center no-repeat;
 }
