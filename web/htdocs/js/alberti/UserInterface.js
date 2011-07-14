@@ -138,9 +138,8 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	}
 	
 	// Update menus
-	this.editMenu.disableMenuItem("mi_cut");
-	this.editMenu.disableMenuItem("mi_undo");
-	this.editMenu.disableMenuItem("mi_redo");
+	this.updateUndoMenuItems();
+	this.updateClippingMenuItems();
 	
 	// So that all changes to model are propagated to view...
 	albertiDoc.connectDelegates(this.lmDelegate, this.umDelegate);
@@ -369,8 +368,10 @@ UserInterface.prototype.updateUndoMenuItems = function(hasUndos, hasRedos) {
 UserInterface.prototype.updateClippingMenuItems = function(shapesAreSelected) {
 	if (shapesAreSelected) {
 		this.editMenu.enableMenuItem("mi_cut");
+		this.editMenu.enableMenuItem("mi_delete");
 	} else {
 		this.editMenu.disableMenuItem("mi_cut");
+		this.editMenu.disableMenuItem("mi_delete");
 	}
 };
 
@@ -460,6 +461,14 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			}
 			break;
 		
+		case "mi_delete":
+			this.lmDelegate.deleteSelectedShapes();
+			break;
+		
+		case "mi_select_all":
+			this.lmDelegate.setSelection(this.lmDelegate.getShapesInCurrentLayer());
+			break;
+		
 		case "mi_import_ul":
 			this.ulImgImporter.prompt();
 			break;
@@ -511,10 +520,14 @@ UserInterface.prototype.keydown = function(evt) {
 			// Delete shape(s)
 			case KeyCode.del:
 			case KeyCode.backspace:
-				this.lmDelegate.deleteSelectedShapes();
+				this.handleMenu("mi_delete");
 			
 				// Attempt to suppress backspace-key navigation.
 				evt.preventDefault();
+				break;
+			
+			case KeyCode.selectAll:
+				this.handleMenu("mi_select_all");
 				break;
 			
 			// Undo

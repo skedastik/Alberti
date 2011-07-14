@@ -51,6 +51,7 @@ var KeyCode = {
 	redo:       82,        // 'r'
 	cut:        88,        // 'x'
 	paste:      86,        // 'v'
+	selectAll:  65,        // 'a'
 	newDoc:     78,        // 'n' - Create a new document
 	save:       83,        // 's' - Save the document (w/ shift key)
 	load:       79,        // 'o' - Open a document
