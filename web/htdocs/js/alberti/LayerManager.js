@@ -420,6 +420,11 @@ LayerManager.prototype.removeShape = function(shape, bulk) {
 	return shape;
 };
 
+// Returns array of shapes in current layer
+LayerManager.prototype.getShapesInCurrentLayer = function() {
+	return this.currentLayer.shapes.clone();
+};
+
 // Returns array of selected shapes, or empty array if none selected
 LayerManager.prototype.getSelectedShapes = function() {
 	return this.selectedShapes.clone();
