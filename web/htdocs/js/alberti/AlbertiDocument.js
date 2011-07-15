@@ -173,6 +173,10 @@ AlbertiDocument.prototype.loadLayers = function() {
 					}
 					break;
 				
+				case "circle":
+					shape = new Circle(curShapeNode);
+					break;
+				
 				case "ellipse":
 					shape = new Ellipse(curShapeNode);
 					break;
