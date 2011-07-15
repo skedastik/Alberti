@@ -21,7 +21,8 @@
  * ToolEllipticalArc.js
  * extends ToolArc
  * 
- * Tool for drawing elliptical arcs inscribed within convex quadrilaterals.
+ * Tool for drawing ellipses and elliptical arcs inscribed within convex 
+ * quadrilaterals (effectively perspective projections).
  * 
  * * */
  
