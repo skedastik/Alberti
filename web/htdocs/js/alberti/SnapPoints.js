@@ -391,9 +391,9 @@ SnapPoints.isect_bezierline = function(bezier, line) {
 	var x3 = line.p1.x,   y3 = line.p1.y;
 	var x4 = line.p2.x,   y4 = line.p2.y;
 	
-	var A = x2*y4 - 2*x1*y4 + x0*y4 - x2*y3 + 2*x1*y3 - x0*y3 - x4*y2 + x3*y2 + 2*x4*y1 - 2*x3*y1 - x4*y0 + x3*y0
-	var B = 2*x1*y4 - 2*x0*y4 - 2*x1*y3 + 2*x0*y3 - 2*x4*y1 + 2*x3*y1 + 2*x4*y0 - 2*x3*y0
-	var C = -x3*y4 + x0*y4 + x4*y3 - x0*y3 - x4*y0 + x3*y0
+	var A = (x2 - 2*x1 + x0)*y4 + (-x2 + 2*x1 - x0)*y3 + (x3 - x4)*y2 + (2*x4 - 2*x3)*y1 + (x3 - x4)*y0;
+	var B = (2*x1 - 2*x0)*y4 + (2*x0 - 2*x1)*y3 + (2*x3 - 2*x4)*y1 + (2*x4 - 2*x3)*y0;
+	var C = (x0 - x3)*y4 + (x4 - x0)*y3 + (x3 - x4)*y0;
 	
 	var discriminant = B*B - 4*A*C;
 	
