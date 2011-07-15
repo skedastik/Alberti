@@ -450,18 +450,17 @@ SnapPoints.isect_bezierline = function(bezier, line) {
 };
 
 // http://paulbourke.net/geometry/2circle/
-SnapPoints.isect_carccarc = function(arc1, arc2) {
+SnapPoints.isect_circlecircle = function(c1, c2) {
+	// let d = distance between circles' centers
 	//
-	// let d = distance between arcs' centers
-	//
-	// If d > arc1.radius + arc2.radius, the circles are too far apart to
-	// intersect. If d < |arc1.radius - arc2.radius|, one circle is contained
-	// in the other and there are no intersections. If d == 0, and the radii
-	// are equivalent, the circles are coincident, with an infinite number of
+	// If d > c1.radius + c2.radius, the circles are too far apart to
+	// intersect. If d < |c1.radius - c2.radius|, one circle is contained in
+	// the other and there are no intersections. If d == 0, and the radii are
+	// equivalent, the circles are coincident, with an infinite number of
 	// intersections.
 	//
-	// If d == arc1.radius + arc2.radius, or d == |arc1.radius - arc2.radius|, 
-	// there is a single intersection.
+	// If d == c1.radius + c2.radius, or d == |c1.radius - c2.radius|, there
+	// is a single intersection.
 	// 
 	// The Pythagorean theorem and the principle of similar triangles are used
 	// to solve for the intersection points.
@@ -469,17 +468,15 @@ SnapPoints.isect_carccarc = function(arc1, arc2) {
 	var intersections = [];
 	
 	// Use floored values as distanceTo will always return a truncated float
-	var d = Util.floorToDecimal(arc1.center.distanceTo(arc2.center), 6);
-	var rsum = Util.floorToDecimal(arc1.radius + arc2.radius, 6);
-	var rdiff = Util.floorToDecimal(Math.abs(arc1.radius - arc2.radius), 6);
+	var d = Util.floorToDecimal(c1.center.distanceTo(c2.center), 6);
+	var rsum = Util.floorToDecimal(c1.radius + c2.radius, 6);
+	var rdiff = Util.floorToDecimal(Math.abs(c1.radius - c2.radius), 6);
 	
-	var r1Squared = arc1.radius * arc1.radius;
-	var r2Squared = arc2.radius * arc2.radius;
+	var r1Squared = c1.radius * c1.radius;
+	var r2Squared = c2.radius * c2.radius;
 	
-	var dx = arc2.center.x - arc1.center.x;
-	var dy = arc2.center.y - arc1.center.y;
-	
-	var solutions = [];
+	var dx = c2.center.x - c1.center.x;
+	var dy = c2.center.y - c1.center.y;
 	
 	if (d < rsum && d > rdiff) {
 		var a = (r1Squared - r2Squared + d * d) / (2 * d);
@@ -491,17 +488,45 @@ SnapPoints.isect_carccarc = function(arc1, arc2) {
 		var newdx = hratio * dx;
 		var newdy = hratio * dy;
 	
-		var p2 = new Coord2D(arc1.center.x + aratio * dx, arc1.center.y + aratio * dy);
-		solutions[0] = new Coord2D(p2.x + newdy, p2.y - newdx);
-		solutions[1] = new Coord2D(p2.x - newdy, p2.y + newdx);
+		var p2 = new Coord2D(c1.center.x + aratio * dx, c1.center.y + aratio * dy);
+		intersections[0] = new Coord2D(p2.x + newdy, p2.y - newdx);
+		intersections[1] = new Coord2D(p2.x - newdy, p2.y + newdx);
 			
 	} else if (d != 0 && (Util.equals(rsum, d) || (Util.equals(rdiff, d)))) {
-		var rratio = arc1.radius / d;
-		solutions[0] = new Coord2D(arc1.center.x + rratio * dx, arc1.center.y + rratio * dy);
+		var rratio = c1.radius / d;
+		intersections[0] = new Coord2D(c1.center.x + rratio * dx, c1.center.y + rratio * dy);
 	}
 	
+	return intersections;
+};
+
+SnapPoints.isect_carccircle = function(arc, circle) {
+	var intersections = [];
+	var solutions = SnapPoints.isect_circlecircle(arc, circle);
+	
 	// Now that we have intersections of circle and circle, we must determine 
-	// if they are on both circle's arcs.
+	// if they are on the arc.
+	
+	if (solutions.length > 0) {
+		var extent = arc.sa + arc.da;
+		
+		for (var i = 0, pLen = solutions.length; i < pLen; i++) {
+			if (Util.angleIsBetweenAngles(arc.center.angleTo(solutions[i]), arc.sa, extent)) {
+				intersections.push(solutions[i]);
+			}
+		}
+	}
+	
+	return intersections;
+};
+
+// http://paulbourke.net/geometry/2circle/
+SnapPoints.isect_carccarc = function(arc1, arc2) {
+	var intersections = [];
+	var solutions = SnapPoints.isect_circlecircle(arc1, arc2);
+	
+	// Now that we have intersections of circle and circle, we must determine 
+	// if they are on both arcs.
 	
 	if (solutions.length > 0) {
 		var extent1 = arc1.sa + arc1.da;
