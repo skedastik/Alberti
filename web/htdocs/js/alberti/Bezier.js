@@ -62,6 +62,18 @@ Bezier.prototype.pull = function() {
 	this.p3 = new Coord2D(this.get("x2", Alberti.customns), this.get("y2", Alberti.customns));
 };
 
+Bezier.prototype.clone = function() {
+	var b = new Bezier();
+	b.p1.x = this.p1.x;
+	b.p1.y = this.p1.y;
+	b.p2.x = this.p2.x;
+	b.p2.y = this.p2.y;
+	b.p3.x = this.p3.x;
+	b.p3.y = this.p3.y;
+	
+	return b;
+};
+
 Bezier.fromPoints = function(p1, p2, p3) {
 	var b = new Bezier();
 	b.p1.x = p1.x;
