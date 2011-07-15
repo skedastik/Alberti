@@ -47,16 +47,21 @@ Bezier.prototype.push = function() {
 };
 
 Bezier.prototype.serialize = function() {
-	this.set("berti:p1", this.p1, Alberti.customns);
-	this.set("berti:p2", this.p2, Alberti.customns);
-	this.set("berti:p3", this.p3, Alberti.customns);
+	this.set("berti:x0", this.p1.x, Alberti.customns);
+	this.set("berti:y0", this.p1.y, Alberti.customns);
+	this.set("berti:x1", this.p2.x, Alberti.customns);
+	this.set("berti:y1", this.p2.y, Alberti.customns);
+	this.set("berti:x2", this.p3.x, Alberti.customns);
+	this.set("berti:y2", this.p3.y, Alberti.customns);
 	this.set("berti:type", Bezier.shapeName, Alberti.customns);
 };
 
 Bezier.prototype.pull = function() {
-	this.p1 = this.get("p1", Alberti.customns);
-	this.p2 = this.get("p2", Alberti.customns);
-	this.p3 = this.get("p3", Alberti.customns);
+	this.p1 = new Coord2D(this.get("x0", Alberti.customns), this.get("y0", Alberti.customns));
+	this.p2 = new Coord2D(this.get("x1", Alberti.customns), this.get("y1", Alberti.customns));
+	this.p3 = new Coord2D(this.get("x2", Alberti.customns), this.get("y2", Alberti.customns));
+	
+	Dbug.log(this);
 };
 
 Bezier.fromPoints = function(p1, p2, p3) {
