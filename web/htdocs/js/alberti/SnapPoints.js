@@ -627,3 +627,25 @@ SnapPoints.isect_bezierrect = function(bezier, rect) {
 	
 	return intersections;
 };
+
+SnapPoints.isect_circlerect = function(circle, rect) {
+	var intersections = [];
+	
+	intersections = intersections.concat(SnapPoints.isect_circleline(circle, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.top))));
+	
+	intersections = intersections.concat(SnapPoints.isect_circleline(circle, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.bottom))));
+	
+	intersections = intersections.concat(SnapPoints.isect_circleline(circle, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.bottom))));
+	
+	intersections = intersections.concat(SnapPoints.isect_circleline(circle, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.top))));
+	
+	return intersections;
+};
