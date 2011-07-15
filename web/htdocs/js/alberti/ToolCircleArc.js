@@ -21,12 +21,12 @@
  * ToolCircleArc.js
  * extends ToolArc
  * 
- * Tool for drawing circle arcs.
+ * Tool for drawing circles and circular arcs.
  * 
  * * */
  
 function ToolCircleArc(uiObjects) {
-	ToolCircleArc.baseConstructor.call(this, -1, 4, false, uiObjects);
+	ToolCircleArc.baseConstructor.call(this, -1, 2, false, uiObjects);
 
 	this.lastRadius = 0;           // Last radius of a completed arc
 }
@@ -179,5 +179,8 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 };
 
 ToolCircleArc.prototype.complete = function(stepNum, constrain) {
-	// Nothing to be done.
+	// Create a circle rather than an arc if user completed shape at step 1 or 2
+	if (stepNum < 3) {
+		this.bakeShape("radius_circle");
+	}
 };
