@@ -166,6 +166,10 @@ AlbertiDocument.prototype.loadLayers = function() {
 						case "bezier":
 							shape = new Bezier(curShapeNode);
 							break;
+						
+						default:
+							throw "AlbertiDocument::loadLayers encountered path node with missing Alberti type.";
+							break;
 					}
 					break;
 				
