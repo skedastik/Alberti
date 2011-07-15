@@ -60,8 +60,6 @@ Bezier.prototype.pull = function() {
 	this.p1 = new Coord2D(this.get("x0", Alberti.customns), this.get("y0", Alberti.customns));
 	this.p2 = new Coord2D(this.get("x1", Alberti.customns), this.get("y1", Alberti.customns));
 	this.p3 = new Coord2D(this.get("x2", Alberti.customns), this.get("y2", Alberti.customns));
-	
-	Dbug.log(this);
 };
 
 Bezier.fromPoints = function(p1, p2, p3) {
