@@ -154,9 +154,19 @@ AlbertiDocument.prototype.loadLayers = function() {
 					break;
 				
 				case "path":
-					// A path indicates either an elliptical arc or circular arc shape
-					var isEllipticalArc = curShapeNode.getAttributeNS(Alberti.customns, "rx");
-					shape = (isEllipticalArc ? new EllipticalArc(curShapeNode) : new CircleArc(curShapeNode));
+					switch (curShapeNode.getAttributeNS(Alberti.customns, "type")) {
+						case "carc":
+							shape = new CircleArc(curShapeNode);
+							break;
+							
+						case "earc":
+							shape = new EllipticalArc(curShapeNode);
+							break;
+							
+						case "bezier":
+							shape = new Bezier(curShapeNode);
+							break;
+					}
 					break;
 				
 				case "ellipse":

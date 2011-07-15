@@ -62,6 +62,7 @@ EllipticalArc.prototype.serialize = function() {
 	EllipticalArc.superclass.serialize.call(this);
 	this.set("berti:sa", this.sa, Alberti.customns);
 	this.set("berti:da", this.da, Alberti.customns);
+	this.set("berti:type", EllipticalArc.shapeName, Alberti.customns);
 };
 
 EllipticalArc.prototype.pull = function() {

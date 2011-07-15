@@ -75,6 +75,7 @@ CircleArc.prototype.serialize = function() {
 	this.set("berti:r", this.radius, Alberti.customns);
 	this.set("berti:sa", this.sa, Alberti.customns);
 	this.set("berti:da", this.da, Alberti.customns);
+	this.set("berti:type", CircleArc.shapeName, Alberti.customns);
 };
 
 CircleArc.prototype.pull = function() {

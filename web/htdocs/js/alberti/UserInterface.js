@@ -229,7 +229,8 @@ UserInterface.prototype.initToolSet = function() {
 		selectionTool:     {tool: new ToolSelection(uiObjects),     cursor: UserInterface.cursorDefault},
 		lineTool:          {tool: new ToolLine(uiObjects),          cursor: UserInterface.cursorCrosshair },
 		circularArcTool:   {tool: new ToolCircleArc(uiObjects),     cursor: UserInterface.cursorCrosshair },
-		ellipticalArcTool: {tool: new ToolEllipticalArc(uiObjects), cursor: UserInterface.cursorCrosshair }
+		ellipticalArcTool: {tool: new ToolEllipticalArc(uiObjects), cursor: UserInterface.cursorCrosshair },
+		bezierTool:        {tool: new ToolBezier(uiObjects),        cursor: UserInterface.cursorCrosshair }
 	};
 	
 	// Map tool button id strings to above tool indices
@@ -237,7 +238,8 @@ UserInterface.prototype.initToolSet = function() {
 		select_tool_btn:   "selectionTool",
 		line_tool_btn:     "lineTool",
 		carc_tool_btn:     "circularArcTool",
-		earc_tool_btn:     "ellipticalArcTool"
+		earc_tool_btn:     "ellipticalArcTool",
+		bez_tool_btn:      "bezierTool"
 	}
 	
 	// Map key codes to toolbar buttons
@@ -245,7 +247,8 @@ UserInterface.prototype.initToolSet = function() {
 		49: this.selectToolBtn,                     // '1'
 		50: this.lineToolBtn,                       // '2'
 		51: this.circularArcToolBtn,                // '3'
-		52: this.ellipticalArcToolBtn               // '4'
+		52: this.ellipticalArcToolBtn,              // '4'
+		53: this.bezierToolBtn                      // '5'
 	}
 	
 	this.currentTool = null;
@@ -338,11 +341,16 @@ UserInterface.prototype.initToolBar = function() {
 		this, "handleToolBar", false, "Perspective Arc Tool [4]", "", true
 	).enable();
 	
+	this.bezierToolBtn = new GuiButton("bez_tool_btn", document.getElementById("bez_tool_btn"), 
+		this, "handleToolBar", false, "Bezier Tool [5]", "", true
+	).enable();
+	
 	this.tbButtonFamily = new GuiButtonFamily();
 	this.tbButtonFamily.addButton(this.selectToolBtn);
 	this.tbButtonFamily.addButton(this.lineToolBtn);
 	this.tbButtonFamily.addButton(this.circularArcToolBtn);
 	this.tbButtonFamily.addButton(this.ellipticalArcToolBtn);
+	this.tbButtonFamily.addButton(this.bezierToolBtn);
 	
 	this.tbButtonFamily.toggleButton(this.lineToolBtn);
 };

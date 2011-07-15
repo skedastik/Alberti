@@ -381,6 +381,74 @@ SnapPoints.isect_carcline = function(arc, line) {
 	return intersections;
 };
 
+SnapPoints.isect_bezierline = function(bezier, line) {
+	var intersections = [];
+	var solutions = [];
+	
+	var x0 = bezier.p1.x, y0 = bezier.p1.y;
+	var x1 = bezier.p2.x, y1 = bezier.p2.y;
+	var x2 = bezier.p3.x, y2 = bezier.p3.y;
+	var x3 = line.p1.x,   y3 = line.p1.y;
+	var x4 = line.p2.x,   y4 = line.p2.y;
+	
+	var A = x2*y4 - 2*x1*y4 + x0*y4 - x2*y3 + 2*x1*y3 - x0*y3 - x4*y2 + x3*y2 + 2*x4*y1 - 2*x3*y1 - x4*y0 + x3*y0
+	var B = 2*x1*y4 - 2*x0*y4 - 2*x1*y3 + 2*x0*y3 - 2*x4*y1 + 2*x3*y1 + 2*x4*y0 - 2*x3*y0
+	var C = -x3*y4 + x0*y4 + x4*y3 - x0*y3 - x4*y0 + x3*y0
+	
+	var discriminant = B*B - 4*A*C;
+	
+	if (Util.equals(discriminant, 0)) {
+		var t = -B / (2*A);
+		
+		if (t >= 0 && t <= 1) {
+			var D = (1 - t)*(1 - t);
+			var E = 2*(1 - t)*t;
+			var F = t*t;
+			
+			solutions[0] = new Coord2D(
+				D*x0 + E*x1 + F*x2,
+				D*y0 + E*y1 + F*y2
+			);
+		}
+	} else if (discriminant > 0) {
+		var rootd = Math.sqrt(discriminant);
+		var t1 = (-B + rootd) / (2*A);
+		var t2 = (-B - rootd) / (2*A);
+		
+		if (t1 >= 0 && t1 <= 1) {
+			var D = (1 - t1)*(1 - t1);
+			var E = 2*(1 - t1)*t1;
+			var F = t1*t1;
+			
+			solutions.push(new Coord2D(
+				D*x0 + E*x1 + F*x2,
+				D*y0 + E*y1 + F*y2
+			));
+		}
+		
+		if (t2 >= 0 && t2 <= 1) {
+			var I = (1 - t2)*(1 - t2);
+			var J = 2*(1 - t2)*t2;
+			var K = t2*t2;
+			
+			solutions.push(new Coord2D(
+				I*x0 + J*x1 + K*x2,
+				I*y0 + J*y1 + K*y2
+			));
+		}
+	}
+	
+	// Make sure that roots lie on line segment
+	for (var iter = 0; iter < solutions.length; iter++) {
+		var sol = solutions[iter];
+		if (Util.between(sol.x, line.p1.x, line.p2.x) && Util.between(sol.y, line.p1.y, line.p2.y)) {
+			intersections.push(sol);
+		}
+	}
+	
+	return intersections;
+};
+
 // http://paulbourke.net/geometry/2circle/
 SnapPoints.isect_carccarc = function(arc1, arc2) {
 	//
@@ -532,6 +600,28 @@ SnapPoints.isect_ellipserect = function(ellipse, rect) {
 		new Coord2D(rect.rect.left, rect.rect.bottom))));
 	
 	intersections = intersections.concat(SnapPoints.isect_ellipseline(ellipse, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.top))));
+	
+	return intersections;
+};
+
+SnapPoints.isect_bezierrect = function(bezier, rect) {
+	var intersections = [];
+	
+	intersections = intersections.concat(SnapPoints.isect_bezierline(bezier, Line.fromPoints(
+		new Coord2D(rect.rect.left, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.top))));
+	
+	intersections = intersections.concat(SnapPoints.isect_bezierline(bezier, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.top),
+		new Coord2D(rect.rect.right, rect.rect.bottom))));
+	
+	intersections = intersections.concat(SnapPoints.isect_bezierline(bezier, Line.fromPoints(
+		new Coord2D(rect.rect.right, rect.rect.bottom),
+		new Coord2D(rect.rect.left, rect.rect.bottom))));
+	
+	intersections = intersections.concat(SnapPoints.isect_bezierline(bezier, Line.fromPoints(
 		new Coord2D(rect.rect.left, rect.rect.bottom),
 		new Coord2D(rect.rect.left, rect.rect.top))));
 	

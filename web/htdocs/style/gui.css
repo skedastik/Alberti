@@ -469,3 +469,7 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 #earc_tool_btn > div {
 	background: url('../images/persp_arc_tool_btn.png') center no-repeat;
 }
+
+#bez_tool_btn > div {
+	background: url('../images/bez_tool_btn.png') center no-repeat;
+}
