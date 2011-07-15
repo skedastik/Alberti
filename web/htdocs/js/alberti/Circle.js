@@ -47,8 +47,6 @@ Circle.prototype.push = function() {
 Circle.prototype.pull = function() {
 	this.center = new Coord2D(this.get("cx"), this.get("cy"));
 	this.radius = this.get("r");
-	
-	Dbug.log(this);
 };
 
 // Clone the circle object, without calling SvgObject::generate
