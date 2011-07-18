@@ -110,7 +110,7 @@ var Intersect = {
 			// area of the ellipse. Tolerance is adjusted accordingly.
 		
 			var alpha = 2.19e35;
-			var beta = -5.673
+			var beta = -5.673;
 			var area = ellipse.rx * ellipse.ry;
 			var tolerance = (alpha * Math.pow(area, beta)) / 10e40;
 		
