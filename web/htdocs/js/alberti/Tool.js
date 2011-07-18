@@ -310,10 +310,21 @@ Tool.prototype.getShapeArrayContaining = function(name) {
 };
 
 // Generate snap points (from intersections w/ user-created shapes) for the given shape
-Tool.prototype.generateSnapPoints = function(name) {
+Tool.prototype.generateIsectSnaps = function(name) {
 	this.clearSnapPoints();
 	
 	this.auxiliarySnapPoints = this.layerManager.snapPoints.testIntersections(
+		this.getShape(name),
+		this.layerManager.getVisibleShapes(),
+		SnapPoints.insertFlag
+	)[1];
+};
+
+// Generate snap points (from tangencies w/ user-created shapes) for the given shape
+Tool.prototype.generateTangentSnaps = function(name) {
+	this.clearSnapPoints();
+	
+	this.auxiliarySnapPoints = this.layerManager.snapPoints.testTangencies(
 		this.getShape(name),
 		this.layerManager.getVisibleShapes(),
 		SnapPoints.insertFlag
