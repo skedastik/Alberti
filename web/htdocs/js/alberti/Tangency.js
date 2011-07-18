@@ -89,9 +89,10 @@ var Tangency = {
 		var f = ellipse.coeffs[4];
 		var g = ellipse.coeffs[5];
 		
-		var x0 = point.x, y0 = point.y;
+		var x0 = point.coord.x;
+		var y0 = point.coord.y;
 
-		Dbug.log("Coefficients:   "+ellipse.coeffs);
+		// Dbug.log("Coefficients:   "+ellipse.coeffs);
 
 		var Q = b*x0 + c*y0 + f;
 
@@ -108,10 +109,22 @@ var Tangency = {
 			Dbug.log("A = "+A+",   B = "+B+",   C = "+C);
 
 			var discriminant = B*B - 4*A*C;
-			Dbug.log("Discriminant = "+discriminant+", ~0? "+Util.equals(discriminant, 0, 1e-25));
+			
+			// The above calculations introduce significant floating point error 
+			// in the discriminant. In order to accurately detect a discriminant
+			// of zero, it is necessary to adjust the tolerance value on-the-fly.
+			// The error size is logarithmically correlated with the area of the
+			// ellipse. Tolerance is adjusted accordingly.
+			
+			var alpha = 1.86e29;
+			var beta = -5.304;
+			var area = ellipse.rx * ellipse.ry;
+			var tolerance = (alpha * Math.pow(area, beta)) / 10e40;
+			
+			Dbug.log("Discriminant = "+discriminant+", ~0? "+Util.equals(discriminant, 0, tolerance));
 
-			if (Util.equals(discriminant, 0, 1e-25)) {
-				tangents[0] = new Coord2D(point.x, point.y);      // Point lies on the ellipse, it is the single tangency
+			if (Util.equals(discriminant, 0, tolerance)) {
+				tangents[0] = new Coord2D(x0, y0);      // Point lies on the ellipse, it is the single tangency
 			} else if (discriminant > 0) {
 				var rootd = Math.sqrt(discriminant);
 				var x1 = (-B + rootd) / (2*A);
@@ -125,6 +138,28 @@ var Tangency = {
 		// }
 
 		return tangents;
-	}
+	},
 	
+	// Elliptical-arc and point
+	earcpoint: function(arc, point) {
+		var intersections = [];
+		var solutions = Tangency.ellipsepoint(arc, point);
+	
+		var len = solutions.length;
+
+		if (len > 0) {
+			// Now that we have tangencies of ellipse and point, we must 
+			// determine if they are on the arc.
+		
+			var extent = arc.sa + arc.da;
+
+			for (var i = 0; i < len; i++) {
+				if (solutions[i] && Util.angleIsBetweenAngles(arc.center.angleTo(solutions[i]), arc.sa, extent)) {
+					intersections.push(solutions[i]);
+				}
+			}
+		}
+	
+		return intersections;
+	}
 }
