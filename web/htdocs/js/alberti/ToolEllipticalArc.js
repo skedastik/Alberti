@@ -79,7 +79,7 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 				this.registerShape(lr, "line_radius");
 				
 				this.excludeSnapPoint = e.center;            // Do not snap to point at center of elliptical arc
-				this.generateSnapPoints("ellipse_guide");
+				this.generateIsectSnaps("ellipse_guide");
 			} else {
 				// Do not advance to the next step if the convex hull has 
 				// less than four points as this indicates the quadrilateral 

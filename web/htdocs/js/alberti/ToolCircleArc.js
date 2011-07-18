@@ -54,7 +54,7 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 			
 			if (c.radius > 0) {
 				this.excludeSnapPoint = c.center;            // Do not snap to point at center of circle arc
-				this.generateSnapPoints("radius_circle");
+				this.generateIsectSnaps("radius_circle");
 				
 				// The radius has been selected, save it for future use
 				this.lastRadius = c.radius;
