@@ -44,8 +44,14 @@
  * query shape, the second, an array of all intersection points. These arrays 
  * will be empty if no intersections were found.
  * 
- * Nearest neighbor searches can be performed on the current set of 
- * intersection points with the getNearestNeighbor method.
+ * Tangency
+ * 
+ * Call testTangencies in the same manner as testIntersections above.
+ * 
+ * Searching Snap Points
+ * 
+ * Nearest neighbor searches can be performed on the current set of snap 
+ * points with the getNearestNeighbor method.
  * 
  * * */
 
@@ -67,9 +73,22 @@ function SnapPoints() {
 	this.snapRadiusScale = 1.0;
 }
 
-// Test newShape for intersections with all Shapes in shapeArray, and take
-// appropriate action depending on action flag.
+// Test newShape for intersections with all Shapes in shapeArray
 SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) {
+	return this.test(Intersect, newShape, shapeArray, action);
+};
+
+// Test newShape for tangencies with all Shapes in shapeArray (not the same as
+// a single intersection--see Tangency.js for details).
+SnapPoints.prototype.testTangencies = function(newShape, shapeArray, action) {
+	return this.test(Tangency, newShape, shapeArray, action);
+};
+
+// Test one shape against another using given geometry class and take 
+// appropriate action depending on action flag. The geometry class' methods
+// should consist of two shape names ordered alphabetically w/ shape args in
+// respective order.
+SnapPoints.prototype.test = function(geomClass, newShape, shapeArray, action) {
 	var intersectors = [];
 	var allPoints = [];
 	
@@ -81,13 +100,13 @@ SnapPoints.prototype.testIntersections = function(newShape, shapeArray, action) 
 		
 			if (shape.shapeName < newShape.shapeName) {
 				var funcName = shape.shapeName + newShape.shapeName;
-				if (Intersect[funcName]) {
-					intersections = Intersect[funcName](shape, newShape);
+				if (geomClass[funcName]) {
+					intersections = geomClass[funcName](shape, newShape);
 				}
 			} else {
 				var funcName = newShape.shapeName + shape.shapeName;
-				if (Intersect[funcName]) {
-					intersections = Intersect[funcName](newShape, shape);
+				if (geomClass[funcName]) {
+					intersections = geomClass[funcName](newShape, shape);
 				}
 			}
 		
