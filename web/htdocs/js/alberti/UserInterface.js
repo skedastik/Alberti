@@ -259,14 +259,16 @@ UserInterface.prototype.initToolSet = function() {
 
 UserInterface.prototype.initAutoScale = function() {
 	// SVG has no shape element for individual points, so we use a special SVG
-	// group as a template. This group must be auto-scaled.
+	// groups as a templates. These groups must be auto-scaled.
 	var pointTemplate = new SvgContainer(document.getElementById(Point.templateId));
+	var selectedPointTemplate = new SvgContainer(document.getElementById(Point.selectedTemplateId));
 	
 	// Register the center HUD, the master group, the Point template, and
 	// dashed-line styles for auto-scaling (see AutoScale.js for details).
 	this.autoScale = new AutoScale();
 	this.autoScale.registerObject(this.masterGroup, AutoScale.lineWidth, Alberti.defaultLineWidth);
 	this.autoScale.registerObject(pointTemplate, AutoScale.scale, 1.0);
+	this.autoScale.registerObject(selectedPointTemplate, AutoScale.scale, 1.0);
 	this.autoScale.registerObject(this.hudGroup, AutoScale.scale, 1.0);
 	this.autoScale.registerStyle(document.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
 };
