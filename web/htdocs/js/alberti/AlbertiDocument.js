@@ -181,6 +181,10 @@ AlbertiDocument.prototype.loadLayers = function() {
 					shape = new Ellipse(curShapeNode);
 					break;
 				
+				case "use":
+					shape = new Point(curShapeNode);
+					break;
+				
 				default:
 					throw "AlbertiDocument::loadLayers encountered unrecognized shape node of type '"+curShapeNode.nodeName+"'.";
 					break;
