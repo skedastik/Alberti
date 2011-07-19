@@ -386,7 +386,7 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	
 	// A point shape indicates a marker
 	if (newShape.shapeName == "point") {
-		this.markers.push(newShape);
+		this.addMarker(newShape);
 	}
 	
 	// Make it undo-able
@@ -422,11 +422,7 @@ LayerManager.prototype.removeShape = function(shape, bulk) {
 	
 	// A point shape indicates a marker
 	if (shape.shapeName == "point") {
-		if (shape == this.currentMarker) {
-			this.currentMarker = null;
-		}
-		
-		this.markers.splice(this.markers.indexOf(shape), 1);
+		this.removeMarker(shape);
 	}
 	
 	// Make it undo-able
@@ -582,6 +578,22 @@ LayerManager.prototype.serializeAll = function() {
 	for (var sid in this.shapeIndex) {
 		this.shapeIndex[sid].shape.serialize();
 	}
+};
+
+LayerManager.prototype.addMarker = function(marker) {
+	this.markers.push(marker);
+};
+
+LayerManager.prototype.removeMarker = function(marker) {
+	if (marker == this.currentMarker) {
+		this.currentMarker = null;
+	}
+	
+	this.markers.splice(this.markers.indexOf(marker), 1);
+};
+
+LayerManager.prototype.getNumMarkers = function() {
+	return this.markers.length - 1;
 };
 
 // Sets current marker to next marker and returns its position (a Coord2D), or
