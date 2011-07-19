@@ -111,7 +111,7 @@
  * You may display tool tips by calling Tool::displayTip, which expects the
  * same arguments as ToolTip::setText.
  * 
- * complete(stepNum)
+ * complete(stepNum, constrainEnabled)
  * 
  * This method is called upon completion of the tool, either by reaching the
  * final step, or by the user short-circuiting the tool with the enter key.
