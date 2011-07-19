@@ -30,7 +30,6 @@ function LayerManagerDelegate(layerManager, lpController, ui) {
 	this.lpController = lpController;
 	this.ui = ui;
 	
-	// Layer-related delegation
 	this.mapMethod("insertLayer", "insertLayerPreDelegate", "insertLayerPostDelegate");
 	this.mapMethod("deleteLayer", null, "deleteLayerDelegate");
 	this.mapMethod("moveLayer", "moveLayerDelegate");
@@ -38,14 +37,12 @@ function LayerManagerDelegate(layerManager, lpController, ui) {
 	this.mapMethod("setLayerVisibility", null, "setLayerVisibilityDelegate");
 	this.mapMethod("setLayerName", "setLayerNameDelegate");
 	this.mapMethod("setLayerColor", "setLayerColorDelegate");
-	
-	// Shape selection delegation
 	this.mapMethod("setSelection", null, "shapeSelectionDelegate");
 	this.mapMethod("xorSelection", null, "shapeSelectionDelegate");
+	this.mapMethod("addMarker", null, "addMarkerDelegate");
+	this.mapMethod("removeMarker", null, "removeMarkerDelegate");
 }
 Util.extend(LayerManagerDelegate, Delegate);
-
-/* * * * * * * * * * * Layer-related delegate methods * * * * * * * * * * * */
 
 LayerManagerDelegate.prototype.insertLayerPreDelegate = function(newLayer, refLayer, before) {
 	refLayer = refLayer ? refLayer : this.currentLayer;
@@ -93,8 +90,14 @@ LayerManagerDelegate.prototype.setLayerColorDelegate = function(targetLayer, new
 	this.lpController.updateRowColor(targetLayer, newColor);
 };
 
-/* * * * * * * * * * Shape-selection delegate methods * * * * * * * * * * * */
-
 LayerManagerDelegate.prototype.shapeSelectionDelegate = function(shapes) {
 	this.ui.updateClippingMenuItems(this.getSelectedShapes().length > 0);
+};
+
+LayerManagerDelegate.prototype.addMarkerDelegate = function(marker) {
+	this.ui.updateNavBar();
+};
+
+LayerManagerDelegate.prototype.removeMarkerDelegate = function(marker) {
+	this.ui.updateNavBar();
 };
