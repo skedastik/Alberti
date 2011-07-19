@@ -473,3 +473,7 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 #bez_tool_btn > div {
 	background: url('../images/bez_tool_btn.png') center no-repeat;
 }
+
+#vp_tool_btn > div {
+	background: url('../images/vp_tool_btn.png') center no-repeat;
+}
