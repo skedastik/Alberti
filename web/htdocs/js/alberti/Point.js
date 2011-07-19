@@ -83,6 +83,12 @@ Point.prototype.push = function() {
 	this.set("stroke", this.outerColor);
 };
 
+Point.prototype.pull = function() {
+	this.coord = new Coord2D(this.get("x"), this.get("y"));
+	this.innerColor = this.get("fill");
+	this.outerColor = this.get("stroke");
+};
+
 Point.prototype.clone = function() {
 	var p = new Point();
 	p.coord = this.coord.clone();
