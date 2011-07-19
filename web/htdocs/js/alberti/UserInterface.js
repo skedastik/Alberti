@@ -71,6 +71,7 @@ function UserInterface(clipBoard, appController, newDocHandler, saveHandler, loa
 	this.initAutoScale();
 	this.initLayerPanel();
 	this.initMenuBar();
+	this.initNavBar();
 	this.initToolBar();
 	this.initToolSet();
 	this.initFileImporters();
@@ -297,7 +298,6 @@ UserInterface.prototype.initLayerPanel = function() {
 	this.layerPanel = new LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv);
 };
 
-// Initialize the menu bar
 UserInterface.prototype.initMenuBar = function() {
 	this.fileMenu = new GuiMenu("file_menu",
 		document.getElementById("file_menu"), this, "handleMenu",
@@ -324,6 +324,20 @@ UserInterface.prototype.initMenuBar = function() {
 	this.ulSlider = new UnderlaySlider("ul_slider", document.getElementById("ul_opac_slider"),
 		this, "handleUlSlider", document.getElementById("ul_slider_cab")
 	);
+};
+
+UserInterface.prototype.initNavBar = function() {
+	this.centerWorkspaceBtn = new GuiButton("center_ws_btn", document.getElementById("center_ws_btn"), 
+		this, "handleNavBar", false, "Center Workspace", "", true
+	).enable();
+	
+	this.nextMarkerBtn = new GuiButton("next_marker_btn", document.getElementById("next_marker_btn"), 
+		this, "handleNavBar", false, "Pan To Next Marker", "", true
+	).enable();
+	
+	this.prevMarkerBtn = new GuiButton("prev_marker_btn", document.getElementById("prev_marker_btn"), 
+		this, "handleNavBar", false, "Pan To Previous Marker", "", true
+	).enable();
 };
 
 UserInterface.prototype.initToolBar = function() {
@@ -497,12 +511,31 @@ UserInterface.prototype.handleMenu = function(itemId) {
 	}
 };
 
+UserInterface.prototype.handleNavBar = function(button) {
+	switch (button.getId()) {
+		
+		case "center_ws_btn":
+			this.zap.panTo(new Coord2D(0, 0), true);
+			break;
+		
+		case "next_marker_btn":
+			var pos = this.lmDelegate.nextMarker();
+			this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+			break;
+		
+		case "prev_marker_btn":
+			var pos = this.lmDelegate.previousMarker();
+			this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+			break;
+	}
+};
+
 UserInterface.prototype.handleToolBarItemId = function(btnId) {
 	this.setTool(this.tbButtonMap[btnId]);
 };
 
 UserInterface.prototype.handleToolBar = function(button) {
-	this.handleToolBarItemId(button.getId());
+	this.setTool(this.tbButtonMap[button.getId()]);
 	this.tbButtonFamily.toggleButton(button);
 };
 
@@ -534,8 +567,7 @@ UserInterface.prototype.keydown = function(evt) {
 			
 			// Auto pan to next marker
 			case KeyCode.autoPan:
-				var pos = this.lmDelegate.nextMarker();
-				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+				this.nextMarkerBtn.click();
 				break;
 		
 			// Delete shape(s)
@@ -601,8 +633,7 @@ UserInterface.prototype.keydown = function(evt) {
 			
 			// Auto pan to previous marker
 			case KeyCode.autoPan:
-				var pos = this.lmDelegate.previousMarker();
-				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+				this.prevMarkerBtn.click();
 				break;
 			
 			// Create a new document
