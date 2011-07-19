@@ -106,3 +106,8 @@ Point.prototype.displaySelected = function() {
 Point.prototype.displayDeselected = function() {
 	this.set("xlink:href", "#"+Point.templateId, Alberti.xlinkns);
 };
+
+// Returns a tiny Rect2D enclosing the point
+Shape.prototype.getBoundingBox = function() {
+	return new Rect2D(this.coord.x - 0.1, this.coord.y - 0.1, this.coord.x + 0.1, this.coord.y + 0.1);
+};
