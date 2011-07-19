@@ -377,27 +377,27 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	padding: 1px 5px 0 5px;
 }
 
-#center_cam_btn {
+#center_ws_btn {
 	background: url('../images/center_cam.png') center no-repeat;
 }
 
-#center_cam_btn:active {
+#center_ws_btn:active {
 	background-image: url('../images/center_cam_sel.png');
 }
 
-#next_vp_btn {
+#next_marker_btn {
 	background: url('../images/next_vp.png') center no-repeat;
 }
 
-#next_vp_btn:active {
+#next_marker_btn:active {
 	background-image: url('../images/next_vp_sel.png');
 }
 
-#prev_vp_btn {
+#prev_marker_btn {
 	background: url('../images/prev_vp.png') center no-repeat;
 }
 
-#prev_vp_btn:active {
+#prev_marker_btn:active {
 	background-image: url('../images/prev_vp_sel.png');
 }
 
