@@ -531,6 +531,12 @@ UserInterface.prototype.keydown = function(evt) {
 				// Disable tool while panning is enabled
 				this.toolIndex[this.currentTool].tool.disable();
 				break;
+			
+			// Auto pan to next marker
+			case KeyCode.autoPan:
+				var pos = this.lmDelegate.nextMarker();
+				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+				break;
 		
 			// Delete shape(s)
 			case KeyCode.del:
@@ -592,6 +598,12 @@ UserInterface.prototype.keydown = function(evt) {
 		}
 	} else {
 		switch (evt.keyCode) {
+			
+			// Auto pan to previous marker
+			case KeyCode.autoPan:
+				var pos = this.lmDelegate.previousMarker();
+				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+				break;
 			
 			// Create a new document
 			case KeyCode.newDoc:
