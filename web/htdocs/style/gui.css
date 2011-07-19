@@ -393,12 +393,20 @@ ul.menu li.mi_hr, ul.menu li.mi_hr:hover {
 	background-image: url('../images/next_vp_sel.png');
 }
 
+#next_marker_btn.guiBtnDisabled {
+	background: url('../images/next_vp_disabled.png') center no-repeat;
+}
+
 #prev_marker_btn {
 	background: url('../images/prev_vp.png') center no-repeat;
 }
 
 #prev_marker_btn:active {
 	background-image: url('../images/prev_vp_sel.png');
+}
+
+#prev_marker_btn.guiBtnDisabled {
+	background: url('../images/prev_vp_disabled.png') center no-repeat;
 }
 
 /* Tools * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
