@@ -37,8 +37,9 @@ Zap.minZoomLevel = Zap.zoomFactors.indexOf(1/5);
 Zap.maxZoomLevel = Zap.zoomFactors.indexOf(4);
 Zap.defaultZoomLevel = Zap.zoomFactors.indexOf(1/2);
 
-Zap.zoomTransitionLength = 0.25;           // zoom transition length in seconds
-Zap.zoomTransitionAccel = -1.0;           // transition animation acceleration
+Zap.autoPanTransitionLength = 0.35;        // Auto-pan transition length in seconds
+Zap.zoomTransitionLength = 0.25;           // Zoom transition length in seconds
+Zap.zoomTransitionAccel = -1.0;            // Transition animation acceleration
 
 // Mouse wheel events are generated too quickly by the trackpad. Limit how 
 // many mouse wheel events are processed per second.
@@ -69,6 +70,9 @@ function Zap(masterGroup, autoScale, layerManager, underlayImage, toolTip) {
 	// The underlay image is scaled and translated separately with hardware-acceleration.
 	this.updateUnderlayImage();
 	
+	// Last position manually panned to by user
+	this.lastPanPosition = new Coord2D(0, 0);
+	
 	this.lastWheelEvent = 0;
 	
 	this.registerListener("mousewheel", Alberti.svgRoot, false);          // opera, safari, ie9
@@ -86,16 +90,18 @@ Zap.prototype.handleWheel = function(direction, evt) {
 	}
 };
 
-// Smoothly zoom relative to the given coordinates at the specified zoom level
+// Smoothly zoom relative to the given global coordinates at the specified zoom level
 Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 	this.zoomLevel = zoomLevel;
 	this.stopZoomTransition();
 	this.enableZoomPanOptimization();
 	
+	var z = Zap.zoomFactors[this.zoomLevel];
+	
 	// The point (x,y) must remain stationary in the window throughout a zoom 
 	// operation. This necessitates a simultaneous translation of the master 
 	// group during the scale.
-	var q = Zap.zoomFactors[this.zoomLevel] / this.masterGroup.scale - 1;
+	var q = z / this.masterGroup.scale - 1;
 	var panX = this.masterGroup.position.x 
 		+ (this.masterGroup.position.x - x + Alberti.halfOriginalWindowWidth) * q;
 	var panY = this.masterGroup.position.y
@@ -118,6 +124,8 @@ Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 				this.autoScale.update(this.masterGroup.scale);
 				this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
 				this.masterGroup.push();
+				this.lastPanPosition.x = -this.masterGroup.position.x / z;
+				this.lastPanPosition.y = -this.masterGroup.position.y / z;
 				this.underlayImage.update();
 			}.bindTo(this)
 			:
@@ -125,6 +133,8 @@ Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 				this.autoScale.update(this.masterGroup.scale);
 				this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
 				this.masterGroup.push();
+				this.lastPanPosition.x = -this.masterGroup.position.x / z;
+				this.lastPanPosition.y = -this.masterGroup.position.y / z;
 			}.bindTo(this)
 	);
 	
@@ -141,10 +151,13 @@ Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 	this.zapAnimation.begin();
 };
 
-// Smoothly pan to the given global coordinates
-Zap.prototype.panTo = function(x, y) {
+// Smoothly pan to the given global coordinates (a Coord2D)
+Zap.prototype.panTo = function(coord) {
+	this.stopZoomTransition();
+	this.enableZoomPanOptimization();
+	
 	this.zapAnimation = new Animation(
-		Zap.zoomTransitionLength,
+		Zap.autoPanTransitionLength,
 		function() {
 			this.zapAnimation = null;
 			if (!this.panningEnabled) {
@@ -162,15 +175,21 @@ Zap.prototype.panTo = function(x, y) {
 			}.bindTo(this)
 	);
 	
-	this.zapAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, -x, Zap.zoomTransitionAccel);
-	this.zapAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, -y, Zap.zoomTransitionAccel);
+	var z = Zap.zoomFactors[this.zoomLevel];
+	
+	this.zapAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, -coord.x * z, Zap.zoomTransitionAccel);
+	this.zapAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, -coord.y * z, Zap.zoomTransitionAccel);
 	
 	if (!this.underlayImage.isHidden()) {
-		this.zapAnimation.add(this.underlayImage, "x", this.underlayImage.x, -x, Zap.zoomTransitionAccel);
-		this.zapAnimation.add(this.underlayImage, "y", this.underlayImage.y, -y, Zap.zoomTransitionAccel);
+		this.zapAnimation.add(this.underlayImage, "x", this.underlayImage.x, -coord.x * z, Zap.zoomTransitionAccel);
+		this.zapAnimation.add(this.underlayImage, "y", this.underlayImage.y, -coord.y * z, Zap.zoomTransitionAccel);
 	}
 		
 	this.zapAnimation.begin();
+};
+
+Zap.prototype.getLastPanPosition = function() {
+	return this.lastPanPosition.clone();
 };
 
 // Stops zoom level transition animation if it is currently taking place
@@ -280,6 +299,11 @@ Zap.prototype.onDragBegin = function(evt) {
 Zap.prototype.onDrag = function(dx, dy, evt) {
 	this.masterGroup.translateRelative(dx, dy);
 	this.masterGroup.push();
+	
+	var z = Zap.zoomFactors[this.zoomLevel];
+	
+	this.lastPanPosition.x = -this.masterGroup.position.x / z;
+	this.lastPanPosition.y = -this.masterGroup.position.y / z;
 	
 	if (!this.underlayImage.isHidden()) {
 		this.underlayImage.translateRelative(dx, dy);
