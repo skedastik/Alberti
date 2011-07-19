@@ -213,7 +213,13 @@ AlbertiDocument.prototype.asXML = function() {
 	
 	var chunks = [];
 	
+	// Get the bounding box of the entire document
+	var bbox = this.workspaceGroup.svgNode.getBBox();
+	
 	chunks[0]  = '<svg\n';
+	chunks[0] += '	width="'+bbox.width+'"\n';
+	chunks[0] += '	height="'+bbox.height+'"\n';
+	chunks[0] += '	viewBox="'+bbox.x+' '+bbox.y+' '+bbox.width+' '+bbox.height+'"\n';
 	chunks[0] += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
 	chunks[0] += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
 	chunks[0] += '	xmlns:berti="'+Alberti.customns+'"\n'
