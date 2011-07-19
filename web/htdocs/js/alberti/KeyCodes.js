@@ -45,14 +45,15 @@ var KeyCode = {
 	number8: 56,
 	number9: 57,
     
-	lpCollapse: 220,       // '\' - Collapse/reveal layer panel
-	snap:       83,        // 's' - Activate snap-to-intersection
+	lpCollapse: 220,       // '\' -   Collapse/reveal layer panel
+	snap:       83,        // 's' -   Activate snap-to-intersection
+	autoPan:    32,        // space - Pan to next marker
 	undo:       85,        // 'u'
 	redo:       82,        // 'r'
 	cut:        88,        // 'x'
 	paste:      86,        // 'v'
 	selectAll:  65,        // 'a'
-	newDoc:     78,        // 'n' - Create a new document
-	save:       83,        // 's' - Save the document (w/ shift key)
-	load:       79,        // 'o' - Open a document
+	newDoc:     78,        // 'n' -   Create a new document
+	save:       83,        // 's' -   Save the document (w/ shift key)
+	load:       79,        // 'o' -   Open a document
 };
