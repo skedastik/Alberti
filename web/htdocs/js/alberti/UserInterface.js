@@ -332,11 +332,11 @@ UserInterface.prototype.initNavBar = function() {
 	).enable();
 	
 	this.nextMarkerBtn = new GuiButton("next_marker_btn", document.getElementById("next_marker_btn"), 
-		this, "handleNavBar", false, "Pan To Next Marker", "", true
+		this, "handleNavBar", false, "Pan To Next Marker [Space]", "", true
 	).enable();
 	
 	this.prevMarkerBtn = new GuiButton("prev_marker_btn", document.getElementById("prev_marker_btn"), 
-		this, "handleNavBar", false, "Pan To Previous Marker", "", true
+		this, "handleNavBar", false, "Pan To Previous Marker [Shift-Space]", "", true
 	).enable();
 };
 
