@@ -108,6 +108,6 @@ Point.prototype.displayDeselected = function() {
 };
 
 // Returns a tiny Rect2D enclosing the point
-Shape.prototype.getBoundingBox = function() {
+Point.prototype.getBoundingBox = function() {
 	return new Rect2D(this.coord.x - 0.1, this.coord.y - 0.1, this.coord.x + 0.1, this.coord.y + 0.1);
 };
