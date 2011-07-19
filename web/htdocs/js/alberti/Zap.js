@@ -55,7 +55,7 @@ function Zap(masterGroup, autoScale, layerManager, underlayImage, toolTip) {
 	
 	this.panningEnabled = false;
 	this.zoomLevel = Zap.defaultZoomLevel;
-	this.zoomAnimation = null;
+	this.zapAnimation = null;
 	
 	this.center();
 	
@@ -76,79 +76,114 @@ function Zap(masterGroup, autoScale, layerManager, underlayImage, toolTip) {
 }
 Util.extend(Zap, DragHandler);
 
-/* * * * * * * * * * * * * Zoom methods below * * * * * * * * * * * * * * * */
-
 Zap.prototype.handleWheel = function(direction, evt) {
 	// Select new zoom level based on mousewheel direction
 	var newZoomLevel = Util.minMax(this.zoomLevel + direction, Zap.minZoomLevel, Zap.maxZoomLevel);
 	
 	if (newZoomLevel != this.zoomLevel) {
-		this.zoomLevel = newZoomLevel;
-		this.stopZoomTransition();
-		this.enableZoomPanOptimization();
-		
-		this.updateMagnificationTooltip(Zap.zoomFactors[this.zoomLevel]);
-		
-		// The point on the screen under the cursor must remain stationary 
-		// throughout a zoom operation. This necessitates a simultaneous 
-		// translation of the master group during the scale.
-		var q = Zap.zoomFactors[this.zoomLevel] / this.masterGroup.scale - 1;
-		var panX = this.masterGroup.position.x 
-			+ (this.masterGroup.position.x - evt.clientX + Alberti.halfOriginalWindowWidth) * q;
-		var panY = this.masterGroup.position.y
-			+ (this.masterGroup.position.y - evt.clientY + Alberti.halfOriginalWindowHeight) * q;
-		
-		// Supply a per-frame callback that invokes Group::push and
-		// AutoScale::update in order to update the workspace and maintain
-		// consistent line and point widths every frame (see AutoScale.js for
-		// details).
-		this.zoomAnimation = new Animation(
-			Zap.zoomTransitionLength,
-			function() {
-				this.zoomAnimation = null;
-				if (!this.panningEnabled) {
-					this.disableZoomPanOptimization();
-				}
-			}.bindTo(this),
-			!this.underlayImage.isHidden() ?
-				function() {
-					this.autoScale.update(this.masterGroup.scale);
-					this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
-					this.masterGroup.push();
-					this.underlayImage.update();
-				}.bindTo(this)
-				:
-				function() {
-					this.autoScale.update(this.masterGroup.scale);
-					this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
-					this.masterGroup.push();
-				}.bindTo(this));
-		
-		this.zoomAnimation.add(this.masterGroup, "scale", this.masterGroup.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
-		this.zoomAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
-		this.zoomAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
-		
-		if (!this.underlayImage.isHidden()) {
-			this.zoomAnimation.add(this.underlayImage, "scale", this.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
-			this.zoomAnimation.add(this.underlayImage, "x", this.underlayImage.x, panX, Zap.zoomTransitionAccel);
-			this.zoomAnimation.add(this.underlayImage, "y", this.underlayImage.y, panY, Zap.zoomTransitionAccel);
-		}
-			
-		this.zoomAnimation.begin();
+		this.zoomRelative(newZoomLevel, evt.clientX, evt.clientY);
+		this.updateMagnificationTooltip(Zap.zoomFactors[newZoomLevel]);
 	}
+};
+
+// Smoothly zoom relative to the given coordinates at the specified zoom level
+Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
+	this.zoomLevel = zoomLevel;
+	this.stopZoomTransition();
+	this.enableZoomPanOptimization();
+	
+	// The point (x,y) must remain stationary in the window throughout a zoom 
+	// operation. This necessitates a simultaneous translation of the master 
+	// group during the scale.
+	var q = Zap.zoomFactors[this.zoomLevel] / this.masterGroup.scale - 1;
+	var panX = this.masterGroup.position.x 
+		+ (this.masterGroup.position.x - x + Alberti.halfOriginalWindowWidth) * q;
+	var panY = this.masterGroup.position.y
+		+ (this.masterGroup.position.y - y + Alberti.halfOriginalWindowHeight) * q;
+	
+	// Supply a per-frame callback that invokes Group::push and
+	// AutoScale::update in order to update the workspace and maintain
+	// consistent line and point widths every frame (see AutoScale.js for
+	// details).
+	this.zapAnimation = new Animation(
+		Zap.zoomTransitionLength,
+		function() {
+			this.zapAnimation = null;
+			if (!this.panningEnabled) {
+				this.disableZoomPanOptimization();
+			}
+		}.bindTo(this),
+		!this.underlayImage.isHidden() ?
+			function() {
+				this.autoScale.update(this.masterGroup.scale);
+				this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
+				this.masterGroup.push();
+				this.underlayImage.update();
+			}.bindTo(this)
+			:
+			function() {
+				this.autoScale.update(this.masterGroup.scale);
+				this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
+				this.masterGroup.push();
+			}.bindTo(this)
+	);
+	
+	this.zapAnimation.add(this.masterGroup, "scale", this.masterGroup.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
+	this.zapAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
+	this.zapAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
+	
+	if (!this.underlayImage.isHidden()) {
+		this.zapAnimation.add(this.underlayImage, "scale", this.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
+		this.zapAnimation.add(this.underlayImage, "x", this.underlayImage.x, panX, Zap.zoomTransitionAccel);
+		this.zapAnimation.add(this.underlayImage, "y", this.underlayImage.y, panY, Zap.zoomTransitionAccel);
+	}
+		
+	this.zapAnimation.begin();
+};
+
+// Smoothly pan to the given global coordinates
+Zap.prototype.panTo = function(x, y) {
+	this.zapAnimation = new Animation(
+		Zap.zoomTransitionLength,
+		function() {
+			this.zapAnimation = null;
+			if (!this.panningEnabled) {
+				this.disableZoomPanOptimization();
+			}
+		}.bindTo(this),
+		!this.underlayImage.isHidden() ?
+			function() {
+				this.masterGroup.push();
+				this.underlayImage.update();
+			}.bindTo(this)
+			:
+			function() {
+				this.masterGroup.push();
+			}.bindTo(this)
+	);
+	
+	this.zapAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, -x, Zap.zoomTransitionAccel);
+	this.zapAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, -y, Zap.zoomTransitionAccel);
+	
+	if (!this.underlayImage.isHidden()) {
+		this.zapAnimation.add(this.underlayImage, "x", this.underlayImage.x, -x, Zap.zoomTransitionAccel);
+		this.zapAnimation.add(this.underlayImage, "y", this.underlayImage.y, -y, Zap.zoomTransitionAccel);
+	}
+		
+	this.zapAnimation.begin();
 };
 
 // Stops zoom level transition animation if it is currently taking place
 Zap.prototype.stopZoomTransition = function() {
-	if (this.zoomAnimation !== null) {
+	if (this.zapAnimation !== null) {
 		// To eliminate stutter, force a redraw before stopping the animation
-		this.zoomAnimation.forceUpdate();
+		this.zapAnimation.forceUpdate();
 		
 		// Zoom animation may have concluded after above call to forceUpdate,
 		// so check before calling stop unnecessarily.
-		if (this.zoomAnimation) {
-			this.zoomAnimation.stop(false);
-			this.zoomAnimation = null;
+		if (this.zapAnimation) {
+			this.zapAnimation.stop(false);
+			this.zapAnimation = null;
 		}
 	}
 };
@@ -185,8 +220,6 @@ Zap.prototype.DOMMouseScroll = function(evt) {
 		}
 	}
 };
-
-/* * * * * * * * * * * * * Pan methods below * * * * * * * * * * * * * * * */
 
 // Center the coordinate space in the window
 Zap.prototype.center = function() {
