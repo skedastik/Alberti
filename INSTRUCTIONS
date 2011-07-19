@@ -67,7 +67,7 @@ will become selected. To delete the selected shapes, press backspace.
 SNAPPING
 
 One of Alberti's most powerful features allows tools to "snap" to line 
-intersections. To enable snapping, hold down the 's' key. While snapping is 
+intersections. To enable snapping, hold down the 'd' key. While snapping is 
 enabled, a translucent circle will appear at line intersections when the 
 cursor is held near, and subsequent tool operations will "snap" to the 
 highlighted intersection. This is crucial for creating accurate perspective 

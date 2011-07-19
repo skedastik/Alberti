@@ -46,7 +46,7 @@ var KeyCode = {
 	number9: 57,
     
 	lpCollapse: 220,       // '\' -   Collapse/reveal layer panel
-	snap:       83,        // 's' -   Activate snap-to-intersection
+	snap:       68,        // 'd' -   Activate snap-to-intersection
 	autoPan:    32,        // space - Pan to next marker
 	undo:       85,        // 'u'
 	redo:       82,        // 'r'
