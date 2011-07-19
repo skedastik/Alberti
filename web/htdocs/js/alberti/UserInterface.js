@@ -138,9 +138,9 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 		this.setTool(UserInterface.defaultTool);
 	}
 	
-	// Update menus
 	this.updateUndoMenuItems();
 	this.updateClippingMenuItems();
+	this.updateNavBar();
 	
 	// So that all changes to model are propagated to view...
 	albertiDoc.connectDelegates(this.lmDelegate, this.umDelegate);
@@ -340,6 +340,9 @@ UserInterface.prototype.initNavBar = function() {
 	this.prevMarkerBtn = new GuiButton("prev_marker_btn", document.getElementById("prev_marker_btn"), 
 		this, "handleNavBar", false, "Pan To Previous Marker [Shift-Space]", "", true
 	).enable();
+	
+	this.nextMarkerBtn.disable();
+	this.prevMarkerBtn.disable();
 };
 
 UserInterface.prototype.initToolBar = function() {
@@ -391,6 +394,16 @@ UserInterface.prototype.updateUndoMenuItems = function(hasUndos, hasRedos) {
 		this.editMenu.enableMenuItem("mi_redo");
 	} else {
 		this.editMenu.disableMenuItem("mi_redo");
+	}
+};
+
+UserInterface.prototype.updateNavBar = function() {
+	if (this.lmDelegate.getNumMarkers() > 0) {
+		this.nextMarkerBtn.enable();
+		this.prevMarkerBtn.enable();
+	} else {
+		this.nextMarkerBtn.disable();
+		this.prevMarkerBtn.disable();
 	}
 };
 
