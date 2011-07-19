@@ -227,6 +227,7 @@ UserInterface.prototype.initToolSet = function() {
 	
 	this.toolIndex = {
 		selectionTool:     {tool: new ToolSelection(uiObjects),     cursor: UserInterface.cursorDefault},
+		markerTool:        {tool: new ToolMarker(uiObjects),        cursor: UserInterface.cursorCrosshair},
 		lineTool:          {tool: new ToolLine(uiObjects),          cursor: UserInterface.cursorCrosshair },
 		circularArcTool:   {tool: new ToolCircleArc(uiObjects),     cursor: UserInterface.cursorCrosshair },
 		ellipticalArcTool: {tool: new ToolEllipticalArc(uiObjects), cursor: UserInterface.cursorCrosshair },
@@ -236,6 +237,7 @@ UserInterface.prototype.initToolSet = function() {
 	// Map tool button id strings to above tool indices
 	this.tbButtonMap = {
 		select_tool_btn:   "selectionTool",
+		marker_tool_btn:   "markerTool",
 		line_tool_btn:     "lineTool",
 		carc_tool_btn:     "circularArcTool",
 		earc_tool_btn:     "ellipticalArcTool",
@@ -329,6 +331,10 @@ UserInterface.prototype.initToolBar = function() {
 		this, "handleToolBar", false, "Selection Tool [1]", "", true
 	).enable();
 	
+	this.markerToolBtn = new GuiButton("marker_tool_btn", document.getElementById("marker_tool_btn"), 
+		this, "handleToolBar", false, "Marker Tool", "", true
+	).enable();
+	
 	this.lineToolBtn = new GuiButton("line_tool_btn", document.getElementById("line_tool_btn"), 
 		this, "handleToolBar", false, "Line Tool [2]", "", true
 	).enable();
@@ -347,6 +353,7 @@ UserInterface.prototype.initToolBar = function() {
 	
 	this.tbButtonFamily = new GuiButtonFamily();
 	this.tbButtonFamily.addButton(this.selectToolBtn);
+	this.tbButtonFamily.addButton(this.markerToolBtn);
 	this.tbButtonFamily.addButton(this.lineToolBtn);
 	this.tbButtonFamily.addButton(this.circularArcToolBtn);
 	this.tbButtonFamily.addButton(this.ellipticalArcToolBtn);
