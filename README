@@ -6,19 +6,19 @@ Pittura".
 
 Why is it needed?
 
-Anyone who has seriously undertaken a complex, accurate perspective drawing 
-knows that it takes an enormous amount of physical space. Depending on the 
-requirements of the drawing, a 14x17 in. layout might require a drafting table 
-5 feet wide and 10 feet deep. On top of this, you would need a number of 
-impractically large tools: a straight-edge, a drafting triangle, possibly a 
-compass fashioned out of a peg and string.
+Anyone who has undertaken a complex, accurate perspective drawing knows that 
+it takes an enormous amount of physical space. Depending on the requirements 
+of the drawing, a 14x17 in. layout might require a drafting table 5 feet wide 
+and 10 feet deep. Furthermore, you would need a number of impractically large 
+tools: a straight-edge, a drafting triangle, possibly a compass fashioned out 
+of a peg and string.
 
 In short, it makes perfect sense to do this in software.
 
 Then why not use an existing solution like AutoCAD or 3ds Max? Because these 
 tools are overkill. Alberti provides a highly streamlined interface tailored 
 specifically to the requirements of rapid, natural perspective layout drawing. 
-It is not a 3D modeling tool, nor is it meant to be.
+It is not a 3D modeling tool.
 
 Features
 
@@ -30,5 +30,5 @@ Natural extensions of these tools follow: perpendicular and parallel line
 tools. Automatic perspective space construction tools (in three-point, 
 two-point, and one-point perspective flavors).
 
-Also, Alberti allows the user to import images (such as scanned sketches) onto 
+Alberti also allows the user to import images (such as scanned sketches) onto 
 which a perspective space can be superimposed.
