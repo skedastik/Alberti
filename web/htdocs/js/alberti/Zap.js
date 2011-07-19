@@ -151,10 +151,16 @@ Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 	this.zapAnimation.begin();
 };
 
-// Smoothly pan to the given global coordinates (a Coord2D)
-Zap.prototype.panTo = function(coord) {
+// Smoothly pan to the given global coordinates (a Coord2D). You may 
+// optionally pass true for savePosition to use this position as the last 
+// manually-panned position.
+Zap.prototype.panTo = function(coord, savePosition) {
 	this.stopZoomTransition();
 	this.enableZoomPanOptimization();
+	
+	if (savePosition) {
+		this.lastPanPosition = coord;
+	}
 	
 	this.zapAnimation = new Animation(
 		Zap.autoPanTransitionLength,
