@@ -45,6 +45,10 @@ function LayerManager(layerGroup, undoManager) {
 	// An array of currently selected shapes
 	this.selectedShapes = [];
 	
+	// Contains all markers created by the marker tool, and a null marker
+	this.markers = [null];
+	this.currentMarker = null;
+	
 	this.snapPoints = new SnapPoints();
 }
 
@@ -380,6 +384,11 @@ LayerManager.prototype.insertShape = function(newShape, targetLayer) {
 	this.shapeIndex[sid] = {"shape":newShape, "layer":targetLayer};
 	this.shapeCount++;
 	
+	// A point shape indicates a marker
+	if (newShape.shapeName == "point") {
+		this.markers.push(newShape);
+	}
+	
 	// Make it undo-able
 	this.undoManager.push("Insert Shape", this,
 		this.insertShape, [newShape, targetLayer],
@@ -410,6 +419,15 @@ LayerManager.prototype.removeShape = function(shape, bulk) {
 	this.snapPoints.testIntersections(
 		shape, this.getVisibleShapes(), bulk ? SnapPoints.bulkDeleteFlag : SnapPoints.deleteFlag
 	);
+	
+	// A point shape indicates a marker
+	if (shape.shapeName == "point") {
+		if (shape == this.currentMarker) {
+			this.currentMarker = null;
+		}
+		
+		this.markers.splice(this.markers.indexOf(shape), 1);
+	}
 	
 	// Make it undo-able
 	this.undoManager.push("Delete Shape", this,
@@ -564,4 +582,22 @@ LayerManager.prototype.serializeAll = function() {
 	for (var sid in this.shapeIndex) {
 		this.shapeIndex[sid].shape.serialize();
 	}
+};
+
+// Sets current marker to next marker and returns its position (a Coord2D), or
+// null if the null marker is the next marker.
+LayerManager.prototype.nextMarker = function() {
+	var index = this.markers.indexOf(this.currentMarker) + 1;
+	this.currentMarker = this.markers[index < this.markers.length ? index : 0];
+	
+	return this.currentMarker ? this.currentMarker.coord.clone() : null;
+};
+
+// Sets current marker to previous marker and returns its position (a 
+// Coord2D), or null if the null marker is the previous marker.
+LayerManager.prototype.previousMarker = function() {
+	var index = this.markers.indexOf(this.currentMarker) - 1;
+	this.currentMarker = this.markers[index >= 0 ? index : this.markers.length - 1];
+	
+	return this.currentMarker ? this.currentMarker.coord.clone() : null;
 };
