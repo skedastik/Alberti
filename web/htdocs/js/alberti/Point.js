@@ -46,6 +46,7 @@ Point.elementTag = "use";
 Point.shapeName = "point";
 
 Point.templateId = "point_template";
+Point.selectedTemplateId = "point_template_sel";
 
 function Point(svgNode) {
 	Point.baseConstructor.call(this, svgNode ? svgNode : Point.elementTag, Point.shapeName);
@@ -96,4 +97,12 @@ Point.prototype.clone = function() {
 	p.outerColor = this.outerColor;
 	
 	return p;
+};
+
+Point.prototype.displaySelected = function() {
+	this.set("xlink:href", "#"+Point.selectedTemplateId, Alberti.xlinkns);
+};
+
+Point.prototype.displayDeselected = function() {
+	this.set("xlink:href", "#"+Point.templateId, Alberti.xlinkns);
 };
