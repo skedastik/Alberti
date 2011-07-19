@@ -534,13 +534,17 @@ UserInterface.prototype.handleNavBar = function(button) {
 			break;
 		
 		case "next_marker_btn":
-			var pos = this.lmDelegate.nextMarker();
-			this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+			if (this.lmDelegate.getNumMarkers() > 0) {
+				var pos = this.lmDelegate.nextMarker();
+				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+			}
 			break;
 		
 		case "prev_marker_btn":
-			var pos = this.lmDelegate.previousMarker();
-			this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+			if (this.lmDelegate.getNumMarkers() > 0) {
+				var pos = this.lmDelegate.nextMarker();
+				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
+			}
 			break;
 	}
 };
