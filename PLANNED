@@ -9,7 +9,6 @@ Rectangle Tool
 
 Circle Tool
    - Two-point form
-   - Center and radius form
 
 Perspective Space Tool
    - 1-point
@@ -18,11 +17,6 @@ Perspective Space Tool
 
 WORKFLOW
 
-Rapid workspace panning
-   - Center coordinate system
-   - Jump to next/previous vanishing point
-   - Jump to last panned position
-
 Exporting
    - Export to PNG
    - Export frame w/ selectable aspect ratio, size, and origin
@@ -30,20 +24,18 @@ Exporting
 Grid
    - Some sort of infinite grid that adjusts dynamically w/ zooming.
 
+More Snap Points
+	- Expanded intersection detection (bezier-circle, etc.)
+	- Expanded tangency detection (bezier-circle, etc.)
+
 FAR FUTURE
 
 As it is, Alberti is a capable drafting tool, but could be augmented with the
 following features to form a very powerful tool set:
 
 Duplicate About Point
-
-Allow the user to select a number of shapes and duplicate them around a chosen 
-point by specified degrees in real-time.
+   - Allow the user to select a number of shapes and duplicate them around a 
+     chosen point by specified degrees in real-time.
 
 Shape Labels
-
-Text labels attached to shapes.
-
-Bezier Curves
-
-Quadratic, or three-point Bezier Tool.
+   - Text labels attached to shapes.
