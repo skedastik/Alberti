@@ -115,6 +115,8 @@ Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 		Zap.zoomTransitionLength,
 		function() {
 			this.zapAnimation = null;
+			this.layerManager.resetCurrentMarker();
+			
 			if (!this.panningEnabled) {
 				this.disableZoomPanOptimization();
 			}
@@ -160,6 +162,7 @@ Zap.prototype.panTo = function(coord, savePosition) {
 	
 	if (savePosition) {
 		this.lastPanPosition = coord;
+		this.layerManager.resetCurrentMarker();
 	}
 	
 	this.zapAnimation = new Animation(
@@ -315,4 +318,8 @@ Zap.prototype.onDrag = function(dx, dy, evt) {
 		this.underlayImage.translateRelative(dx, dy);
 		this.underlayImage.update();
 	}
+};
+
+Zap.prototype.onDrop = function(evt) {
+	this.layerManager.resetCurrentMarker();
 };
