@@ -117,7 +117,7 @@ var Intersect = {
 			if (Util.equals(discriminant, 0, tolerance)) {
 				var t = -B / (2*A);
 			
-				if (t >= 0 && t <= 1) {
+				if (Util.between(t, 0, 1)) {
 					intersections[0] = new Coord2D(line.p1.x + t * dx, line.p1.y + t * dy);
 				}
 			} else if (discriminant > 0) {
@@ -125,11 +125,11 @@ var Intersect = {
 				var t1 = (-B + rootd) / (2*A);
 				var t2 = (-B - rootd) / (2*A);
 			
-				if (t1 >= 0 && t1 <= 1) {
+				if (Util.between(t1, 0, 1)) {
 					intersections.push(new Coord2D(line.p1.x + t1 * dx, line.p1.y + t1 * dy));
 				}
 			
-				if (t2 >= 0 && t2 <= 1) {
+				if (Util.between(t2, 0, 1)) {
 					intersections.push(new Coord2D(line.p1.x + t2 * dx, line.p1.y + t2 * dy));
 				}
 			}
@@ -203,7 +203,7 @@ var Intersect = {
 		if (Util.equals(discriminant, 0, 1e-25)) {
 			var t = -b / (2 * a);
 		
-			if (t >= 0 && t <= 1) {
+			if (Util.between(t, 0, 1)) {
 				intersections[0] = new Coord2D(line.p1.x + t * dx1, line.p1.y + t * dy1);
 			}
 		} else if (discriminant > 0) {
@@ -211,11 +211,11 @@ var Intersect = {
 			var t1 = (-b + rootd) / (2 * a);
 			var t2 = (-b - rootd) / (2 * a);
 		
-			if (t1 >= 0 && t1 <= 1) {
+			if (Util.between(t1, 0, 1)) {
 				intersections.push(new Coord2D(line.p1.x + t1 * dx1, line.p1.y + t1 * dy1));
 			}
 		
-			if (t2 >= 0 && t2 <= 1) {
+			if (Util.between(t2, 0, 1)) {
 				intersections.push(new Coord2D(line.p1.x + t2 * dx1, line.p1.y + t2 * dy1));
 			}
 		}
@@ -264,7 +264,7 @@ var Intersect = {
 		if (Util.equals(discriminant, 0)) {
 			var t = -B / (2*A);
 		
-			if (t >= 0 && t <= 1) {
+			if (Util.between(t, 0, 1)) {
 				var D = (1 - t)*(1 - t);
 				var E = 2*(1 - t)*t;
 				var F = t*t;
@@ -279,7 +279,7 @@ var Intersect = {
 			var t1 = (-B + rootd) / (2*A);
 			var t2 = (-B - rootd) / (2*A);
 		
-			if (t1 >= 0 && t1 <= 1) {
+			if (Util.between(t1, 0, 1)) {
 				var D = (1 - t1)*(1 - t1);
 				var E = 2*(1 - t1)*t1;
 				var F = t1*t1;
@@ -290,7 +290,7 @@ var Intersect = {
 				));
 			}
 		
-			if (t2 >= 0 && t2 <= 1) {
+			if (Util.between(t2, 0, 1)) {
 				var I = (1 - t2)*(1 - t2);
 				var J = 2*(1 - t2)*t2;
 				var K = t2*t2;
