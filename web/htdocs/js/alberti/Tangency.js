@@ -77,8 +77,20 @@ var Tangency = {
 		// Special case #2: If the discriminant of [4] is 0, point p lies on the
 		// ellipse and there is only one point of tangency: point p.
 		// 
-		// Special case #3: If Q is 0, we have a special case where the X
-		// coordinates of both points of tangency are equal.
+		// Special case #3: If Q is 0, the following equation is plugged into [2]:
+		// 
+		//    X = -R / P
+		// 
+		// Yielding a quadratic equation which reduces to:
+		// 
+		//    A*Y^2 + B*Y + C = 0
+		// 
+		// Where:
+		// 
+		//    A = c
+		//    B = 2*(f - (b*R) / P)
+		//    C = (a*R^2) / P^2 - (2*d*R) / P + g
+		// 
 
 		var tangents = [];
 
@@ -92,50 +104,54 @@ var Tangency = {
 		var x0 = point.coord.x;
 		var y0 = point.coord.y;
 
-		// Dbug.log("Coefficients:   "+ellipse.coeffs);
-
+		var P = a*x0 + b*y0 + d;
 		var Q = b*x0 + c*y0 + f;
+		var R = d*x0 + f*y0 + g;
 
-		// if (Q == 0) {
-			// TODO: Special case when Q == 0 (same as when discriminant == 0)
-		// } else {
-			var P = a*x0 + b*y0 + d;
-			var R = d*x0 + f*y0 + g;
-			Dbug.log("P = "+R+",   Q = "+Q+",   R = "+R)
-
+		if (Q == 0) {
+			var A = c;
+			var B = 2 * (f - (b*R) / P);
+			var C = (a*R*R) / (P*P) - (2*d*R) / P + g;
+		} else {
 			var A = a - (2*b*P) / Q + (c*P*P) / (Q*Q);
 			var B = 2 * (d - (b*R + f*P) / Q + (c*P*R) / (Q*Q));
 			var C = g - (2*f*R) / Q + (c*R*R) / (Q*Q);
-			Dbug.log("A = "+A+",   B = "+B+",   C = "+C);
+		}
 
-			var discriminant = B*B - 4*A*C;
-			
-			// The above calculations introduce significant floating point error 
-			// in the discriminant. In order to accurately detect a discriminant
-			// of zero, it is necessary to adjust the tolerance value on-the-fly.
-			// The error size is logarithmically correlated with the area of the
-			// ellipse. Tolerance is adjusted accordingly.
-			
-			var alpha = 1.86e29;
-			var beta = -5.304;
-			var area = ellipse.rx * ellipse.ry;
-			var tolerance = (alpha * Math.pow(area, beta)) / 10e40;
-			
-			Dbug.log("Discriminant = "+discriminant+", ~0? "+Util.equals(discriminant, 0, tolerance));
+		var discriminant = B*B - 4*A*C;
+		
+		// The above calculations (and the original perspective projection of
+		// ellipse calculations) introduce significant floating point error 
+		// in the discriminant. In order to accurately detect a discriminant
+		// of zero, it is necessary to adjust the tolerance value on-the-fly.
+		// The error size is logarithmically correlated with the area of the
+		// ellipse. Tolerance is adjusted accordingly.
+		
+		var alpha = 1.86e29;
+		var beta = -5.304;
+		var area = ellipse.rx * ellipse.ry;
+		var tolerance = (alpha * Math.pow(area, beta)) / 10e40;
 
-			if (Util.equals(discriminant, 0, tolerance)) {
-				tangents[0] = new Coord2D(x0, y0);      // Point lies on the ellipse, it is the single tangency
-			} else if (discriminant > 0) {
-				var rootd = Math.sqrt(discriminant);
+		if (Util.equals(discriminant, 0, tolerance)) {
+			tangents[0] = new Coord2D(x0, y0);      // Point lies on the ellipse, it is the single tangency
+		} else if (discriminant > 0) {
+			var rootd = Math.sqrt(discriminant);
+			
+			if (Q == 0) {
+				var y1 = (-B + rootd) / (2*A);
+				var y2 = (-B - rootd) / (2*A);
+				var x1 = -R / P;
+				var x2 = -R / P;
+			} else {
 				var x1 = (-B + rootd) / (2*A);
 				var x2 = (-B - rootd) / (2*A);
 				var y1 = -(P*x1 + R) / Q;
 				var y2 = -(P*x2 + R) / Q;
-
-				tangents[0] = new Coord2D(x1, y1);
-				tangents[1] = new Coord2D(x2, y2);
 			}
-		// }
+
+			tangents[0] = new Coord2D(x1, y1);
+			tangents[1] = new Coord2D(x2, y2);
+		}
 
 		return tangents;
 	},
