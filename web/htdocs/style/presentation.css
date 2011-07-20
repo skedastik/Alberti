@@ -81,7 +81,7 @@ a {
 }
 
 #about_box {
-	margin-top: -170px;
+	margin-top: -180px;
 }
 
 .cbox {
@@ -116,27 +116,24 @@ a {
 #about_bot {
 	position: relative;
 	top: -16px;
-	height: 270px;
+	height: 290px;
 	
 	border-bottom-left-radius: 15px;
 	border-bottom-right-radius: 15px;
 	
-	background: #fff;
+	background: #fff url('../images/splash.gif') right no-repeat;
 	
 	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 }
 
 #about_left {
-	width: 154px;
 	padding: 0px 10px 10px 10px;
 	
 	float: left;
 	
 	font-size: 12px;
 /*	font-family: Arial, sans-serif;*/
-	
-	border-right: 1px solid #888;
 }
 
 #about_left > p {
@@ -151,13 +148,9 @@ a {
 	color: #000;
 }
 
-#about_right {
-	width: 305px;
-	padding: 10px 0 10px 10px;
-	float: left;
-	
-	font-size: 15px;
-	color: #000;
+#about_left p.license {
+	width: 220px;
+	margin-top: 16px;
 }
 
 .kickup {
