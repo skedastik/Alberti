@@ -613,3 +613,8 @@ LayerManager.prototype.previousMarker = function() {
 	
 	return this.currentMarker ? this.currentMarker.coord.clone() : null;
 };
+
+// Sets current marker to the null marker
+LayerManager.prototype.resetCurrentMarker = function() {
+	this.currentMarker = null;
+};
