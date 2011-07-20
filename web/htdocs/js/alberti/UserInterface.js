@@ -542,7 +542,7 @@ UserInterface.prototype.handleNavBar = function(button) {
 		
 		case "prev_marker_btn":
 			if (this.lmDelegate.getNumMarkers() > 0) {
-				var pos = this.lmDelegate.nextMarker();
+				var pos = this.lmDelegate.previousMarker();
 				this.zap.panTo(pos ? pos : this.zap.getLastPanPosition());
 			}
 			break;
