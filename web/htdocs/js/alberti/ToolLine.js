@@ -42,6 +42,8 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 			
 			this.registerShape(p, "start_point");
 			this.registerShape(l, "line");
+			
+			this.generateTangentSnaps("start_point");
 			break;
 			
 		// Step 1: Display line's midpoint and endpoint, as well as a guide 
