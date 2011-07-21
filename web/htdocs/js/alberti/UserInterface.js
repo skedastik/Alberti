@@ -467,6 +467,14 @@ UserInterface.prototype.handleMenu = function(itemId) {
 			this.showHud();
 			break;
 		
+		case "mi_help":
+			window.open(
+				"help.html",
+				"alb_help",
+				"resizable=yes,scrollbars=yes,status=no,toolbar=no,width=650"
+			);
+			break;
+		
 		case "mi_about":
 			this.aboutBox.show();
 			break;
