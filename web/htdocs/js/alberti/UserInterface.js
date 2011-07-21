@@ -575,8 +575,8 @@ UserInterface.prototype.keydown = function(evt) {
 		switch (evt.keyCode) {
 		
 			// Activate panning
+			case KeyCode.manPan:
 			case KeyCode.alt:
-				// Enable panning while the alt-key and no other keys are pressed
 				this.zap.enablePanning();
 				this.setCursor(UserInterface.cursorZoomAndPan);
 			
@@ -603,13 +603,8 @@ UserInterface.prototype.keydown = function(evt) {
 				break;
 			
 			// Undo
-			case KeyCode.undo:
+			case KeyCode.undoRedo:
 				this.handleMenu("mi_undo");
-				break;
-		
-			// Redo
-			case KeyCode.redo:
-				this.handleMenu("mi_redo");
 				break;
 		
 			// Cut shape(s)
@@ -655,6 +650,11 @@ UserInterface.prototype.keydown = function(evt) {
 				this.prevMarkerBtn.click();
 				break;
 			
+			// Redo
+			case KeyCode.undoRedo:
+				this.handleMenu("mi_redo");
+				break;
+			
 			// Create a new document
 			case KeyCode.newDoc:
 				this.handleMenu("mi_new_doc");
@@ -677,6 +677,7 @@ UserInterface.prototype.keydown = function(evt) {
 
 UserInterface.prototype.keyup = function(evt) {
 	switch(evt.keyCode) {
+		case KeyCode.manPan:
 		case KeyCode.alt:
 			// stop panning when alt-key is released
 			this.zap.disablePanning();

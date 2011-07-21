@@ -48,8 +48,8 @@ var KeyCode = {
 	lpCollapse: 220,       // '\' -   Collapse/reveal layer panel
 	snap:       68,        // 'd' -   Activate snap-to-intersection
 	autoPan:    32,        // space - Pan to next marker
-	undo:       85,        // 'u'
-	redo:       82,        // 'r'
+	manPan:     69,        // 'e' -   Alternate manual panning key
+	undoRedo:   90,        // 'z' -   Undo/redo key (shift for redo)
 	cut:        88,        // 'x'
 	paste:      86,        // 'v'
 	selectAll:  65,        // 'a'
