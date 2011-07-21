@@ -1,0 +1,120 @@
+/* 
+ * help.css
+ * 
+ * Help page styling.
+ *
+ */
+
+body {
+	margin: 0;
+	padding: 0;
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	
+	background-color: #eee;
+}
+
+a {
+	color: #46e;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 20px 0 0 0;
+	font-weight: normal;
+}
+
+h1 {
+	font-family: 'Georgia', serif;
+	font-size: 2.5em;
+}
+
+h2 {
+	font-size: 2em;
+}
+
+h2, h3 {
+	font-family: sans-serif;
+	font-weight: lighter;
+}
+
+#top_btn {
+	display: block;
+	position: fixed;
+	left: 50%;
+	margin: 8px 0 0 260px;
+	
+	width: 50px;
+	height: 44px;
+	
+	border-radius: 25px;
+	background-color: #46e;
+	
+	padding-top: 6px;
+	text-align: center;
+	text-transform: uppercase;
+	text-decoration: none;
+	text-shadow: 0px -1px 1px #24c;
+	color: #fff;
+}
+
+#top_btn:hover {
+	background-color: #57f;
+}
+
+#top_btn .a {
+	font-size: 20px;
+}
+
+#top_btn .b {
+	font-size: 9px
+}
+
+#main {
+	position: relative;
+	left: 50%;
+	width: 460px;
+	margin-left: -250px;
+	padding: 0 20px 20px 20px;
+	
+	border: 1px solid #fff;
+	background-color: #fff;
+}
+
+#main > ul, p {
+	margin-top: 25px;
+}
+
+p {
+	color: #383838;
+}
+
+ul {
+	padding-left: 2em;
+	border-left: 1px dotted #aaa;
+}
+
+#contents, #contents * {
+	list-style-type: none;
+}
+
+#contents li {
+	margin-top: 2px;
+}
+
+#contents > li {
+	font-size: 1.2em;
+}
+
+#contents ul {
+	margin: 6px 0 6px 0;
+}
+
+#contents > ul > li {
+	font-style: italic;
+}
