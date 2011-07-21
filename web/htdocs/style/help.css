@@ -39,8 +39,16 @@ h2 {
 }
 
 h2, h3 {
-	font-family: sans-serif;
+	font-family: 'Helvetica Neue', sans-serif;
 	font-weight: lighter;
+}
+
+h3 {
+	font-style: italic;
+}
+
+h4 {
+	font-size: 1.1em;
 }
 
 #top_btn {
