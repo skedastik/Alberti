@@ -129,11 +129,8 @@ a {
 
 #about_left {
 	padding: 0px 10px 10px 10px;
-	
 	float: left;
-	
 	font-size: 12px;
-/*	font-family: Arial, sans-serif;*/
 }
 
 #about_left > p {
