@@ -596,20 +596,27 @@ LayerManager.prototype.getNumMarkers = function() {
 	return this.markers.length - 1;
 };
 
-// Sets current marker to next marker and returns its position (a Coord2D), or
-// null if the null marker is the next marker.
+// Sets current marker to next visible marker and returns its position (a 
+// Coord2D), or null if the null marker is the next marker.
 LayerManager.prototype.nextMarker = function() {
-	var index = this.markers.indexOf(this.currentMarker) + 1;
-	this.currentMarker = this.markers[index < this.markers.length ? index : 0];
+	var i = this.markers.indexOf(this.currentMarker);
+	
+	while (++i < this.markers.length && this.shapeIndex[this.markers[i].sid].layer.isHidden()) {}
+
+	this.currentMarker = this.markers[i < this.markers.length ? i : 0];
 	
 	return this.currentMarker ? this.currentMarker.coord.clone() : null;
 };
 
-// Sets current marker to previous marker and returns its position (a 
+// Sets current marker to previous visible marker and returns its position (a 
 // Coord2D), or null if the null marker is the previous marker.
 LayerManager.prototype.previousMarker = function() {
-	var index = this.markers.indexOf(this.currentMarker) - 1;
-	this.currentMarker = this.markers[index >= 0 ? index : this.markers.length - 1];
+	var j = this.markers.indexOf(this.currentMarker);
+	var i = (j > 0 ? j : this.markers.length);
+	
+	while (--i > 0 && this.shapeIndex[this.markers[i].sid].layer.isHidden()) {}
+	
+	this.currentMarker = this.markers[i];
 	
 	return this.currentMarker ? this.currentMarker.coord.clone() : null;
 };
