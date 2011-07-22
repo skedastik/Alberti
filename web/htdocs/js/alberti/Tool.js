@@ -430,7 +430,8 @@ Tool.prototype.onMouseMove = function(gx, gy, evt) {
 };
 
 Tool.prototype.keydown = function(evt) {
-	if (!evt.shiftKey) {
+	if (evt.keyCode != KeyCode.shift) {
+		Dbug.log("Not shift key");
 		this.constrainEnabled = false;
 		
 		switch (evt.keyCode) {
