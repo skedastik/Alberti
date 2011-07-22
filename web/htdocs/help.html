@@ -268,8 +268,30 @@
 				</ol>
 			</p>
 			<h2 id="nav_snap">Auto-Snap</h2>
+			<p>
+				Auto-snap brings precision to the drawing process by automatically detecting potential snap points (e.g. intersections
+				and tangencies). It is enabled by pressing and holding down the <b>D</b> key. When the tool crosshair is held near
+				a snap point, a red, circular snap indicator appears at the snap point, and the tool "snaps" to this point. Use cases 
+				are discussed below.
+			</p>
 			<h3 id="nav_isect">Intersections</h3>
+			<p>
+				Alberti will detect intersections between a line and any shape, as well as intersections between <a href="#nav_arc_tool">
+				circular arcs</a>.
+			</p>
+			<div id="isect_demo" class="divimg"></div>
+			<p class="caption">
+				Move the mouse over the image to observe the effect of intersection detection with the line tool.
+			</p>
 			<h3 id="nav_tan">Tangency</h3>
+			<p>
+				Currently, Alberti detects only one type of tangency: that between a line and a perspective arc. This is useful for 
+				precisely finding the edge of a rounded form in perspective.
+			</p>
+			<div id="tan_earc_demo" class="divimg"></div>
+			<p class="caption">
+				Move the mouse over the image to observe the effect of tangency detection involving the line tool and a perspective arc.
+			</p>
 			<h2 id="nav_lp">The Layer Panel</h2>
 			<h3 id="nav_cd_layers">Creating and Deleting Layers</h3>
 			<h3 id="nav_name_layers">Naming Layers</h3>

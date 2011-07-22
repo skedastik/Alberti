@@ -5,6 +5,15 @@
  *
  */
 
+/* Preload images */
+body:after {
+	content:
+	url('../images/help/isect_snap.gif')
+	url('../images/help/tan_earc_demo_snap.gif');
+	
+	display: none;
+}
+
 body {
 	margin: 0;
 	padding: 0;
@@ -141,7 +150,7 @@ p.caption {
 	margin-bottom: 20px;
 }
 
-#maintext img {
+#maintext img, .divimg {
 	display: block;
 	margin: 20px auto 0 auto;
 }
@@ -211,4 +220,24 @@ ul {
 	-o-transform: scaleY(-1);
 	-webkit-transform: scaleY(-1);
 	transform: scaleY(-1);
+}
+
+#isect_demo {
+	width: 152px;
+	height: 171px;
+	background-image: url('../images/help/isect_nosnap.gif');
+}
+
+#isect_demo:hover {
+	background-image: url('../images/help/isect_snap.gif');
+}
+
+#tan_earc_demo {
+	width: 231px;
+	height: 353px;
+	background-image: url('../images/help/tan_earc_demo_nosnap.gif');
+}
+
+#tan_earc_demo:hover {
+	background-image: url('../images/help/tan_earc_demo_snap.gif');
 }
