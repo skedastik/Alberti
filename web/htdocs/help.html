@@ -37,11 +37,11 @@
 				<li><a href="#nav_isect">Intersections</a></li>
 				<li><a href="#nav_tan">Tangency</a></li>
 			</ul>
-			<li><a href="#nav_lp">The Layer Panel</a></li>
+			<li><a href="#nav_lp">Layers</a></li>
 			<ul>
+				<li><a href="#nav_hs_layers">Hiding and Showing Layers</a></li>
 				<li><a href="#nav_cd_layers">Creating and Deleting Layers</a></li>
 				<li><a href="#nav_name_layers">Naming Layers</a></li>
-				<li><a href="#nav_hs_layers">Hiding and Showing Layers</a></li>
 				<li><a href="#nav_order_layers">Changing Layer Order</a></li>
 				<li><a href="#nav_cc_layers">Color-Coding Layers</a></li>
 			</ul>
@@ -100,7 +100,7 @@
 				which spans infinitely in all directions.
 			</p>
 			<img src="images/help/c_hud.png"/>
-			<p class="caption">The workspace center.</p>
+			<p class="caption">Fig. 1. The workspace center.</p>
 			<h3 id="nav_ws_nav">Navigating the Workspace</h3>
 			<h4 id="nav_zap">Zooming and Panning</h4>
 			<p>
@@ -121,7 +121,7 @@
 				the workspace.
 			</p>
 			<img src="images/help/navbar.png"/>
-			<p class="caption">The navigation bar.</p>
+			<p class="caption">Fig. 2. The navigation bar.</p>
 			<p>The home button (<img class="insert" src="images/center_cam.png"/>) centers the workspace in the browser window.</p>
 			<p>
 				The other two buttons involve what are called <em>markers</em>. Markers can be placed anywhere in the workspace using
@@ -137,8 +137,8 @@
 				its name and associated hotkey in brackets.
 				<img src="images/help/toolbar.png"/>
 				<p class="caption">
-					The tool bar. Tools from top to bottom: Selection Tool, Line Tool, Arc Tool, Perspective Arc Tool, Bezier Tool, Marker Tool.
-					The selection tool is currently selected.
+					Fig. 3. The tool bar. Tools from top to bottom: Selection Tool, Line Tool, Arc Tool, Perspective Arc Tool, 
+					Bezier Tool, Marker Tool. The selection tool is currently selected.
 				</p>
 			</p>
 			<p>
@@ -191,7 +191,7 @@
 			</p>
 			<img src="images/help/inscribe.gif"/>
 			<p class="caption">
-				An ellipse projected in perspective.
+				Fig. 4. An ellipse projected in perspective.
 			</p>
 			<h4>Steps</h4>
 			<ol>
@@ -222,7 +222,7 @@
 			</p>
 			<img src="images/help/lancet.gif"/>
 			<p class="caption">
-				The ogive of a lancet window is constructed by placing the control points of its constituent curves at the 
+				Fig. 5. The ogive of a lancet window is constructed by placing the control points of its constituent curves at the 
 				intersections of appropriate vanishing lines.
 			</p>
 			<h3 id="nav_sel_tool"><img class="insert" src="images/select_tool_btn.png"/>Selection Tool</h3>
@@ -234,7 +234,7 @@
 			</p>
 			<img src="images/help/selection.gif"/>
 			<p class="caption">
-				An unselected shape (left) and a selected one (right).
+				Fig. 6. An unselected shape (left)<br/>and a selected one (right).
 			</p>
 			<p>
 				In Alberti, once a shape is created it cannot be modified, even when selected. This is admittedly unusual for a
@@ -281,7 +281,7 @@
 			</p>
 			<div id="isect_demo" class="divimg"></div>
 			<p class="caption">
-				Move the mouse over the image to observe the effect of intersection detection with the line tool.
+				Fig. 7. Move the mouse over the image to observe the effect of intersection detection with the line tool.
 			</p>
 			<h3 id="nav_tan">Tangency</h3>
 			<p>
@@ -290,14 +290,63 @@
 			</p>
 			<div id="tan_earc_demo" class="divimg"></div>
 			<p class="caption">
-				Move the mouse over the image to observe the effect of tangency detection involving the line tool and a perspective arc.
+				Fig. 8. Move the mouse over the image to observe the effect of tangency detection involving the line tool and a perspective arc.
 			</p>
-			<h2 id="nav_lp">The Layer Panel</h2>
-			<h3 id="nav_cd_layers">Creating and Deleting Layers</h3>
-			<h3 id="nav_name_layers">Naming Layers</h3>
+			<h2 id="nav_lp">Layers</h2>
+			<p>
+				Hovering at the right side of the workspace is the layer panel. Layers serve to organize shapes into groups; for
+				instance, if you were drawing a building, you might use one layer for the floor plan, and another for the building 
+				itself.
+			</p>
+			<img src="images/help/layer_panel.gif"/>
+			<p class="caption">
+				Fig. 9. The layer panel with two layers.
+			</p>
+			<p>
+				In figure 9 above, the layer named "Building" is currently selected. To select a layer, simply click on it, or use the 
+				<b>up-arrow</b> and <b>down-arrow</b> keys to cycle through them. Shapes are always drawn into the currently selected
+				layer.
+			</p>
+			<p>
+				You can use the textured 
+				(<img id="lpc_icon" class="insert" src="images/lpcollapse_on.png"/>)
+				button at the bottom of the layer panel, or the <b>backslash</b> 
+				(\) key to collapse and expand the layer panel.
+			</p>
+			<img src="images/help/layer_panel_col.gif"/>
+			<p class="caption">
+				Fig. 10. The layer panel in its collapsed state.
+			</p>
 			<h3 id="nav_hs_layers">Hiding and Showing Layers</h3>
+			<p>
+				The contents of a layer can be hidden by clicking its eye (<img class="insert3" src="images/vistog.png"/>) icon.
+				A hidden layer cannot be selected and is therefore grayed out. At least one layer must remain visible at all times.
+				To show a layer, click the space where its eye icon once resided (<img class="insert3" src="images/vistog_on.png"/>).
+			</p>
+			<h3 id="nav_cd_layers">Creating and Deleting Layers</h3>
+			<p>
+				Use the (<img class="insert2" src="images/addlayer.png"/>) button at the bottom of the layer panel to create a new
+				layer. Use the (<img class="insert2" src="images/remlayer.png"/>) button to delete the current layer. At least one
+				visible layer must exist at all times.
+			</p>
+			<h3 id="nav_name_layers">Naming Layers</h3>
+			<p>
+				To change a layer's name, double-click on it. Hit <b>enter</b> to finalize the name change, or <b>escape</b> if you
+				decide not to change it after all.
+			</p>
 			<h3 id="nav_order_layers">Changing Layer Order</h3>
+			<p>
+				To change the order of a layer, simply drag it to the desired position below or above another layer. During the drag
+				operation, a white arrow indicates where the layer will be inserted.
+			</p>
 			<h3 id="nav_cc_layers">Color-Coding Layers</h3>
+			<p>
+				Layers are color-coded to aid with organization and clarity. A layer's color determines the stroke color of its shapes.
+			</p>
+			<img src="images/help/layer_color.gif"/>
+			<p class="caption">
+				Fig. 11. Color-coded layers and their shapes.
+			</p>
 			<h2 id="nav_mm">The Main Menu</h2>
 			<h3 id="nav_file">File</h3>
 			<h4 id="nav_saving">Saving Files</h4>

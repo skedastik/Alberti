@@ -160,6 +160,16 @@ p.caption {
 	margin: 0 0 -6px 0;
 }
 
+#maintext img.insert2 {
+	display: inline;
+	margin: 0 0 -2px 0;
+}
+
+#maintext img.insert3 {
+	display: inline;
+	margin: 0 0 -4px 0;
+}
+
 #maintext h3 img.insert {
 	margin: 0 8px -4px 0;
 	padding: 1px;
@@ -240,4 +250,9 @@ ul {
 
 #tan_earc_demo:hover {
 	background-image: url('../images/help/tan_earc_demo_snap.gif');
+}
+
+#lpc_icon {
+	background: url(../images/cstripbg.png) repeat-x center;
+	padding: 1px 0 1px 2px;
 }
