@@ -20,7 +20,7 @@
 				<li><a href="#nav_ws_nav">Navigating the Workspace</a></li>
 				<ul>
 					<li><a href="#nav_zap">Zooming and Panning</a></li>
-					<li><a href="#nav_markers">The Navigation Bar</a></li>
+					<li><a href="#nav_navbar">The Navigation Bar</a></li>
 				</ul>
 			</ul>
 			<li><a href="#nav_tools">Tools</a></li>
@@ -115,7 +115,7 @@
 				remains stationary during a zoom, while other points move away from or converge
 				toward the mouse depending on whether you are zooming in or out.
 			</p>
-			<h4 id="nav_markers">The Navigation Bar</h4>
+			<h4 id="nav_navbar">The Navigation Bar</h4>
 			<p>
 				Hovering at the top of the workspace is the navigation bar. The buttons here allow you to rapidly pan around
 				the workspace.
@@ -126,7 +126,9 @@
 			<p>
 				The other two buttons involve what are called <em>markers</em>. Markers can be placed anywhere in the workspace using
 				the <a href="#nav_mark_tool">marker tool</a>. The left button (<img class="insert" src="images/next_vp.png"/>) pans
-				to the next marker, the right (<img class="insert" src="images/prev_vp.png"/>), the previous marker.
+				to the next marker, the right button (<img class="insert" src="images/prev_vp.png"/>), the previous marker (hotkeys 
+				<b>space</b> and <b>shift-space</b> respectively). As you cycle
+				through markers, Alberti will also remember and pan to the last <em>manually-panned</em> position in the workspace.
 			</p>
 			<h2 id="nav_tools">Tools</h2>
 			<p>
@@ -236,10 +238,35 @@
 			</p>
 			<p>
 				In Alberti, once a shape is created it cannot be modified, even when selected. This is admittedly unusual for a
-				vector-based drawing program, but is by design. The idea is that each shape is like making a mark with a pencil;
+				vector-based drawing program, but is by design. The idea is that each shape is like a mark made by a pencil;
 				it can be erased, but not changed.
 			</p>
+			<h4>Steps</h4>
+			<ol>
+				<li><p>Click and hold the mouse button down.</p></li>
+				<li><p>Drag the mouse to expand the selection box.</p></li>
+				<li><p>Release the mouse button. Any shapes enclosed by or intersecting with the selection box will be selected.</p></li>
+			</ol>
+			<p>
+				To add shapes to or remove shapes from an existing selection, simply hold down <b>shift</b> as you release the 
+				mouse button 
+				in step 3. Selected shapes within the selection box will be deselected while unselected shapes will become selected.
+			</p>
+			<p>
+				It is possible to "pick" single shapes by simply clicking on a shape without dragging. You can also pick
+				intersections using <a href="#nav_snap">auto-snap</a>. All shapes that intersect at the snap point will be
+				selected.
+			</p>
 			<h3 id="nav_mark_tool"><img class="insert" src="images/marker_tool_btn.png"/>Marker Tool</h3>
+			<p>
+				Use the marker tool to place markers around the workspace. Markers are best placed at landmarks that you often
+				frequent, such as vanishing points.
+				<h4>Steps</h4>
+				<ol>
+					<li><p>Click anywhere in the workspace to place a marker.</p></li>
+					<li><p>Cycle between markers at any time using the <a href="#nav_navbar">navigation bar</a> or associated hotkeys.</p></li>
+				</ol>
+			</p>
 			<h2 id="nav_snap">Auto-Snap</h2>
 			<h3 id="nav_isect">Intersections</h3>
 			<h3 id="nav_tan">Tangency</h3>
