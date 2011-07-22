@@ -281,7 +281,7 @@
 			</p>
 			<div id="isect_demo" class="divimg"></div>
 			<p class="caption">
-				Fig. 7. Move the mouse over the image to observe the effect of intersection detection with the line tool.
+				Fig. 7. Move the mouse over the image to see intersection detection in action with the line tool.
 			</p>
 			<h3 id="nav_tan">Tangency</h3>
 			<p>
@@ -290,7 +290,7 @@
 			</p>
 			<div id="tan_earc_demo" class="divimg"></div>
 			<p class="caption">
-				Fig. 8. Move the mouse over the image to observe the effect of tangency detection involving the line tool and a perspective arc.
+				Fig. 8. Move the mouse over the image to see tangency detection involving the line tool and a perspective arc.
 			</p>
 			<h2 id="nav_lp">Layers</h2>
 			<p>
@@ -398,7 +398,7 @@
 			<h3 id="nav_edit">Edit</h3>
 			<img src="images/help/edit_menu.gif"/>
 			<p class="caption">
-				Fig. 13. The edit menu.
+				Fig. 14. The edit menu.
 			</p>
 			<h4 id="nav_undo_redo">Undo and Redo</h4>
 			<p>
@@ -411,8 +411,41 @@
 				internal clipboard. These shapes can then pasted into another layer or document.
 			</p>
 			<h2 id="nav_underlays">Underlays</h2>
+			<p>
+				Generally, one doesn't compose an image using perspective construction directly. It makes more sense to create
+				a sketch and use the principles of perspective to "square" the drawing (correct for perspective errors, check the
+				relative scale of objects in the image, etc.). To this end, Alberti is able to import
+				<em>underlays</em>&#8212;images placed under the Alberti workspace that serve as a reference for construction.
+			</p>
 			<h3 id="nav_import">Importing</h3>
+			<p>
+				Use the underlay menu at the top of the Alberti workspace to import underlays.
+			</p>
+			<img src="images/help/ul_menu.gif"/>
+			<p class="caption">
+				Fig. 15. The underlay menu.
+			</p>
+			<p>
+				Select <em>Import Underlay...</em> to choose an image file from your hard drive to use as an underlay. Once 
+				imported, the underlay can be removed using <em>Remove Underlay</em>.
+			</p>
+			<p class="note">
+				Underlays require a lot of processing power and are best suited to browsers capable of hardware
+				acceleration. Performance may be sluggish otherwise.
+			</p>
 			<h3 id="nav_opacity">Opacity</h3>
+			<p>
+				After importing an underlay, you can adjust its opacity with the opacity slider that appears next to the underlay
+				menu.
+			</p>
+			<img src="images/help/ul_opacity.gif"/>
+			<p class="caption">
+				Fig. 16. The underlay opacity slider.
+			</p>
+			<p>
+				With the slider at its rightmost position, the underlay becomes fully opaque; at its leftmost position, the
+				underlay is hidden altogether.
+			</p>
 			<h2 id="nav_hotkeys">Hotkeys</h2>
 			<h2 id="nav_rsrc">Resources</h2>
 			<h3 id="nav_construction">Geometric Construction</h3>

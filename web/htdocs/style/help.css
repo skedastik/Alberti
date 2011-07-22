@@ -138,6 +138,13 @@ p.caption {
 	color: #888;
 }
 
+p.note {
+	width: 300px;
+	padding: 10px;
+	margin: 0 auto 0 auto;
+	border: 1px solid #f88;
+}
+
 #maintext h2 {
 	margin: 40px 0 20px 0;
 }
