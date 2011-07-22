@@ -25,8 +25,12 @@ a:hover {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	margin: 20px 0 0 0;
+	margin-top: 20px;
 	font-weight: normal;
+}
+
+h1:target, h2:target, h3:target, h4:target, h5:target, h6:target {
+	color: #f24;
 }
 
 h1 {
@@ -118,7 +122,7 @@ p {
 p.caption {
 	display: block;
 	margin: 3px auto 25px auto;
-	max-width: 350px;
+	max-width: 275px;
 	font-size: 0.8em;
 	font-style: italic;
 	text-align: center;
@@ -145,6 +149,32 @@ p.caption {
 #maintext img.insert {
 	display: inline;
 	margin: 0 0 -6px 0;
+}
+
+#maintext h3 img.insert {
+	margin: 0 8px -4px 0;
+	padding: 1px;
+	background: #666 url('../images/tb_btn_selected.png') center no-repeat;
+	border: 1px solid #666;
+}
+
+#maintext ol {
+	margin: 0 0 20px 0;
+}
+
+#maintext ol > li {
+	font-family: Georgia, serif;
+	font-weight: bold;
+}
+
+#maintext ol > li.optional {
+	color: #888;
+}
+
+#maintext ol li p {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	margin: 0;
 }
 
 ul {
