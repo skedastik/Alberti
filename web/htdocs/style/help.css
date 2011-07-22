@@ -184,6 +184,7 @@ p.caption {
 #maintext ol > li {
 	font-family: Georgia, serif;
 	font-weight: bold;
+	margin-bottom: 0.5em;
 }
 
 #maintext ol > li.optional {

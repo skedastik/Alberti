@@ -50,7 +50,7 @@
 				<li><a href="#nav_file">File</a></li>
 				<ul>
 					<li><a href="#nav_save">Saving Files</a></li>
-					<li><a href="#nav_load">Loading Files</a></li>
+					<li><a href="#nav_open">Opening Files</a></li>
 				</ul>
 				<li><a href="#nav_edit">Edit</a></li>
 				<ul>
@@ -347,13 +347,69 @@
 			<p class="caption">
 				Fig. 11. Color-coded layers and their shapes.
 			</p>
+			<p>
+				To change a layer's color, click on the circular color well at the left side of the layer's row. A color picker will
+				appear allowing you to select a color. Click outside the picker or press <b>enter</b> to finalize the color, or
+				press <b>escape</b> to cancel.
+			</p>
 			<h2 id="nav_mm">The Main Menu</h2>
+			<p>
+				Hovering at the top of the workspace is the main menu bar, much like one you would find in a desktop application.
+			</p>
+			<img src="images/help/mm.gif"/>
+			<p class="caption">
+				Fig. 12. The main menu.
+			</p>
 			<h3 id="nav_file">File</h3>
-			<h4 id="nav_saving">Saving Files</h4>
-			<h4 id="nav_loading">Loading Files</h4>
+			<p>
+				The file menu allows you to create, import, and export Alberti documents. Alberti documents use the 
+				SVG format which is understood by a wide variety of illustration programs.
+			</p>
+			<img src="images/help/file_menu.gif"/>
+			<p class="caption">
+				Fig. 13. The file menu.
+			</p>
+			<h4 id="nav_save">Saving Files</h4>
+			<p>
+				For security reasons, your browser will not allow Alberti to save files directly to your hard drive. Because of
+				this, several steps are involved in saving a file:
+			</p>
+			<ol>
+				<li><p>Select <em>Save as...</em> from Alberti's file menu. Alberti will open a new browser window containing the raw data of the document.</p></li>
+				<li><p>Use your <em>browser's</em> file menu to save the file to your hard drive. Many browsers allow you to save files in several formats. <em>Make sure you select the option to save the complete web page source only!</em> Otherwise Alberti will not be able to import the resulting file.</p></li>
+				<li><p>Close the window and resume working.</p></li>
+			</ol>
+			<p>
+				The default file name for documents is "Alberti Document". Chances are you will use a different name.
+				However, due to browser limitations, Alberti is not able detect the name of the saved file. This means that every 
+				time you save, you will have to rename the file from "Alberti Document" to the unique name. To work around this,
+				you can save the file and immediately open it as described below.
+			</p>
+			<h4 id="nav_open">Opening Files</h4>
+			<p>
+				Select <em>Open...</em> from Alberti's file menu. A standard file dialog box will appear allowing you to select a file
+				previously saved with Alberti. Assuming that the file was saved correctly, the document will load and appear in
+				the workspace.
+			</p>
+			<p>
+				After opening a document, Alberti will be able to read its file name and use it in 
+				subsequent <em>Save As...</em> operations.
+			</p>
 			<h3 id="nav_edit">Edit</h3>
+			<img src="images/help/edit_menu.gif"/>
+			<p class="caption">
+				Fig. 13. The edit menu.
+			</p>
 			<h4 id="nav_undo_redo">Undo and Redo</h4>
+			<p>
+				Most actions in Alberti are undo-able. Select <em>Undo</em> to undo an action such as deleting a shape or layer,
+				and <em>redo</em> if you change your mind. Alberti will remember the last hundred actions performed.
+			</p>
 			<h4 id="nav_cut_paste">Cut and Paste</h4>
+			<p>
+				Select any number of shapes and choose <em>Cut</em> to transfer the shapes from the workspace to Alberti's
+				internal clipboard. These shapes can then pasted into another layer or document.
+			</p>
 			<h2 id="nav_underlays">Underlays</h2>
 			<h3 id="nav_import">Importing</h3>
 			<h3 id="nav_opacity">Opacity</h3>
