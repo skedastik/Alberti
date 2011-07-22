@@ -204,6 +204,23 @@ p.note {
 	margin: 0;
 }
 
+#maintext table {
+	width: 460px;
+	border-collapse: collapse;
+	border-style: solid;
+	border-color: #ccc;
+	font-size: 12px;
+	background-color: #fffeee;
+}
+
+#maintext td {
+	padding: 2px 2px 2px 3px;
+}
+
+#maintext tr.g2 td {
+	background-color: #eeefff;
+}
+
 ul {
 	padding-left: 2em;
 	border-left: 1px dotted #aaa;
