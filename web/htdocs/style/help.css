@@ -130,16 +130,16 @@ p {
 
 p.caption {
 	display: block;
-	margin: 3px auto 25px auto;
-	max-width: 275px;
-	font-size: 0.8em;
+	margin: 50px auto 25px auto;
+	max-width: 300px;
+	font-size: 12px;
 	font-style: italic;
 	text-align: center;
 	color: #888;
 }
 
 p.note {
-	width: 300px;
+	width: 290px;
 	padding: 10px;
 	margin: 0 auto 0 auto;
 	border: 1px solid #f88;
@@ -247,7 +247,7 @@ ul {
 }
 
 #footer {
-	height: 800px;
+	height: 650px;
 	margin-right: -21px;
 	background: url('../images/splash.gif') no-repeat top right;
 	
