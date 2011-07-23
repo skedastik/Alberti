@@ -20,7 +20,7 @@ if ($arg0) {
 print "Merging".($minify ? " and minifying" : "")."...\n";
 
 $htdocsPath =   '../htdocs';                           # Path to htdocs
-$htmlPath =     $htdocsPath.'/working-base.xhtml';     # Path to HTML file
+$htmlPath =     $htdocsPath.'/index.xhtml';            # Path to HTML file
 $templatePath = $htdocsPath.'/template';               # Path to template directory
 $varPath =      '../var';                              # Path to var directory
 $deployPath =   '../deploy';                           # Path to template directory

@@ -27,7 +27,7 @@ the current getBBox implementation. Under WebKit, the returned bounding box
 includes the bezier control points.
 
 - 7/2/2011. Oddly, deployed Alberti code runs slowly compared to undeployed 
-code (i.e. opening working-base.xhtml instead running the output of the deploy 
+code (i.e. opening index.xhtml instead running the output of the deploy 
 script). This is evident when using the selection tool--while dragging a 
 selection box rapidly around the screen, CPU usage spikes significantly. This 
 does not occur w/ undeployed code. It's unclear why this happens considering 
