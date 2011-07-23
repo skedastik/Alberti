@@ -24,6 +24,8 @@
  * 
  * * */
 
+Alberti.version  = "0.1.0";
+
 Alberti.svgns    = "http://www.w3.org/2000/svg";          // SVG XML namespace
 Alberti.xlinkns  = "http://www.w3.org/1999/xlink";           
 Alberti.customns = "http://www.albertidraw.com/alberti";      // Custom XML namespace for extending SVG document
@@ -43,8 +45,11 @@ function Alberti() {
 	// Open with an empty document by default
 	this.loadDocument(new AlbertiDocument());
 	
+	// Display version string in About box
+	document.getElementById("version").innerHTML = "v"+Alberti.version;
+	
 	// Reveal the document body now that application setup is complete
-	document.body.style.display = "";
+	document.getElementById("content").style.display = "";
 }
 
 Alberti.prototype.handleNewDocument = function() {

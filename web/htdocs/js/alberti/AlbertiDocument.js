@@ -223,7 +223,8 @@ AlbertiDocument.prototype.asXML = function() {
 	chunks[0] += '	xmlns="http://www.w3.org/2000/svg" version="1.1"\n';
 	chunks[0] += '	xmlns:xlink="http://www.w3.org/1999/xlink"\n';
 	chunks[0] += '	xmlns:berti="'+Alberti.customns+'"\n'
-	chunks[0] += '  fill="none">\n';
+	chunks[0] += '  fill="none"\n';
+	chunks[0] += '  berti:version="'+Alberti.version+'">\n';
 	
 	// Set the document title. This will be the default filename in the save dialog.
 	chunks[0] += '<title>'+(this.filename ? this.filename : "Alberti Document")+'</title>\n';

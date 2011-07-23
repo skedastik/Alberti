@@ -1,0 +1,283 @@
+/* 
+ * help.css
+ * 
+ * Help page styling.
+ *
+ */
+
+/* Preload images */
+body:after {
+	content:
+	url('../images/help/isect_snap.gif')
+	url('../images/help/tan_earc_demo_snap.gif');
+	
+	display: none;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	
+	background-color: #eee;
+}
+
+a {
+	color: #46e;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin-top: 20px;
+	font-weight: normal;
+}
+
+h1:target, h2:target, h3:target, h4:target, h5:target, h6:target {
+	color: #f24;
+}
+
+h1 {
+	margin-bottom: -10px;
+	font-family: 'Georgia', serif;
+	font-size: 2.5em;
+}
+
+h2 {
+	font-size: 2em;
+}
+
+h2, h3 {
+	font-family: 'Helvetica Neue', sans-serif;
+	font-weight: lighter;
+}
+
+h3 {
+	margin-top: 25px;
+	font-size: 1.4em;
+	font-style: italic;
+}
+
+h4 {
+	font-family: 'Trebuchet MS', sans-serif;
+	font-size: 1em;
+	font-weight: bold;
+}
+
+#top_btn {
+	display: block;
+	position: fixed;
+	left: 50%;
+	margin: 8px 0 0 260px;
+	
+	width: 50px;
+	height: 44px;
+	
+	border-radius: 25px;
+	background-color: #46e;
+	
+	padding-top: 6px;
+	text-align: center;
+	text-transform: uppercase;
+	text-decoration: none;
+	text-shadow: 0px -1px 1px #24c;
+	color: #fff;
+}
+
+#top_btn:hover {
+	background-color: #57f;
+}
+
+#top_btn .a {
+	font-size: 20px;
+}
+
+#top_btn .b {
+	font-size: 9px
+}
+
+#main {
+	position: relative;
+	left: 50%;
+	width: 460px;
+	margin-left: -250px;
+	padding: 0 20px 0px 20px;
+	
+	border: 1px solid #fff;
+	background-color: #fff;
+}
+
+#main > ul {
+	margin-top: 25px;
+}
+
+hr {
+	height: 1px;
+	background-color: #ddd;
+	border: none;
+	margin: 30px -21px 0 -21px;
+}
+
+p {
+	line-height: 1.3em;
+	color: #383838;
+}
+
+p.caption {
+	display: block;
+	margin: 5px auto 25px auto;
+	max-width: 300px;
+	font-size: 12px;
+	font-style: italic;
+	text-align: center;
+	color: #888;
+}
+
+p.note {
+	width: 290px;
+	padding: 10px;
+	margin: 0 auto 0 auto;
+	border: 1px solid #f88;
+}
+
+#maintext h2 {
+	margin: 40px 0 20px 0;
+}
+
+#maintext h2:first-child {
+	margin: 20px 0 20px 0;
+}
+
+#maintext h3 {
+	margin-bottom: 20px;
+}
+
+#maintext img, .divimg {
+	display: block;
+	margin: 20px auto 0 auto;
+}
+
+#maintext img.insert {
+	display: inline;
+	margin: 0 0 -6px 0;
+}
+
+#maintext img.insert2 {
+	display: inline;
+	margin: 0 0 -2px 0;
+}
+
+#maintext img.insert3 {
+	display: inline;
+	margin: 0 0 -4px 0;
+}
+
+#maintext h3 img.insert {
+	margin: 0 8px -4px 0;
+	padding: 1px;
+	background: #666 url('../images/tb_btn_selected.png') center no-repeat;
+	border: 1px solid #666;
+}
+
+#maintext ol {
+	margin: 0 0 20px 0;
+}
+
+#maintext ol > li {
+	font-family: Georgia, serif;
+	font-weight: bold;
+	margin-bottom: 0.5em;
+}
+
+#maintext ol > li.optional {
+	color: #888;
+}
+
+#maintext ol li p {
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	margin: 0;
+}
+
+#maintext table {
+	width: 460px;
+	border-collapse: collapse;
+	border-style: solid;
+	border-color: #ccc;
+	font-size: 12px;
+	background-color: #fffeee;
+}
+
+#maintext td {
+	padding: 2px 2px 2px 3px;
+}
+
+#maintext tr.g2 td {
+	background-color: #eeefff;
+}
+
+ul {
+	padding-left: 2em;
+	border-left: 1px dotted #aaa;
+}
+
+#contents, #contents * {
+	list-style-type: none;
+}
+
+#contents li {
+	margin-top: 2px;
+}
+
+#contents > li {
+	font-size: 1.2em;
+}
+
+#contents ul {
+	margin: 6px 0 6px 0;
+}
+
+#contents > ul > li {
+	font-style: italic;
+}
+
+#footer {
+	height: 650px;
+	margin-right: -21px;
+	background: url('../images/splash.gif') no-repeat top right;
+	
+	-moz-transform: scaleY(-1);
+	-o-transform: scaleY(-1);
+	-webkit-transform: scaleY(-1);
+	transform: scaleY(-1);
+}
+
+#isect_demo {
+	width: 152px;
+	height: 171px;
+	background-image: url('../images/help/isect_nosnap.gif');
+}
+
+#isect_demo:hover {
+	background-image: url('../images/help/isect_snap.gif');
+}
+
+#tan_earc_demo {
+	width: 231px;
+	height: 353px;
+	background-image: url('../images/help/tan_earc_demo_nosnap.gif');
+}
+
+#tan_earc_demo:hover {
+	background-image: url('../images/help/tan_earc_demo_snap.gif');
+}
+
+#lpc_icon {
+	background: url(../images/cstripbg.png) repeat-x center;
+	padding: 1px 0 1px 2px;
+}

@@ -1,6 +1,8 @@
 /* 
  * alberti.css
  *
+ * SVG styling. This must be the first CSS file to be included.
+ *
  * The order of rules below is important, as various scripts reference the 
  * rules by index number. New order-sensitive rules should be appended to the 
  * end of the section, and new properties should be appended to the end of 
@@ -46,25 +48,12 @@
 }
 
 text {
-	font-family: "Lucida Grande", Arial, sans-serif;
+	font-family: 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
 	font-size: 11px;
 }
 
 text, img {
 	pointer-events: none;
-}
-
-body {
-	margin: 0;
-	background-color: #f4f4f4;
-	overflow: hidden;
-}
-
-body, div, img, ul {
-	-webkit-user-select: none;
-	-moz-user-select: -moz-none;
-	-khtml-user-select: none;
-	user-select: none;
 }
 
 #static_overlay text {

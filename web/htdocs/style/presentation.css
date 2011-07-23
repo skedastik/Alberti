@@ -1,0 +1,178 @@
+/* 
+ * presentation.css
+ *
+ * General presentation.
+ *
+ */
+
+body {
+	color: #ddd;
+	font-family: 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+	font-size: 14px;
+	
+	margin: 0;
+	background-color: #f4f4f4;
+	overflow: hidden;
+}
+
+body, div, img, ul {
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	user-select: none;
+}
+
+a {
+	color: #46e;
+}
+
+#striptop {
+	position: fixed;
+	height: 5px;
+	width: 100%;
+	background-color: #000;
+}
+
+#tooltip {
+	position: fixed;
+	left: 9px;
+	bottom: 6px;
+	
+	font-size: 11px;
+	color: #f00;
+}
+
+#hidden_div {
+	position: fixed;
+	top: -1000px;
+	left: -1000px;
+	opacity: 0;
+}
+
+/* Modals * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#js_required {
+	position: fixed;
+	width: 450px;
+	height: 30px;
+	top: 50%;
+	left: 50%;
+	margin-top: -15px;
+	margin-left: -225px;
+	
+	color: #000;
+	font-family: 'Baskerville', 'Palatino Linotype', 'Book Antiqua', 'Palatino', serif;
+	font-size: 20px;
+}
+
+.modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -250px;
+	width: 500px;
+	
+	font-family: 'Georgia', serif;
+}
+
+.modal * {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	user-select: text;
+}
+
+#about_box {
+	margin-top: -180px;
+}
+
+.cbox {
+	position: relative;
+	left: 500px;
+	width: 20px;
+	height: 20px;
+	
+	border-radius: 10px 10px 10px 0;
+	background: #333 url(../images/closebox.png) 5px 5px no-repeat;
+	
+	cursor: pointer;
+	
+	box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.25);
+	-webkit-box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.25);
+}
+
+.cbox:hover {
+	background-color: red;
+}
+
+#about_top {
+	padding-left: 10px;
+	height: 50px;
+	
+	border-top-left-radius: 15px;
+	
+	background: #333;
+	color: #fff;
+}
+
+#about_bot {
+	position: relative;
+	top: -16px;
+	height: 290px;
+	
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	
+	background: #fff url('../images/splash.gif') right no-repeat;
+	
+	box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
+}
+
+#about_left {
+	padding: 0px 10px 10px 10px;
+	float: left;
+	font-size: 12px;
+}
+
+#about_left > p {
+	padding: 0;
+	margin: 10px 0 0 0;
+	color: #888;
+}
+
+#about_left p.indent {
+	margin-top: 4px;
+	padding-left: 20px;
+	color: #000;
+}
+
+#about_left p.license {
+	width: 220px;
+	margin-top: 16px;
+}
+
+.kickup {
+	position: relative;
+	top: -25px;
+}
+
+.masthead {
+	color: #fff;
+	font-family: 'Baskerville', 'Palatino Linotype', 'Book Antiqua', 'Palatino', serif;
+	font-size: 60px;
+}
+
+.blurb {
+	margin-left: 8px;
+	color: #888;
+}
+
+.subsidiary {
+	font-size: 10px;
+	font-weight: bold;
+}
+
+#version {
+	position: relative;
+	top: -15px;
+	text-align: right;
+}

@@ -1,0 +1,510 @@
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<title>Alberti Help</title>
+<link rel="stylesheet" href="style/help.css" type="text/css" />
+<script>
+
+</script>
+</head>
+<body>
+	<a href="#nav_top" id="top_btn"><span class="a">&#x21e7;</span><br/><span class="b">Top</span></a>
+	<div id="main">
+		<h1 id="nav_top">Alberti Help</h1>
+		<hr/>
+		<h2>Contents</h2>
+		<ul id="contents">
+			<li><a href="#nav_intro">Introduction</a></li>
+			<li><a href="#nav_workspace">The Workspace</a></li>
+			<ul>
+				<li><a href="#nav_ws_nav">Navigating the Workspace</a></li>
+				<ul>
+					<li><a href="#nav_zap">Zooming and Panning</a></li>
+					<li><a href="#nav_navbar">The Navigation Bar</a></li>
+				</ul>
+			</ul>
+			<li><a href="#nav_tools">Tools</a></li>
+			<ul>
+				<li><a href="#nav_line_tool">Line Tool</a></li>
+				<li><a href="#nav_arc_tool">Arc Tool</a></li>
+				<li><a href="#nav_parc_tool">Perspective Arc Tool</a></li>
+				<li><a href="#nav_bez_tool">Bezier Tool</a></li>
+				<li><a href="#nav_sel_tool">Selection Tool</a></li>
+				<li><a href="#nav_mark_tool">Marker Tool</a></li>
+			</ul>
+			<li><a href="#nav_snap">Snap Points</a></li>
+			<ul>
+				<li><a href="#nav_isect">Intersections</a></li>
+				<li><a href="#nav_tan">Tangency</a></li>
+			</ul>
+			<li><a href="#nav_lp">Layers</a></li>
+			<ul>
+				<li><a href="#nav_hs_layers">Hiding and Showing Layers</a></li>
+				<li><a href="#nav_cd_layers">Creating and Deleting Layers</a></li>
+				<li><a href="#nav_name_layers">Naming Layers</a></li>
+				<li><a href="#nav_order_layers">Changing Layer Order</a></li>
+				<li><a href="#nav_cc_layers">Color-Coding Layers</a></li>
+			</ul>
+			<li><a href="#nav_mm">The Main Menu</a></li>
+			<ul>
+				<li><a href="#nav_file">File</a></li>
+				<ul>
+					<li><a href="#nav_save">Saving Files</a></li>
+					<li><a href="#nav_open">Opening Files</a></li>
+				</ul>
+				<li><a href="#nav_edit">Edit</a></li>
+				<ul>
+					<li><a href="#nav_undo_redo">Undo and Redo</a></li>
+					<li><a href="#nav_cut_paste">Cut and Paste</a></li>
+				</ul>
+			</ul>
+			<li><a href="#nav_underlays">Underlays</a></li>
+			<ul>
+				<li><a href="#nav_import">Importing</a></li>
+				<li><a href="#nav_opacity">Opacity</a></li>
+			</ul>
+			<li><a href="#nav_hotkeys">Hotkeys</a></li>
+			<li><a href="#nav_rsrc">Resources</a></li>
+			<ul>
+				<li><a href="#nav_construction">Geometric Construction</a></li>
+				<li><a href="#nav_perspective">Perspective</a></li>
+			</ul>
+		</ul>
+		<hr/>
+		<div id="maintext">
+			<h2 id="nav_intro">Introduction</h2>
+			<p>
+				Alberti is a browser-based perspective drawing and layout application,
+				named after Leon Battista Alberti, who quantified modern perspective drawing in his 
+				treatise "Della Pittura".
+			</p>
+			<h3>Why is Alberti needed?</h3>
+			<p>
+				Undertaking a complex, accurate perspective drawing requires an enormous 
+				amount of physical space. Depending on the requirements of the drawing, a 
+				14x17 in. layout might require a drafting table 5 feet wide and 10 feet deep. 
+				Furthermore, you would need a number of impractically large tools: a 
+				straight-edge, a drafting triangle, possibly a compass fashioned out of a peg 
+				and string.
+			</p>
+			<p>In short, it makes perfect sense to do this in software.</p>
+			<p>
+				Then why not use an existing solution like AutoCAD or 3ds Max? Because these 
+				tools are overkill. Alberti provides a streamlined interface tailored 
+				specifically to rapid, natural perspective drawing.
+			</p>
+			<h2 id="nav_workspace">The Workspace</h2>
+			<p>
+				When Alberti is first loaded, you will see an empty workspace. This is the
+				canvas on which shapes are drawn. An 'X' marks the center of the workspace, 
+				which spans infinitely in all directions.
+			</p>
+			<img src="images/help/c_hud.png"/>
+			<p class="caption">Fig. 1. The workspace center.</p>
+			<h3 id="nav_ws_nav">Navigating the Workspace</h3>
+			<h4 id="nav_zap">Zooming and Panning</h4>
+			<p>
+				Panning is the act of translating, or changing, the horizontal or vertical position of the workspace. To
+				pan, hold down either the <b>alt</b> or <b>E</b> key. While holding down either 
+				key, click and drag to pan the workspace.
+			</p>
+			<p>
+				Zooming is the act of moving closer to or away from the workspace. To zoom in, scroll 
+				the mousewheel up. To zoom out, scroll down. Zooming occurs relative to the position 
+				of the mouse cursor; in other words, the point under the mouse
+				remains stationary during a zoom, while other points move away from or converge
+				toward the mouse depending on whether you are zooming in or out.
+			</p>
+			<h4 id="nav_navbar">The Navigation Bar</h4>
+			<p>
+				Hovering at the top of the workspace is the navigation bar. The buttons here allow you to rapidly pan around
+				the workspace.
+			</p>
+			<img src="images/help/navbar.png"/>
+			<p class="caption">Fig. 2. The navigation bar.</p>
+			<p>The home button (<img class="insert" src="images/center_cam.png"/>) centers the workspace in the browser window.</p>
+			<p>
+				The other two buttons involve what are called <em>markers</em>. Markers can be placed anywhere in the workspace using
+				the <a href="#nav_mark_tool">marker tool</a>. The left button (<img class="insert" src="images/next_vp.png"/>) pans
+				to the next marker, the right button (<img class="insert" src="images/prev_vp.png"/>), the previous marker (hotkeys 
+				<b>space</b> and <b>shift-space</b> respectively). As you cycle
+				through markers, Alberti will also remember and pan to the last <em>manually-panned</em> position in the workspace.
+			</p>
+			<h2 id="nav_tools">Tools</h2>
+			<p>
+				Hovering at the left side of the workspace is the tool bar. To select a tool, click on it.
+				Most tools have hotkeys that allow you to select them with the keyboard. Hovering the mouse over a tool displays
+				its name and associated hotkey in brackets.
+				<img src="images/help/toolbar.png"/>
+				<p class="caption">
+					Fig. 3. The tool bar. Tools from top to bottom: Selection Tool, Line Tool, Arc Tool, Perspective Arc Tool, 
+					Bezier Tool, Marker Tool. The selection tool is selected.
+				</p>
+			</p>
+			<p>
+				Each tool is capable of performing an action or drawing a shape based on a series of steps (usually involving a mouse
+				click). The number of steps involved varies from tool to
+				tool, several of them having optional steps.
+			</p>
+			<p>
+				All tools follow the same convention: the optional steps can be skipped
+				by either pressing <b>enter</b>/<b>return</b>, or by <b>right-clicking</b> (which is equivalent to a 
+				left-click followed by enter/return). This is referred to as <em>completing</em>
+				the tool. You may revert to a previous step at any time prior to completing a tool by pressing the <b>escape</b> key. 
+				Each tool is discussed in detail below with optional steps indicated by faded step numbers.
+			</p>
+			<h3 id="nav_line_tool"><img class="insert" src="images/line_tool_btn.png"/>Line Tool</h3>
+			<p>
+				The line tool draws lines aligned to points. It can be thought of as a straightedge.
+			</p>
+			<h4>Steps</h4>
+			<ol>
+				<li><p>Click anywhere in the workspace to define a reference point.</p></li>
+				<li><p>Click to define a second reference point. The line will be drawn along the resulting path.</p></li>
+				<li class="optional"><p>Click to place the beginning of your line.</p></li>
+				<li class="optional"><p>Click to place the end of your line and complete the tool.</p></li>
+			</ol>
+			<p>
+				During step 2, the <b>shift</b> key may be held down to constrain the line to angles of 45&deg;.
+			</p>
+			<h3 id="nav_arc_tool"><img class="insert" src="images/arc_tool_btn.png"/>Arc Tool</h3>
+			<p>
+				The arc tool draws circles and circular arcs. It can be thought of as a compass.
+			</p>
+			<ol>
+				<li><p>Click anywhere in the workspace to place the center of the circular arc.</p></li>
+				<li><p>Click elsewhere to set the radius of the arc.</p></li>
+				<li class="optional"><p>Click to begin sweeping an arc.</p></li>
+				<li class="optional"><p>Click elsewhere to complete the arc.</p></li>
+				<li class="optional"><p>Repeat steps 3-4 as desired, or press enter or right-click to complete the tool.</p></li>
+			</ol>
+			<p>
+				During step 2, the <b>shift</b> key may be held down in order to match the last-used arc radius. This is crucial for
+				many <a href="#nav_construction">geometric constructions</a>.
+			</p>
+			<h3 id="nav_parc_tool"><img class="insert" src="images/persp_arc_tool_btn.png"/>Perspective Arc Tool</h3>
+			<p>
+					The perspective arc tool draws arcs in perspective, thereby producing ellipses or elliptical arcs. This is
+					useful for constructing arches, circular windows, etc. in perspective. When approaching such a problem
+					by hand, one generally starts with a rectangle in perspective and then inscribes the ellipse in that 
+					rectangle. The perspective arc tool operates on the same principle.
+			</p>
+			<img src="images/help/inscribe.gif"/>
+			<p class="caption">
+				Fig. 4. An ellipse projected in perspective.
+			</p>
+			<h4>Steps</h4>
+			<ol>
+				<li><p>Click to place the first "corner" of the perspective projection.</p></li>
+				<li><p>Click to place the second corner.</p></li>
+				<li><p>Click to place the third corner.</p></li>
+				<li><p>Click to place the fourth corner. This creates the projected ellipse.</p></li>
+				<li class="optional"><p>Click to begin sweeping an arc.</p></li>
+				<li class="optional"><p>Click elsewhere to complete the arc.</p></li>
+				<li class="optional"><p>Repeat steps 5-6 as desired, or press enter or right-click to complete the tool.</p></li>
+			</ol>
+			<p>
+				In order to accurately place the corners of the ellipse projection, use Alberti's <a href="#nav_snap">snap points</a> feature.
+			</p>
+			<h3 id="nav_bez_tool"><img class="insert" src="images/bez_tool_btn.png"/>Bezier Tool</h3>
+			<p>
+				The bezier tool allows you to draw arbitrary curves. It can be thought of as a French curve.
+			</p>
+			<h4>Steps</h4>
+			<ol>
+				<li><p>Click to place the beginning of the curve.</p></li>
+				<li><p>Click to place the end of the curve.</p></li>
+				<li><p>Click to place the control point of the curve. This completes the curve.</p></li>
+			</ol>
+			<p>
+				It is possible to accurately construct a curve in perspective by using <a href="#nav_snap">snapping</a> to place
+				its control points.
+			</p>
+			<img src="images/help/lancet.gif"/>
+			<p class="caption">
+				Fig. 5. The ogive of a lancet window is constructed by placing the control points of its constituent curves at the 
+				intersections of appropriate vanishing lines.
+			</p>
+			<h3 id="nav_sel_tool"><img class="insert" src="images/select_tool_btn.png"/>Selection Tool</h3>
+			<p>
+				The selection tool selects shapes. Once a shape is selected, it can be deleted by pressing <b>backspace</b> or
+				<b>delete</b>, or by selecting <em>Edit > Delete</em> from the <a href="#nav_mm">main menu</a>. You can also
+				<a href="#nav_cut_paste">cut</a> the shape by selecting <em>Edit > Cut</em>. Selections are indicated by
+				dashed lines and black endpoint markers.
+			</p>
+			<img src="images/help/selection.gif"/>
+			<p class="caption">
+				Fig. 6. An unselected shape (left)<br/>and a selected one (right).
+			</p>
+			<p>
+				In Alberti, once a shape is created it cannot be modified, even when selected. This is admittedly unusual for a
+				vector-based drawing program, but is by design. The idea is that each shape is like a mark made by a pencil;
+				it can be erased, but not changed.
+			</p>
+			<h4>Steps</h4>
+			<ol>
+				<li><p>Click and hold the mouse button down.</p></li>
+				<li><p>Drag the mouse to expand the selection box.</p></li>
+				<li><p>Release the mouse button. Any shapes enclosed by or intersecting with the selection box will be selected.</p></li>
+			</ol>
+			<p>
+				To add shapes to or remove shapes from an existing selection, simply hold down <b>shift</b> as you release the 
+				mouse button 
+				in step 3. Selected shapes within the selection box will be deselected while unselected shapes will become selected.
+			</p>
+			<p>
+				It is possible to "pick" single shapes by simply clicking on a shape without dragging. You can also pick
+				intersections using <a href="#nav_snap">snapping</a>. All shapes that intersect at the snap point will be
+				selected.
+			</p>
+			<h3 id="nav_mark_tool"><img class="insert" src="images/marker_tool_btn.png"/>Marker Tool</h3>
+			<p>
+				Use the marker tool to place markers around the workspace. Markers are best placed at landmarks that you often
+				frequent, such as vanishing points.
+				<h4>Steps</h4>
+				<ol>
+					<li><p>Click anywhere in the workspace to place a marker.</p></li>
+					<li><p>Cycle between markers at any time using the <a href="#nav_navbar">navigation bar</a> or associated hotkeys.</p></li>
+				</ol>
+			</p>
+			<h2 id="nav_snap">Snap Points</h2>
+			<p>
+				Snap points bring precision to the drawing process by automatically detecting potential snap points (e.g. intersections
+				and tangencies). It is enabled by pressing and holding down the <b>D</b> key. When the tool crosshair is held near
+				a snap point, a red, circular snap indicator appears at the snap point, and the tool "snaps" to this point. Use cases 
+				are discussed below.
+			</p>
+			<h3 id="nav_isect">Intersections</h3>
+			<p>
+				Alberti will detect intersections between a line and any shape, as well as intersections between <a href="#nav_arc_tool">
+				circular arcs</a>.
+			</p>
+			<div id="isect_demo" class="divimg"></div>
+			<p class="caption">
+				Fig. 7. Move the mouse over the image to see intersection detection in action with the line tool.
+			</p>
+			<h3 id="nav_tan">Tangency</h3>
+			<p>
+				Currently, Alberti detects only one type of tangency: that between a line and a <a href="#nav_parc_tool">
+				perspective arc</a>. This is useful for precisely finding the edge of a rounded form in perspective.
+			</p>
+			<div id="tan_earc_demo" class="divimg"></div>
+			<p class="caption">
+				Fig. 8. Move the mouse over the image to see tangency detection involving the line tool and a perspective arc.
+			</p>
+			<h2 id="nav_lp">Layers</h2>
+			<p>
+				Hovering at the right side of the workspace is the layer panel. Layers serve to organize shapes into groups; for
+				instance, if you were drawing a building, you might use one layer for the floor plan, and another for the building 
+				itself.
+			</p>
+			<img src="images/help/layer_panel.gif"/>
+			<p class="caption">
+				Fig. 9. The layer panel with two layers.
+			</p>
+			<p>
+				In figure 9 above, the layer named "Building" is currently selected. To select a layer, simply click on it, or use the 
+				<b>up-arrow</b> and <b>down-arrow</b> keys to cycle through them. Shapes are always drawn into the currently selected
+				layer.
+			</p>
+			<p>
+				You can use the textured 
+				(<img id="lpc_icon" class="insert" src="images/lpcollapse_on.png"/>)
+				button at the bottom of the layer panel, or the <b>backslash</b> 
+				(\) key to collapse and expand the layer panel.
+			</p>
+			<img src="images/help/layer_panel_col.gif"/>
+			<p class="caption">
+				Fig. 10. The layer panel in its collapsed state.
+			</p>
+			<h3 id="nav_hs_layers">Hiding and Showing Layers</h3>
+			<p>
+				The contents of a layer can be hidden by clicking its eye (<img class="insert3" src="images/vistog.png"/>) icon.
+				A hidden layer cannot be selected and is therefore grayed out. At least one layer must remain visible at all times.
+				To show a layer, click the space where its eye icon once resided (<img class="insert3" src="images/vistog_on.png"/>).
+			</p>
+			<h3 id="nav_cd_layers">Creating and Deleting Layers</h3>
+			<p>
+				Use the (<img class="insert2" src="images/addlayer.png"/>) button at the bottom of the layer panel to create a new
+				layer. Use the (<img class="insert2" src="images/remlayer.png"/>) button to delete the current layer. At least one
+				visible layer must exist at all times.
+			</p>
+			<h3 id="nav_name_layers">Naming Layers</h3>
+			<p>
+				To change a layer's name, double-click on it. Hit <b>enter</b> to finalize the name change, or <b>escape</b> if you
+				decide not to change it after all.
+			</p>
+			<h3 id="nav_order_layers">Changing Layer Order</h3>
+			<p>
+				To change the order of a layer, simply drag it to the desired position below or above another layer. During the drag
+				operation, a white arrow indicates where the layer will be inserted.
+			</p>
+			<h3 id="nav_cc_layers">Color-Coding Layers</h3>
+			<p>
+				Layers are color-coded to aid with organization and clarity. A layer's color determines the stroke color of its shapes.
+			</p>
+			<img src="images/help/layer_color.gif"/>
+			<p class="caption">
+				Fig. 11. Color-coded layers and their shapes.
+			</p>
+			<p>
+				To change a layer's color, click on its circular color well. A color picker will
+				appear allowing you to select a color. Click outside the picker or press <b>enter</b> to finalize the color, or
+				press <b>escape</b> to cancel.
+			</p>
+			<h2 id="nav_mm">The Main Menu</h2>
+			<p>
+				Hovering at the top of the workspace is the main menu bar, much like one you would find in a desktop application.
+			</p>
+			<img src="images/help/mm.gif"/>
+			<p class="caption">
+				Fig. 12. The main menu.
+			</p>
+			<h3 id="nav_file">File</h3>
+			<p>
+				The file menu allows you to create, import, and export Alberti documents. Alberti documents use the 
+				SVG format which is understood by a wide variety of illustration programs.
+			</p>
+			<img src="images/help/file_menu.gif"/>
+			<p class="caption">
+				Fig. 13. The file menu.
+			</p>
+			<h4 id="nav_save">Saving Files</h4>
+			<p>
+				For security reasons, your browser will not allow Alberti to save files directly to your hard drive. Because of
+				this, several steps are involved in saving a file:
+			</p>
+			<ol>
+				<li><p>Select <em>Save as...</em> from Alberti's file menu. Alberti will open a new browser window containing the raw data of the document.</p></li>
+				<li><p>Use your <em>browser's</em> file menu to save the file to your hard drive. Many browsers allow you to save files in several formats. <em>Make sure you select the option to save the complete web page source only!</em> Otherwise Alberti will not be able to import the resulting file.</p></li>
+				<li><p>Close the window and resume working.</p></li>
+			</ol>
+			<p>
+				The default file name for documents is "Alberti Document". Chances are you will use a different name.
+				However, due to browser limitations, Alberti is not able detect the name of the saved file. This means that every 
+				time you save, you will have to rename the file from "Alberti Document" to the unique name. To work around this,
+				you can save the file and immediately open it as described below.
+			</p>
+			<h4 id="nav_open">Opening Files</h4>
+			<p>
+				Select <em>Open...</em> from Alberti's file menu. A standard file dialog box will appear allowing you to select a file
+				previously saved with Alberti. Assuming that the file was saved correctly, the document will load and appear in
+				the workspace.
+			</p>
+			<p>
+				After opening a document, Alberti will be able to read its file name and use it in 
+				subsequent <em>Save As...</em> operations.
+			</p>
+			<h3 id="nav_edit">Edit</h3>
+			<img src="images/help/edit_menu.gif"/>
+			<p class="caption">
+				Fig. 14. The edit menu.
+			</p>
+			<h4 id="nav_undo_redo">Undo and Redo</h4>
+			<p>
+				Most actions in Alberti are undo-able. Select <em>Undo</em> to undo an action such as deleting a shape or layer,
+				and <em>redo</em> if you change your mind. Alberti will remember the last hundred actions performed.
+			</p>
+			<h4 id="nav_cut_paste">Cut and Paste</h4>
+			<p>
+				Select any number of shapes and choose <em>Cut</em> to transfer the shapes from the workspace to Alberti's
+				internal clipboard. These shapes can then be pasted into another layer or document.
+			</p>
+			<h2 id="nav_underlays">Underlays</h2>
+			<p>
+				Generally, one doesn't compose an image using perspective construction directly. It makes more sense to create
+				a sketch and use the principles of perspective to "square" the drawing (correct for perspective errors, check the
+				relative scale of objects in the image, etc.). To this end, Alberti is able to import
+				<em>underlays</em>&#8212;images placed under the Alberti workspace that serve as a reference for construction.
+			</p>
+			<h3 id="nav_import">Importing</h3>
+			<p>
+				Use the underlay menu at the top of the Alberti workspace to import underlays.
+			</p>
+			<img src="images/help/ul_menu.gif"/>
+			<p class="caption">
+				Fig. 15. The underlay menu.
+			</p>
+			<p>
+				Select <em>Import Underlay...</em> to choose an image file from your hard drive to use as an underlay. Once 
+				imported, the underlay can be removed using <em>Remove Underlay</em>.
+			</p>
+			<p class="note">
+				Underlays require a lot of processing power and are best suited to browsers featuring hardware
+				acceleration. Performance may be sluggish otherwise.
+			</p>
+			<h3 id="nav_opacity">Opacity</h3>
+			<p>
+				After importing an underlay, you can adjust its opacity with the opacity slider that appears next to the underlay
+				menu.
+			</p>
+			<img src="images/help/ul_opacity.gif"/>
+			<p class="caption">
+				Fig. 16. The underlay opacity slider.
+			</p>
+			<p>
+				With the slider at its rightmost position, the underlay becomes fully opaque; at its leftmost position, the
+				underlay is hidden altogether.
+			</p>
+			<h2 id="nav_hotkeys">Hotkeys</h2>
+			<table cols="2" border="1">
+				<tr><td><b>1</b></td><td>Selection tool</td></tr>
+				<tr><td><b>2</b></td><td>Line tool</td></tr>
+				<tr><td><b>3</b></td><td>Arc tool</td></tr>
+				<tr><td><b>4</b></td><td>Perspective arc tool</td></tr>
+				<tr><td><b>5</b></td><td>Bezier tool</td></tr>
+				<tr class="g2"><td><b>Alt</b>, <b>E</b></td><td>Enable panning</td></tr>
+				<tr class="g2"><td><b>D</b></td><td>Enable snapping</td></tr>
+				<tr class="g2"><td><b>Shift</b></td><td>Enable tool constraint (behavior varies depending on tool)</td></tr>
+				<tr><td><b>Escape</b></td><td>Previous tool step</td></tr>
+				<tr><td><b>Enter, Return</b></td><td>Complete tool</td></tr>
+				<tr><td><b>Right-click</b></td><td>Left-click, then complete tool</td></tr>
+				<tr class="g2"><td><b>Space</b></td><td>Next marker</td></tr>
+				<tr class="g2"><td><b>Shift-Space</b></td><td>Previous marker</td></tr>
+				<tr><td><b>Up Arrow</b></td><td>Next visible layer</td></tr>
+				<tr><td><b>Down Arrow</b></td><td>Previous visible layer</td></tr>
+				<tr><td><b>Backslash (\)</b></td><td>Collapse/expand layer panel</td></tr>
+				<tr class="g2"><td><b>Shift-N</b></td><td>New document</td></tr>
+				<tr class="g2"><td><b>Shift-O</b></td><td>Open document</td></tr>
+				<tr class="g2"><td><b>Shift-S</b></td><td>Save document</td></tr>
+				<tr><td><b>Z</b></td><td>Undo</td></tr>
+				<tr><td><b>Shift-Z</b></td><td>Redo</td></tr>
+				<tr><td><b>X</b></td><td>Cut</td></tr>
+				<tr><td><b>V</b></td><td>Paste</td></tr>
+			</table>
+			<h2 id="nav_rsrc">Resources</h2>
+			<p>
+				Alberti has a relatively low-tech tool set, reflecting drafting tools that have been in use since
+				the Renaissance. In time, this tool set will grow. To get the most out of its existing features, you
+				should have a basic familiarity with geometric construction and perspective.
+			</p>
+			<h3 id="nav_construction">Geometric Construction</h3>
+			<p>
+				Geometric construction refers to the use of a ruler and compass (in Alberti's case, the
+				<a href="#nav_line_tool">line tool</a> and <a href="#nav_arc_tool">arc tool</a>) to construct various shapes.
+			</p>
+			<img src="images/help/geo_con.gif"/>
+			<p class="caption">
+				Fig. 17. Perpendicular and parallel line constructions via the line and arc tools.
+			</p>
+			<p>
+				Understanding how to perform a handful of these basic constructions is enough to handle nearly everything
+				related to the process of perspective drawing.
+			</p>
+			<p>
+				<a href="http://www.mathopenref.com/tocs/constructionstoc.html" target="_blank">Math Open Reference</a> 
+				covers all the requisite constructions and more.
+			</p>
+			<h3 id="nav_perspective">Perspective</h3>
+			<p>
+				There is endless material on perspective drawing available throughout the internet. A good place to go if
+				you're looking for depth is Bruce MacEvoy's
+				<a href="http://www.handprint.com/HP/WCL/tech10.html#index" target="_blank">massive treatise</a> on the subject.
+				Every aspect of perspective drawing is covered
+				from first principles to shadow constructions.
+			</p>
+		</div>
+		<div id="footer"></div>
+	</div>
+</body>
+</html>

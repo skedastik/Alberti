@@ -52,6 +52,10 @@
  * 
  * Each child <li> and trigger element should have a unique id attribute.
  * 
+ * TODO
+ * 
+ * - Create a proper shortcut key system for menus
+ * 
  * * */
 
 // Class name for opened menu item state, for styling purposes
