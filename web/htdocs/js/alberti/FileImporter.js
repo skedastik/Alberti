@@ -68,7 +68,7 @@ FileImporter.prototype.prompt = function() {
 
 // Returns the filename of the currently imported file (or null if none).
 FileImporter.prototype.getFilename = function() {
-	return this.inputElement.files[0].fileName || null;
+	return this.inputElement.files[0].name || null;
 };
 
 // Invoked every time the user imports a new file.
