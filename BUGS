@@ -1,3 +1,7 @@
+ALBERTI BUGS
+
+Perspective ellipses are not calculated correctly for certain cases where the circumscribing quadrilateral has two or more parallel sides. This is difficult to reproduce consistently but always happens for rectangles and squares (i.e. unrotated ellipses and circles). Circles need to be handled as a special case. Floating point error is probably to blame in the other cases.
+
 CHROME RELATED BUGS
 
 - As of 6.2.2011, Chrome has an issue w/ cross-origin CSS requests, preventing
