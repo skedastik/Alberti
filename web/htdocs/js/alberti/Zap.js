@@ -121,34 +121,23 @@ Zap.prototype.zoomRelative = function(zoomLevel, x, y) {
 				this.disableZoomPanOptimization();
 			}
 		}.bindTo(this),
-		!this.underlayImage.isHidden() ?
-			function() {
-				this.autoScale.update(this.masterGroup.scale);
-				this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
-				this.masterGroup.push();
-				this.lastPanPosition.x = -this.masterGroup.position.x / z;
-				this.lastPanPosition.y = -this.masterGroup.position.y / z;
-				this.underlayImage.update();
-			}.bindTo(this)
-			:
-			function() {
-				this.autoScale.update(this.masterGroup.scale);
-				this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
-				this.masterGroup.push();
-				this.lastPanPosition.x = -this.masterGroup.position.x / z;
-				this.lastPanPosition.y = -this.masterGroup.position.y / z;
-			}.bindTo(this)
+		function() {
+			this.autoScale.update(this.masterGroup.scale);
+			this.layerManager.snapPoints.setSnapRadiusScale(this.masterGroup.scale);
+			this.masterGroup.push();
+			this.lastPanPosition.x = -this.masterGroup.position.x / z;
+			this.lastPanPosition.y = -this.masterGroup.position.y / z;
+			this.underlayImage.update();
+		}.bindTo(this)
 	);
 	
 	this.zapAnimation.add(this.masterGroup, "scale", this.masterGroup.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
 	this.zapAnimation.add(this.masterGroup.position, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
 	this.zapAnimation.add(this.masterGroup.position, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
 	
-	if (!this.underlayImage.isHidden()) {
-		this.zapAnimation.add(this.underlayImage, "scale", this.underlayImage.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
-		this.zapAnimation.add(this.underlayImage, "x", this.underlayImage.x, panX, Zap.zoomTransitionAccel);
-		this.zapAnimation.add(this.underlayImage, "y", this.underlayImage.y, panY, Zap.zoomTransitionAccel);
-	}
+	this.zapAnimation.add(this.underlayImage, "scale", this.masterGroup.scale, Zap.zoomFactors[this.zoomLevel], Zap.zoomTransitionAccel);
+	this.zapAnimation.add(this.underlayImage, "x", this.masterGroup.position.x, panX, Zap.zoomTransitionAccel);
+	this.zapAnimation.add(this.underlayImage, "y", this.masterGroup.position.y, panY, Zap.zoomTransitionAccel);
 		
 	this.zapAnimation.begin();
 };
