@@ -33,6 +33,12 @@ Alberti.customns = "http://www.albertidraw.com/alberti";      // Custom XML name
 Alberti.svgRoot;                                           // Root SVG element--the <svg> node
 
 function Alberti() {
+	
+	// Use {vector-effect: non-scaling-stroke} if hack is disabled
+	if (!Alberti.nonScalingLinesHack) {
+		document.styleSheets[0].cssRules[1].style.setProperty("vector-effect", "non-scaling-stroke", "");
+	}
+	
 	this.clipBoard = new ClipBoard();
 	
 	Alberti.svgRoot = document.getElementById("svgroot");

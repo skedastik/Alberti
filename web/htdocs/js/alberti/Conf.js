@@ -49,7 +49,7 @@ Alberti.crispLines = true;                               // if true, lines are a
 Alberti.defaultLineWidth = 1;
 Alberti.lineWidthDeltaOptimized = 0.01;
 
-// Set to true to enable non-scaling lines. This is only useful if the SVG 
+// Set to true to enable non-scaling lines. This is useful if the SVG 
 // implementation does not support "vector-effect: non-scaling-stroke".
 Alberti.nonScalingLinesHack = true;
 

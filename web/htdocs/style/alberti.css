@@ -18,6 +18,14 @@
 	marker-start: url('#marker_selected');
 }
 
+line, path, circle, ellipse, rect {
+	/*
+	vector-effect is not supported in all implementations of SVG. A work-
+	around can be activated in Alberti.js by setting Alberti.nonScalingLinesHack 
+	to true. This rule is altered accordingly.
+	*/
+}
+
 /* * * * * * * * * * * Order below is NOT important. * * * * * * * * * * * */
 
 #background {
@@ -67,17 +75,4 @@ text, img {
 
 .optimized {
 	shape-rendering: crispEdges;
-}
-
-line {
-	/*
-	vector-effect is not supported in all implementations of SVG. A work-
-	around can be activated in Alberti.js by setting Alberti.nonScalingLinesHack 
-	to true. If the workaround is activated, the rule below must be commented 
-	out.
-	
-line, path, circle, ellipse, rect {
-	vector-effect: non-scaling-stroke;
-	
-	*/
 }
