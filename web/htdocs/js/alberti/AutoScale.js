@@ -142,8 +142,10 @@ AutoScale.prototype.update = function(scale) {
 		switch (this.styles[i]["flag"]) {
 			
 			case AutoScale.dashArray:
-				var dashLength = Util.floorToDecimal(this.styles[i]["default"] / scale, 3);
-				this.styles[i]["style"].setProperty("stroke-dasharray", dashLength+","+dashLength, "");
+				if (Alberti.nonScalingLinesHack) {
+					var dashLength = Util.floorToDecimal(this.styles[i]["default"] / scale, 3);
+					this.styles[i]["style"].setProperty("stroke-dasharray", dashLength+","+dashLength, "");
+				}
 				break;
 		}
 	}
