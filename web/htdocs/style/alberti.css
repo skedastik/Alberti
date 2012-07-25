@@ -76,6 +76,7 @@ line {
 	to true. If the workaround is activated, the rule below must be commented 
 	out.
 	
+line, path, circle, ellipse, rect {
 	vector-effect: non-scaling-stroke;
 	
 	*/
