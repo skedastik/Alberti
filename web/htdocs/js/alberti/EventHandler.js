@@ -29,7 +29,7 @@ EventHandler.numListeners = 0;
 // Safari has an absurdly high repeat rate for the escape key. (just tapping 
 // the escape key can result in hundreds of keydown events). Limit the repeat 
 // rate to this value (in ms).
-EventHandler.escKeyRepeatRate = 100;
+EventHandler.escKeyRepeatRate = 150;
 
 function EventHandler() {
 	this.lastMouseMove = Date.now();
