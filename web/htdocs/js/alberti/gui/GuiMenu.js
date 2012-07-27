@@ -322,10 +322,7 @@ GuiMenu.prototype.click = function(evt) {
 	// invoke the menu item action. Menu item action can return true in order
 	// to prevent menu from closing.
 	if (this.menuTreeHasElement(evt.target) && this.disabledMenuItems.indexOf(evt.target.id) == -1) {
-		// Invoke the action after the menu fade animation has completed
-		setTimeout(function() {
-			this.invokeAction(this.action, evt.target.id, evt);
-		}.bindTo(this), (GuiMenu.fadeLength + .05) * 1000);
+		this.invokeAction(this.action, evt.target.id, evt);
 	}
 };
 
