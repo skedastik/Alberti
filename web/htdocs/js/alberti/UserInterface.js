@@ -267,11 +267,14 @@ UserInterface.prototype.initAutoScale = function() {
 	// Register the center HUD, the master group, the Point template, and
 	// dashed-line styles for auto-scaling (see AutoScale.js for details).
 	this.autoScale = new AutoScale();
-	this.autoScale.registerObject(this.masterGroup, AutoScale.lineWidth, Alberti.defaultLineWidth);
 	this.autoScale.registerObject(pointTemplate, AutoScale.scale, 1.0);
 	this.autoScale.registerObject(selectedPointTemplate, AutoScale.scale, 1.0);
 	this.autoScale.registerObject(this.hudGroup, AutoScale.scale, 1.0);
-	this.autoScale.registerStyle(document.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
+	
+	if (Alberti.nonScalingLinesHack) {
+		this.autoScale.registerObject(this.masterGroup, AutoScale.lineWidth, Alberti.defaultLineWidth);
+		this.autoScale.registerStyle(document.styleSheets[0].cssRules[0].style, AutoScale.dashArray, 4);
+	}
 };
 
 UserInterface.prototype.initFileImporters = function() {

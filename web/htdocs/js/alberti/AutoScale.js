@@ -125,15 +125,11 @@ AutoScale.prototype.update = function(scale) {
 				break;
 				
 			case AutoScale.lineWidth:
-				if (Alberti.nonScalingLinesHack) {
-					// Line-width must be floored rather than rounded, or else single-
-					// pixel width lines are rendered 2 pixels wide.
-					this.shapes[i]["shape"].set("stroke-width", 
-						Util.floorToDecimal((this.shapes[i]["default"] + this.lineWidthAdjustment) / scale, 3));
-				}
-				break;
-				
-			case AutoScale.dashArray:
+				// Line-width must be floored rather than rounded, or else single-pixel width lines are rendered 2 pixels wide.
+				this.shapes[i]["shape"].set(
+					"stroke-width", 
+					Util.floorToDecimal((this.shapes[i]["default"] + this.lineWidthAdjustment) / scale, 3)
+				);
 				break;
 		}
 	}
@@ -142,10 +138,8 @@ AutoScale.prototype.update = function(scale) {
 		switch (this.styles[i]["flag"]) {
 			
 			case AutoScale.dashArray:
-				if (Alberti.nonScalingLinesHack) {
-					var dashLength = Util.floorToDecimal(this.styles[i]["default"] / scale, 3);
-					this.styles[i]["style"].setProperty("stroke-dasharray", dashLength+","+dashLength, "");
-				}
+				var dashLength = Util.floorToDecimal(this.styles[i]["default"] / scale, 3);
+				this.styles[i]["style"].setProperty("stroke-dasharray", dashLength+","+dashLength, "");
 				break;
 		}
 	}
