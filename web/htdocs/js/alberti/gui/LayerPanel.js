@@ -33,7 +33,6 @@
 LayerPanel.defaultPosition          = "0px";        // Layer panel's default position
 LayerPanel.collapsePosition         = "-160px";     // Layer panel's collapsed (hidden) position
 LayerPanel.collapseTransitionLength = 0.25;         // Collapse animation length in seconds
-LayerPanel.rowInsertAnimationLength = 0.1;          // Length of row insertion/removal for drag/drop purposes
 LayerPanel.rowSnapAnimationLength   = 0.125;        // Length of ghost row "bungee" animation for drag/drop purposes
  
 function LayerPanel(mainDiv, dynamicDiv, cstripDiv, insertMarkDiv) {
