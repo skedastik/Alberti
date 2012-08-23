@@ -86,7 +86,7 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 	}
 };
 
-ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
+ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 	switch (stepNum) {
 		
 		// Step 0: Update the line's endpoint to match the mouse location. If 
@@ -95,12 +95,12 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
 		case 0:
 			var l = this.getShape("line");
 			
-			if (constrain) {
+			if (this.checkModifierKeys([KeyCode.shift])) {
 				l.p2.x = gx;
 				l.p2.y = gy;
 				l.setAngle(Util.roundToMultiple(l.getAngle(), quarterPi));
 				l.p2 = l.getProjectedPoint(new Coord2D(gx, gy));
-				this.setConstrainCoords(l.p2);
+				this.lockMouseCoords(l.p2);
 			} else {
 				l.p2.x = gx;
 				l.p2.y = gy;
@@ -146,7 +146,7 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
 	}
 };
 
-ToolLine.prototype.complete = function(stepNum, constrain) {
+ToolLine.prototype.complete = function(stepNum) {
 	var l = this.getShape("line");
 	
 	if (stepNum == 1) {

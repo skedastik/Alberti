@@ -51,6 +51,13 @@ Array.prototype.equals = function(a) {
 	});
 };
 
+// Returns true if every element in array is contained in a.
+Array.prototype.isSubsetOf = function(a) {
+	return this.every(function(value) {
+		return a.indexOf(value) != -1;
+	});
+}
+
 // Trig abbreviations
 var sin =         Math.sin;
 var cos =         Math.cos;

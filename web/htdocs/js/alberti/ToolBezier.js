@@ -50,7 +50,7 @@ ToolBezier.prototype.executeStep = function(stepNum, gx, gy) {
 	}
 };
 
-ToolBezier.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
+ToolBezier.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 	var b = this.getShape("bezier");
 	
 	switch (stepNum) {
@@ -75,6 +75,6 @@ ToolBezier.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) 
 	}
 };
 
-ToolBezier.prototype.complete = function(stepNum, constrain) {
+ToolBezier.prototype.complete = function(stepNum) {
 	this.bakeShape("bezier");
 };

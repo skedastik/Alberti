@@ -122,14 +122,14 @@ ToolEllipticalArc.prototype.executeStep = function(stepNum, gx, gy) {
 	}
 };
 
-ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
+ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 	if (stepNum > 2) {
 		var e = this.getShape("ellipse_guide");
 		var lr = this.getShape("line_radius");
 		var mouseCoord = new Coord2D(gx, gy);
 		var mouseAngle = e.center.angleTo(mouseCoord);
 		
-		if (constrain) {
+		if (this.checkModifierKeys([KeyCode.shift])) {
 			// Constrain to quarter degrees
 			mouseAngle = Util.degToRad(Util.roundToMultiple(Util.radToDeg(mouseAngle), 0.25));
 		}
@@ -137,7 +137,7 @@ ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, cons
 		var p = e.getPointGivenAngle(mouseAngle);
 		
 		// Calculate point on ellipse for next step regardless of constrain
-		this.setConstrainCoords(p);
+		this.lockMouseCoords(p);
 		
 		lr.p2.x = p.x;
 		lr.p2.y = p.y;
@@ -154,7 +154,7 @@ ToolEllipticalArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, cons
 	}
 };
 
-ToolEllipticalArc.prototype.complete = function(stepNum, constrain) {
+ToolEllipticalArc.prototype.complete = function(stepNum) {
 	// Create an ellipse rather than an arc if user completed shape at step 4 or 5
 	if (stepNum < 5) {
 		this.bakeShape("ellipse_guide");

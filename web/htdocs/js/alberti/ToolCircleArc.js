@@ -109,15 +109,15 @@ ToolCircleArc.prototype.executeStep = function(stepNum, gx, gy) {
 	}
 };
 
-ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
+ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 	switch (stepNum) {
 		
 		case 0:
 			var c = this.getShape("radius_circle");
 			
-			if (constrain && this.lastRadius != 0) {
+			if (this.checkModifierKeys([KeyCode.shift]) && this.lastRadius != 0) {
 				var l = Line.fromPoints(c.center, new Coord2D(gx, gy)).setLength(this.lastRadius);
-				this.setConstrainCoords(l.p2);
+				this.lockMouseCoords(l.p2);
 				
 				c.radius = this.lastRadius;
 			} else {
@@ -135,7 +135,7 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 			var mouseCoord = new Coord2D(gx, gy);
 			var mouseAngle = Util.radToDeg(c.center.angleTo(mouseCoord));
 			
-			if (constrain) {
+			if (this.checkModifierKeys([KeyCode.shift])) {
 				// Constrain to quarter degrees
 				mouseAngle = Util.roundToMultiple(mouseAngle, 0.25);
 				l.setAngle(Util.degToRad(mouseAngle));
@@ -143,7 +143,7 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 				mouseCoord.x = l.p2.x;
 				mouseCoord.y = l.p2.y;
 				
-				this.setConstrainCoords(l.p2);
+				this.lockMouseCoords(l.p2);
 			} else {
 				l.p2.x = gx;
 				l.p2.y = gy;
@@ -178,7 +178,7 @@ ToolCircleArc.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 	}
 };
 
-ToolCircleArc.prototype.complete = function(stepNum, constrain) {
+ToolCircleArc.prototype.complete = function(stepNum) {
 	// Create a circle rather than an arc if user completed shape at step 1 or 2
 	if (stepNum < 3) {
 		this.bakeShape("radius_circle");

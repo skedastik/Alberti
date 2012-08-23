@@ -43,7 +43,7 @@ ToolSelection.prototype.executeStep = function(stepNum, gx, gy) {
 	}
 };
 
-ToolSelection.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrain) {
+ToolSelection.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 	switch (stepNum) {
 		
 		case 0:
@@ -59,7 +59,7 @@ ToolSelection.prototype.mouseMoveDuringStep = function(stepNum, gx, gy, constrai
 	}
 };
 
-ToolSelection.prototype.complete = function(stepNum, constrain) {
+ToolSelection.prototype.complete = function(stepNum) {
 	var selectRect = this.getShape("select_rect");
 	var shapes;
 	
@@ -77,7 +77,7 @@ ToolSelection.prototype.complete = function(stepNum, constrain) {
 		shapes = this.layerManager.getShapesInRect(selectRect.rect);
 	}
 	
-	if (constrain) {
+	if (this.checkModifierKeys([KeyCode.shift])) {
 		this.layerManager.xorSelection(shapes);
 	} else {
 		this.layerManager.setSelection(shapes);

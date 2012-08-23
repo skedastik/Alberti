@@ -33,10 +33,6 @@
  * escape key. Some tools have optional steps, and may be short-circuited via 
  * the enter or return keys.
  * 
- * Some tools might allow the user to "constrain" the mouse (e.g. a line tool
- * that allows constraining to horizontal or vertical). All constraining 
- * is performed with the shift key.
- * 
  * NOTES
  * 
  * Tool captures mousedowns at the window level while enabled.
@@ -91,34 +87,23 @@
  * the Tool::complete section) by calling Tool::bakeShape with the name of the
  * shape to be baked.
  * 
- * mouseMoveDuringStep(stepNum, gx, gy, constrain)
+ * mouseMoveDuringStep(stepNum, gx, gy)
  * 
  * This method is invoked every time a mousemove event occurs and hence will
  * be used to implement the interactivity of the tool. Taking the example of
  * the line tool, you would update a previously registered line shape to match 
- * the new mouse position. Some tools will need to constrain mouse 
- * coordinates based on whether the shift key is down. If the constrain
- * parameter is true, constraining should take place.
- * 
- * The Tool::setConstrainCoords method is also essential for tools that must
- * constrain the mouse. This method locks Tool's internal mouse coordinates to 
- * the constrained position. This way, the locked mouse coordinates will be 
- * passed to the next executeStep invocation, rather than the unconstrained 
- * coordinates of the click. If convenient, setConstrainCoords can be called 
- * even if the constrain parameter is false (for instance, if you need to pre-
- * calculate values for the next step's executeStep call).
+ * the new mouse position.
  * 
  * You may display tool tips by calling Tool::displayTip, which expects the
  * same arguments as ToolTip::setText.
  * 
- * complete(stepNum, constrainEnabled)
+ * complete(stepNum)
  * 
  * This method is called upon completion of the tool, either by reaching the
  * final step, or by the user short-circuiting the tool with the enter key.
  * In the first case, stepNum will be equivalent to the tool's final step. In 
  * the second case, stepNum indicates the step during which the short-circuit 
- * occurred. 'constrain' is true if the shift-key was down at the time, false
- * otherwise.
+ * occurred.
  * 
  * If you did not mark any shapes for baking while executing a prior step, you 
  * can mark them here.
@@ -131,6 +116,24 @@
  * 
  * This method may be overridden optionally. It is invoked when the tool is
  * deactivated (i.e. the user has selected a different tool).
+ *
+ * Mouse Constraints
+ *
+ * Some tools might allow the user to "constrain" the mouse (e.g. a line tool
+ * that allows constraining to horizontal or vertical) by pressing a certain
+ * key or a combination of keys.
+ *
+ * Use Tool::checkModifierKeys, passing in an array of key codes. If all keys
+ * in the array are currently held down, the method will return true; false
+ * otherwise.
+ *
+ * The Tool::lockMouseCoords method is also essential for tools that must
+ * constrain the mouse. This method locks Tool's internal mouse coordinates to 
+ * the given position. This way, the locked mouse coordinates will be passed
+ * to the next executeStep invocation, rather than the unconstrained 
+ * coordinates of the click. If convenient, lockMouseCoords can be called 
+ * even if the constrain parameter is false (for instance, if you need to pre-
+ * calculate values for the next step's executeStep call).
  * 
  * Excluding Snap Points
  * 
@@ -160,7 +163,7 @@ function Tool(numSteps, minSteps, mouseupFlag, uiObjects) {
 	
 	this.auxiliarySnapPoints = [];         // Snap points generated on the fly
 	
-	this.constrainEnabled = false;
+	this.constrainKeys = [];
 	
 	this.constrainCoordX = null;
 	this.constrainCoordY = null;
@@ -374,7 +377,7 @@ Tool.prototype.displayTip = function(text, autoClear, hiPriority) {
 // Freezes internal mouse coordinates to the specified Coord2D. This is useful 
 // for tools that can constrain mouse movements. Note that subsequent mouse-
 // move events will clear the frozen coordinate.
-Tool.prototype.setConstrainCoords = function(coord) {
+Tool.prototype.lockMouseCoords = function(coord) {
 	this.constrainCoordX = coord.x;
 	this.constrainCoordY = coord.y;
 };
@@ -416,7 +419,7 @@ Tool.prototype.onMouseUp = function(gx, gy, evt) {
 
 Tool.prototype.invokeMouseMove = function(gx, gy) {
 	if (this.currentStep >= 0) {
-		this.mouseMoveDuringStep(this.currentStep, gx, gy, this.constrainEnabled && !this.snappingEnabled);
+		this.mouseMoveDuringStep(this.currentStep, gx, gy, this.constrainKeys);
 	}
 };
 
@@ -430,43 +433,49 @@ Tool.prototype.onMouseMove = function(gx, gy, evt) {
 };
 
 Tool.prototype.keydown = function(evt) {
-	if (evt.keyCode != KeyCode.shift) {
-		this.constrainEnabled = false;
-		
-		switch (evt.keyCode) {
-			case KeyCode.esc:
-				this.decrementStep();
-				break;
-			case KeyCode.enter:
-				if (this.currentStep >= this.minSteps - 1) {
-					this.completeTool();
-				}
-				break;
-			case KeyCode.snap:
-				this.enableSnapping();
-				break;
-		}
-	} else if (!evt.altKey && !evt.ctrlKey && !evt.metaKey) {
-		this.constrainEnabled = true;
+	if (this.constrainKeys.indexOf(evt.keyCode) == -1) {
+		this.constrainKeys.push(evt.keyCode);
+	}
 	
-		// Spoof a mousemove so shapes will update to constrained position
-		p = this.getLastMousePosition();
-		this.invokeMouseMove(p.x, p.y);
+	switch (evt.keyCode) {
+		
+		case KeyCode.esc:
+			this.decrementStep();
+			break;
+			
+		case KeyCode.enter:
+			if (this.currentStep >= this.minSteps - 1) {
+				this.completeTool();
+			}
+			break;
+			
+		case KeyCode.snap:
+			this.enableSnapping();
+			break;
+		
+		default:
+			p = this.getLastMousePosition();
+			this.invokeMouseMove(p.x, p.y);
 	}
 };
 
 Tool.prototype.keyup = function(evt) {
+	var ckeyIndex = this.constrainKeys.indexOf(evt.keyCode);
+	
+	if (ckeyIndex != -1) {
+		this.constrainKeys.splice(ckeyIndex, 1);
+	}
+	
 	switch (evt.keyCode) {
-		case KeyCode.shift:
-			this.constrainEnabled = false;
 		
-			// Spoof a mousemove so shapes will update to constrained position
-			p = this.getLastMousePosition();
-			this.invokeMouseMove(p.x, p.y);
-			break;
 		case KeyCode.snap:
 			this.disableSnapping();
 			break;
+			
+		default:
+			// Spoof a mousemove so shapes will update to constrained position
+			p = this.getLastMousePosition();
+			this.invokeMouseMove(p.x, p.y);
 	}
 };
 
@@ -494,7 +503,7 @@ Tool.prototype.decrementStep = function() {
 			var pb = this.getKeyCoordFromStep(this.currentStep);
 			
 			this.unregisterShapesInCurrentStep();
-			this.executeStep(this.currentStep, pb.x, pb.y, this.constrainEnabled && !this.snappingEnabled);
+			this.executeStep(this.currentStep, pb.x, pb.y, this.constrainKeys);
 			this.invokeMouseMove(pa.x, pa.y);
 		}
 	}
@@ -518,7 +527,7 @@ Tool.prototype.bake = function() {
 };
 
 Tool.prototype.completeTool = function() {
-	this.complete(this.currentStep, this.constrainEnabled);
+	this.complete(this.currentStep, this.constrainKeys);
 	this.bake();
 	this.reset();
 };
@@ -552,6 +561,10 @@ Tool.prototype.reset = function() {
 	this.excludeSnapPoint = null;
 	this.clearSnapPoints();
 };
+
+Tool.prototype.checkModifierKeys = function(keyArray) {
+	return keyArray.isSubsetOf(this.constrainKeys);
+}
 
 // Abstract function. Executes the given step. Must be overridden!
 Tool.prototype.executeStep = function(stepNum, gx, gy) {
