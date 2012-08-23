@@ -564,6 +564,9 @@ Tool.prototype.reset = function() {
 	// Stop excluding snap points, and clear auxiliary snap points
 	this.excludeSnapPoint = null;
 	this.clearSnapPoints();
+	
+	// Clear modifier keys just in case
+	this.constrainKeys = [];
 };
 
 Tool.prototype.checkModifierKeys = function(keyArray) {

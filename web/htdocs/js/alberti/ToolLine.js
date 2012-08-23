@@ -27,6 +27,11 @@
  
 function ToolLine(uiObjects) {
 	ToolLine.baseConstructor.call(this, 4, 2, false, uiObjects);
+	
+	// Each line is defined by two points A and B. These paramaters represent
+	// the last delta between points A and B.
+	this.lastDeltaX = 0;
+	this.lastDeltaY = 0;
 }
 Util.extend(ToolLine, Tool);
 
@@ -54,6 +59,9 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 			
 			l.p1 = this.getKeyCoordFromStep(0);
 			l.p2 = this.getKeyCoordFromStep(1);
+			
+			this.lastDeltaX = l.p2.x - l.p1.x;
+			this.lastDeltaY = l.p2.y - l.p1.y;
 			
 			if (l.getLength() > 0) {
 				var gl = l.extendToInfinity().generate();
@@ -89,18 +97,34 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 	switch (stepNum) {
 		
-		// Step 0: Update the line's endpoint to match the mouse location. If 
-		// the shift key is down, constrain the line's angle to intervals of 
-		// 45 degrees.
+		// Step 0: Update the line's endpoint to match the mouse location.
+		
 		case 0:
 			var l = this.getShape("line");
 			
 			if (this.checkModifierKeys([KeyCode.shift])) {
+				
+				// Constrain the line's angle to intervals of 45 degrees.
 				l.p2.x = gx;
 				l.p2.y = gy;
 				l.setAngle(Util.roundToMultiple(l.getAngle(), quarterPi));
 				l.p2 = l.getProjectedPoint(new Coord2D(gx, gy));
 				this.lockMouseCoords(l.p2);
+				
+			} else if (this.checkModifierKeys([KeyCode.modParallel]) && !(this.lastDeltaX == 0 && this.lastDeltaY == 0)) {
+				
+				// Create a line parallel to the last used line
+				l.p2.x = l.p1.x + this.lastDeltaX;
+				l.p2.y = l.p1.y + this.lastDeltaY;
+				this.lockMouseCoords(l.p2);
+				
+			} else if (this.checkModifierKeys([KeyCode.modPerpendicular])) {
+				
+				// Create a line perpendicular to the last used line
+				l.p2.x = l.p1.x - this.lastDeltaY;
+				l.p2.y = l.p1.y + this.lastDeltaX;
+				this.lockMouseCoords(l.p2);
+				
 			} else {
 				l.p2.x = gx;
 				l.p2.y = gy;
