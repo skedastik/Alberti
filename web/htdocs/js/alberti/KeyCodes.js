@@ -44,6 +44,10 @@ var KeyCode = {
 	number7: 55,
 	number8: 56,
 	number9: 57,
+	
+	// Tool keys
+	backStep:    192,      // tilde - Undo last tool step
+	modParallel: 76,       // 'l' -   Parallel line constraint
     
 	lpCollapse: 220,       // '\' -   Collapse/reveal layer panel
 	snap:       68,        // 'd' -   Activate snap-to-intersection
@@ -54,6 +58,6 @@ var KeyCode = {
 	paste:      86,        // 'v'
 	selectAll:  65,        // 'a'
 	newDoc:     78,        // 'n' -   Create a new document
-	save:       83,        // 's' -   Save the document (w/ shift key)
+	save:       83,        // 's' -   Save the document
 	load:       79,        // 'o' -   Open a document
 };

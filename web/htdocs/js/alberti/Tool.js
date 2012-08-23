@@ -440,6 +440,10 @@ Tool.prototype.keydown = function(evt) {
 	switch (evt.keyCode) {
 		
 		case KeyCode.esc:
+			this.reset();
+			break;
+		
+		case KeyCode.backStep:
 			this.decrementStep();
 			break;
 			
