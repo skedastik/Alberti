@@ -32,6 +32,9 @@ function ToolLine(uiObjects) {
 	// the last delta between points A and B.
 	this.lastDeltaX = 0;
 	this.lastDeltaY = 0;
+	
+	// Coord2D of last line origin.
+	this.lastOrigin = null;
 }
 Util.extend(ToolLine, Tool);
 
@@ -40,7 +43,16 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 		
 		// Step 0: Display the line and start point.
 		case 0:
-			var c = new Coord2D(gx, gy);
+			var sp = this.getShape("startpoint");
+			
+			if (this.checkModifierKeys([KeyCode.modPinning]) && this.lastOrigin !== null) {
+				// If shift key is held down, use last line origin as new line origin
+				var c = this.lastOrigin.clone();
+				this.updateKeyCoord(this.lastOrigin);
+			} else {
+				var c = new Coord2D(gx, gy);
+				this.lastOrigin = c.clone();
+			}
 			
 			var p = Point.fromCoord(c).generate();
 			var l = Line.fromPoints(c, c).generate();
@@ -57,7 +69,7 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 			var l = this.getShape("line");
 			var sp = this.getShape("startpoint")
 			
-			l.p1 = this.getKeyCoordFromStep(0);
+			l.p1 = sp.coord.clone();
 			l.p2 = this.getKeyCoordFromStep(1);
 			
 			this.lastDeltaX = l.p2.x - l.p1.x;
@@ -174,14 +186,15 @@ ToolLine.prototype.complete = function(stepNum) {
 	var l = this.getShape("line");
 	
 	if (stepNum == 1) {
+		
 		// If user short-circuited at step 1, place line's endpoint at key 
 		// coordinate of step 1.
-		l.p2 = this.getKeyCoordFromStep(1);
+		l.p2 = this.getShape("midpoint").coord.clone();
 	} else if (stepNum == 2) {
-		// If user short-circuited at step 2, place line's endpoint at key 
+		// If user short-circuited at step 2, place line's startpoint at key 
 		// coordinate of step 1.
 		var ep = this.getShape("endpoint1");
-		l.p1 = this.getKeyCoordFromStep(0);
+		l.p1 = this.getShape("startpoint").coord.clone();
 		l.p2 = ep.coord.clone();
 	}
 	

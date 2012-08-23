@@ -49,6 +49,7 @@ var KeyCode = {
 	backStep:         192,      // tilde - Undo last tool step
 	modParallel:      76,       // 'l' -   Parallel line constraint
 	modPerpendicular: 80,       // 'p' -   Perpendicular line constraint
+	modPinning:       83,       // 's' -   Line pinning constraint
     
 	lpCollapse: 220,       // '\' -   Collapse/reveal layer panel
 	snap:       68,        // 'd' -   Activate snap-to-intersection
