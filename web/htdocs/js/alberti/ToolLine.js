@@ -45,17 +45,17 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 			var p = Point.fromCoord(c).generate();
 			var l = Line.fromPoints(c, c).generate();
 			
-			this.registerShape(p, "start_point");
+			this.registerShape(p, "startpoint");
 			this.registerShape(l, "line");
 			
-			this.generateTangentSnaps("start_point");
+			this.generateTangentSnaps("startpoint");
 			break;
 			
 		// Step 1: Display line's midpoint and endpoint, as well as a guide 
 		// line extending through midpoint to infinity.
 		case 1:
 			var l = this.getShape("line");
-			var sp = this.getShape("start_point")
+			var sp = this.getShape("startpoint")
 			
 			l.p1 = this.getKeyCoordFromStep(0);
 			l.p2 = this.getKeyCoordFromStep(1);
@@ -70,7 +70,7 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 			
 				mp.innerColor = "none";
 				sp.innerColor = "black";
-				this.sendShapeToOverlay("start_point");
+				this.sendShapeToOverlay("startpoint");
 			
 				this.registerShape(gl, "line_guide", true);
 				this.registerShape(mp, "midpoint", true);
@@ -83,11 +83,11 @@ ToolLine.prototype.executeStep = function(stepNum, gx, gy) {
 		
 		case 2:
 			var l = this.getShape("line");
-			var sp = this.getShape("start_point");
+			var sp = this.getShape("startpoint");
 			var ep = Point.fromCoord(l.p2).generate();
 			
 			sp.innerColor = "none";
-			this.sendShapeToUnderlay("start_point");
+			this.sendShapeToUnderlay("startpoint");
 			
 			this.registerShape(ep, "endpoint2");
 			break;
