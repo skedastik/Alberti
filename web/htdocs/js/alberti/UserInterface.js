@@ -137,6 +137,8 @@ UserInterface.prototype.prepareForDocument = function(albertiDoc) {
 	
 	if (this.currentTool === null) {
 		this.setTool(UserInterface.defaultTool);
+	} else {
+		this.toolIndex[this.currentTool].tool.reset();
 	}
 	
 	this.updateUndoMenuItems();
