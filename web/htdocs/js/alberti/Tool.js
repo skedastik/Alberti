@@ -75,6 +75,9 @@
  * will lose the data describing its original state. In that case, 
  * Tool::getKeyCoordFromStep is an essential method as it allows you to query
  * the position of the mouseclick that originally triggered that step.
+ *
+ * It may be necessary to actually change the key coords for the current step.
+ * In such a case, use Tool::updateKeyCoord, passing in a Coord2D.
  * 
  * Previously registered shapes may be unregistered at any time with the
  * Tool::unregisterShape method.
@@ -290,6 +293,10 @@ Tool.prototype.unregisterShape = function(name) {
 Tool.prototype.getKeyCoordFromStep = function(stepNum) {
 	return this.steps[stepNum] !== undefined ? this.steps[stepNum].keyCoord.clone() : undefined;
 };
+
+Tool.prototype.updateKeyCoord = function(coord) {
+	this.steps[this.currentStep].keyCoord = coord.clone();
+}
 
 // Get previously registered shape. Returns null if shape w/ given name not found.
 Tool.prototype.getShape = function(name) {
