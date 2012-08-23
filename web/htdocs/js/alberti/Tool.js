@@ -426,7 +426,7 @@ Tool.prototype.onMouseUp = function(gx, gy, evt) {
 
 Tool.prototype.invokeMouseMove = function(gx, gy) {
 	if (this.currentStep >= 0) {
-		this.mouseMoveDuringStep(this.currentStep, gx, gy, this.constrainKeys);
+		this.mouseMoveDuringStep(this.currentStep, gx, gy);
 	}
 };
 
@@ -514,7 +514,7 @@ Tool.prototype.decrementStep = function() {
 			var pb = this.getKeyCoordFromStep(this.currentStep);
 			
 			this.unregisterShapesInCurrentStep();
-			this.executeStep(this.currentStep, pb.x, pb.y, this.constrainKeys);
+			this.executeStep(this.currentStep, pb.x, pb.y);
 			this.invokeMouseMove(pa.x, pa.y);
 		}
 	}
@@ -538,7 +538,7 @@ Tool.prototype.bake = function() {
 };
 
 Tool.prototype.completeTool = function() {
-	this.complete(this.currentStep, this.constrainKeys);
+	this.complete(this.currentStep);
 	this.bake();
 	this.reset();
 };
