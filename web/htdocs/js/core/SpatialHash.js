@@ -60,6 +60,7 @@
 function SpatialHash(bucketWidth) {
 	this.buckets = {};
 	this.bucketWidth = bucketWidth;
+	this.halfBucketWidth = bucketWidth / 2;
 	
 	this.bucketCount = 0;
 	this.nodeCount = 0;
@@ -74,9 +75,7 @@ function SpatialHash(bucketWidth) {
 }
 
 SpatialHash.prototype.search = function(queryCoord, radius) {
-	var hw = this.bucketWidth / 2;
-	
-	Util.assert(radius <= hw, "Radius passed to SpatialHash::search must be no larger than half the bucket width.");
+	Util.assert(radius <= this.halfBucketWidth, "Radius passed to SpatialHash::search must be no larger than half the bucket width.");
 	
 	var bx = Util.roundToMultiple(queryCoord.x, this.bucketWidth);
 	var by = Util.roundToMultiple(queryCoord.y, this.bucketWidth);
@@ -104,8 +103,8 @@ SpatialHash.prototype.search = function(queryCoord, radius) {
 	var dy = queryCoord.y - by;
 	
 	// Determine relevant neighbor buckets
-	var nx = Math.abs(dx) + radius >= hw ? bx + (Util.sign(dx) * this.bucketWidth) : null;
-	var ny = Math.abs(dy) + radius >= hw ? by + (Util.sign(dy) * this.bucketWidth) : null;
+	var nx = Math.abs(dx) + radius >= this.halfBucketWidth ? bx + (Util.sign(dx) * this.bucketWidth) : null;
+	var ny = Math.abs(dy) + radius >= this.halfBucketWidth ? by + (Util.sign(dy) * this.bucketWidth) : null;
 	
 	if (nx !== null) {
 		buckets.push(this.buckets[nx+","+by]);
