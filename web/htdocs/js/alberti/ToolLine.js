@@ -130,7 +130,7 @@ ToolLine.prototype.mouseMoveDuringStep = function(stepNum, gx, gy) {
 				l.p2.y = l.p1.y + this.lastDeltaY;
 				this.lockMouseCoords(l.p2);
 				
-			} else if (this.checkModifierKeys([KeyCode.modPerpendicular])) {
+			} else if (this.checkModifierKeys([KeyCode.modPerpendicular]) && !(this.lastDeltaX == 0 && this.lastDeltaY == 0)) {
 				
 				// Create a line perpendicular to the last used line
 				l.p2.x = l.p1.x - this.lastDeltaY;
