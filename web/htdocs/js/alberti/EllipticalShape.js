@@ -144,7 +144,7 @@ EllipticalShape.projectToQuad = function(e, w, x, y, z) {
 	var H =  Y0*Z1    - X0*Z1    - Y1*Z0    + X1*Z0    + W0*Y1    - W1*Y0    - W0*X1    + W1*X0;
 	var I =  Y0*Z1    - W0*Z1    - Y1*Z0    + W1*Z0    + X0*Y1    - X1*Y0    + W0*X1    - W1*X0;
 	
-	var S = Matrix.create([
+	var S = SylvesterModule.Matrix.create([
 		[A,B,C],
 		[D,E,F],
 		[G,H,I]
