@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 #
+# Quick and dirty deploy script.
+#
 # Merge and minify js, CSS, and HTML into a single XHTML file for deployment
 # at deploy/index.xhtml. Also copies images to deploy directory. You may 
 # optionally supply a '--raw' argument to avoid minification.
@@ -69,11 +71,19 @@ print FILE $body;
 print FILE $footer;
 close FILE;
 
-# Copy images to deploy/images if not already done
+# Copy other files
 if (!-e "$deployPath/images") {
-	print "Copying images...\n";
+	print "Copying files...\n";
+
 	`mkdir $deployPath/images`;
-	`cp $htdocsPath/images/* $deployPath/images`;
+	`cp $htdocsPath/images/*.* $deployPath/images`;
+
+	`mkdir $deployPath/images/help`;
+	`cp $htdocsPath/images/help/*.* $deployPath/images/help`;
+
+	`cp $htdocsPath/help.html $deployPath/help.html`;
+	`mkdir $deployPath/style`;
+	`cp $htdocsPath/style/help.css $deployPath/style/help.css`;
 }
 
 print "Deployment complete.\n";
