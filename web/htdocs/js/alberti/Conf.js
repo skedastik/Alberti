@@ -41,7 +41,7 @@ Alberti.halfOriginalWindowWidth = Math.round(window.innerWidth / 2);
 Alberti.halfOriginalWindowHeight = Math.round(window.innerHeight / 2);
 
 Alberti.optimizedClassName = "optimized";                // special CSS class used to render non-anti-aliased line
-Alberti.crispLines = true;                               // if true, lines are always rendered with the above CSS style
+Alberti.crispLines = false;                               // if true, lines are always rendered with the above CSS style
 
 // For whatever reason, SVG rendering speed slows down drastically for line
 // widths less than or equal to 1. Hence, line width must be increased 
