@@ -182,6 +182,7 @@ Tool.prototype.activate = function() {
 	if (!this.active) {
 		this.active = true;
 		this.enabled = true;
+		this.constrainKeys = [];
 		
 		// No points should be excluded from snapping when a tool is first activated
 		this.excludeSnapPoint = null;
@@ -571,9 +572,6 @@ Tool.prototype.reset = function() {
 	// Stop excluding snap points, and clear auxiliary snap points
 	this.excludeSnapPoint = null;
 	this.clearSnapPoints();
-	
-	// Clear modifier keys just in case
-	this.constrainKeys = [];
 };
 
 Tool.prototype.checkModifierKeys = function(keyArray) {
