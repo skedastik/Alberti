@@ -72,21 +72,19 @@ print FILE $footer;
 close FILE;
 
 # Copy other files
-if (!-e "$deployPath/images") {
-	print "Copying files...\n";
-	
-	`mkdir $deployPath/jscolor`;
-	`cp $htdocsPath/js/jscolor/*.gif $htdocsPath/js/jscolor/*.png $deployPath/jscolor`;
+print "Copying files...\n";
 
-	`mkdir $deployPath/images`;
-	`cp $htdocsPath/images/*.* $deployPath/images`;
+`mkdir $deployPath/jscolor`;
+`cp $htdocsPath/js/jscolor/*.gif $htdocsPath/js/jscolor/*.png $deployPath/jscolor`;
 
-	`mkdir $deployPath/images/help`;
-	`cp $htdocsPath/images/help/*.* $deployPath/images/help`;
+`mkdir $deployPath/images`;
+`cp $htdocsPath/images/*.* $deployPath/images`;
 
-	`cp $htdocsPath/help.html $deployPath/help.html`;
-	`mkdir $deployPath/style`;
-	`cp $htdocsPath/style/help.css $deployPath/style/help.css`;
-}
+`mkdir $deployPath/images/help`;
+`cp $htdocsPath/images/help/*.* $deployPath/images/help`;
+
+`cp $htdocsPath/help.html $deployPath/help.html`;
+`mkdir $deployPath/style`;
+`cp $htdocsPath/style/help.css $deployPath/style/help.css`;
 
 print "Deployment complete.\n";
