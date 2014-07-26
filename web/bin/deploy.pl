@@ -74,6 +74,9 @@ close FILE;
 # Copy other files
 if (!-e "$deployPath/images") {
 	print "Copying files...\n";
+	
+	`mkdir $deployPath/jscolor`;
+	`cp $htdocsPath/js/jscolor/*.gif $htdocsPath/js/jscolor/*.png $deployPath/jscolor`;
 
 	`mkdir $deployPath/images`;
 	`cp $htdocsPath/images/*.* $deployPath/images`;
