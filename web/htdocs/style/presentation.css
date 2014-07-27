@@ -91,7 +91,7 @@ a {
 	height: 20px;
 	
 	border-radius: 10px 10px 10px 0;
-	background: #333 url(../images/closebox.png) 5px 5px no-repeat;
+	background: #333 url('../images/closebox.png') 5px 5px no-repeat;
 	
 	cursor: pointer;
 	
